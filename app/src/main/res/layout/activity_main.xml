@@ -11,7 +11,14 @@
     tools:context="tddd82.healthcare.MainActivity">
 
     <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="hej"
+        android:id="@+id/testinfo"/>
+    <Button
+        android:layout_below="@id/testinfo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!" />
+        android:id="@+id/nfcbutton"/>
+
 </RelativeLayout>
