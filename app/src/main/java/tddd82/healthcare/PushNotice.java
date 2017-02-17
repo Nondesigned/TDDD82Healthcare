@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.nfc.Tag;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.Toast;
 
 
 import com.google.firebase.messaging.RemoteMessage;
@@ -15,7 +16,7 @@ public class PushNotice extends FirebaseMessagingService {
     }
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage){
-        Log.d("sd","fuck you");
+Log.d("Bob","Wtf");
     }
 
     @Override
