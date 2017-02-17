@@ -10,8 +10,24 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="tddd82.healthcare.MainActivity">
 
-    <TextView
+    <Button
+        android:text="get regid"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!" />
+        android:layout_below="@+id/textView"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="36dp"
+        android:layout_marginTop="44dp"
+        android:id="@+id/button2" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:text="Name"
+        android:ems="10"
+        android:layout_alignParentBottom="true"
+        android:layout_alignStart="@+id/button2"
+        android:layout_marginBottom="118dp"
+        android:id="@+id/editText" />
 </RelativeLayout>
