@@ -4,6 +4,13 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.toolbox.JsonObjectRequest;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -26,60 +33,57 @@ import java.net.URLEncoder;
 class LoginTask extends AsyncTask<String,Void,String> {
     private Context context;
     private AlertDialog alertDialog;
+    private String token;
+    public AsyncResponse delegate = null;
 
-    LoginTask(Context context){
+    public LoginTask(Context context, AsyncResponse delegate){
         this.context = context;
+        this.delegate = delegate;
+        alertDialog = new AlertDialog.Builder(context).create();
+        alertDialog.setTitle("test");
+    }
+    // you may separate this or combined to caller class.
+    public interface AsyncResponse {
+        void processFinish(String output);
     }
 
 
-    @Override
     protected String doInBackground(String... params) {
-
-        String cardID = params[0];
+        String card = params[0];
         String password = params[1];
-        /* TODO This needs to be the changed to the correct URL */
-        String registerURL = "http://10.0.2.2/goclubmanager/register_user.php";
+        String url = params[2];
 
+        JSONObject credentials = new JSONObject();
         try {
-            URL url = new URL(registerURL);
-            HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection();
-            httpURLConnection.setRequestMethod("POST");
-            httpURLConnection.setDoOutput(true);
-            OutputStream OS = httpURLConnection.getOutputStream();
-            BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(OS, "UTF-8"));
-            String data = URLEncoder.encode("cardID", "UTF-8") + "=" + URLEncoder.encode(cardID, "UTF-8") + "&" +
-                    URLEncoder.encode("password", "UTF-8") + "=" + URLEncoder.encode(password, "UTF-8") + "&";
-            bufferedWriter.write(data);
-            bufferedWriter.flush();
-            bufferedWriter.close();
-            OS.close();
-            InputStream IS = httpURLConnection.getInputStream();
-            BufferedReader bufferdReader = new BufferedReader(new InputStreamReader(IS, "iso-8859-1"));
-            String response = "";
-            String line = "";
-            while ((line = bufferdReader.readLine()) != null){
-                response += line;
-            }
-            bufferdReader.close();
-            IS.close();
-            return response;
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+            credentials.put("password", password);
+            credentials.put("card", card);
+        } catch (JSONException e) {
             e.printStackTrace();
         }
-        return "Something went wrong";
-    }
 
+/*
+        JsonObjectRequest jsonRequest = new JsonObjectRequest
+        (Request.Method.GET, url, null, new Response.Listener<JSONObject>(){
+            @Override
+            public void onResponse(JSONObject response) {
+                if (response.status.equals("accepted")) {
+                    setToken(response.token);
+                }else{
+                    return(response.message);
+                }
+
+            }
+        });
+*/
+        return "token";
+    }
     @Override
     protected void onPreExecute() {
-        alertDialog = new AlertDialog.Builder(context).create();
         alertDialog.setTitle("Retriving ID");
     }
 
     @Override
     protected void onPostExecute(String result) {
-        alertDialog.setMessage(result);
-        alertDialog.show();
+        delegate.processFinish(result);
     }
 }
