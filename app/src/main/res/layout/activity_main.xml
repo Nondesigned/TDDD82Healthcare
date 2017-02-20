@@ -11,7 +11,7 @@
     tools:context="tddd82.healthcare.MainActivity">
 
     <Button
-        android:text="get regid"
+        android:text="Token"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/textView"
@@ -20,14 +20,13 @@
         android:layout_marginTop="44dp"
         android:id="@+id/button2" />
 
-    <EditText
+    <Button
+        android:text="call"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:inputType="textPersonName"
-        android:text="Name"
-        android:ems="10"
-        android:layout_alignParentBottom="true"
-        android:layout_alignStart="@+id/button2"
-        android:layout_marginBottom="118dp"
-        android:id="@+id/editText" />
+        android:layout_marginEnd="49dp"
+        android:id="@+id/call"
+        android:layout_alignBaseline="@+id/button2"
+        android:layout_alignBottom="@+id/button2"
+        android:layout_alignParentEnd="true" />
 </RelativeLayout>

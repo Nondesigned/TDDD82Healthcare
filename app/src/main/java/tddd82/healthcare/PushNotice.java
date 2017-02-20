@@ -8,6 +8,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.RemoteMessage;
 import com.google.firebase.messaging.FirebaseMessagingService;
 
@@ -16,7 +17,11 @@ public class PushNotice extends FirebaseMessagingService {
     }
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage){
-Log.d("Bob","Wtf");
+        String token = FirebaseInstanceId.getInstance().getToken();
+        Intent intent = new Intent(this,callingActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra("token",token);
+        startActivity(intent);
     }
 
     @Override

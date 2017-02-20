@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -17,9 +18,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-    //Bobby was here
-        //Wooow Mvh Rickard
-        // Test
+
+        Button call = (Button) findViewById(R.id.call);
         Button button = (Button) findViewById(R.id.button2);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -27,5 +27,10 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        call.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                //UPSTREAM FÖR ATT SKICKA EN notis
+            }
+        });
     }
 }
