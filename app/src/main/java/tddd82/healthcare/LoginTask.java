@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 
 import org.json.JSONException;
@@ -33,8 +34,14 @@ import java.net.URLEncoder;
 class LoginTask extends AsyncTask<String,Void,String> {
     private Context context;
     private AlertDialog alertDialog;
-    private String token;
+    private static String token;
     public AsyncResponse delegate = null;
+    private JSONObject response;
+    private static final String JSON_ACCEPTED = "accepted";
+    private static final String JSON_STATUS = "status";
+    private static final String JSON_DECLINED = "declined";
+    private static final String JSON_TOKEN = "token";
+    private static final String JSON_MESSAGE = "message";
 
     public LoginTask(Context context, AsyncResponse delegate){
         this.context = context;
@@ -55,27 +62,36 @@ class LoginTask extends AsyncTask<String,Void,String> {
 
         JSONObject credentials = new JSONObject();
         try {
-            credentials.put("password", password);
             credentials.put("card", card);
+            credentials.put("password", password);
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-/*
-        JsonObjectRequest jsonRequest = new JsonObjectRequest
-        (Request.Method.GET, url, null, new Response.Listener<JSONObject>(){
-            @Override
-            public void onResponse(JSONObject response) {
-                if (response.status.equals("accepted")) {
-                    setToken(response.token);
-                }else{
-                    return(response.message);
-                }
 
-            }
-        });
-*/
-        return "token";
+        JsonObjectRequest jsonRequest = new JsonObjectRequest
+                (Request.Method.POST, url, credentials, new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject m_response) {
+                        response = m_response;
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                });
+
+        try {
+            if(response.getString(JSON_STATUS).equals(JSON_ACCEPTED))
+                return response.getString(JSON_TOKEN);
+            else
+                return response.getString(JSON_MESSAGE);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return "ERROR";
     }
     @Override
     protected void onPreExecute() {
