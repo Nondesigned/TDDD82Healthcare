@@ -2,7 +2,10 @@ package tddd82.healthcare;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
+import android.util.Log;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -74,6 +77,16 @@ class LoginTask extends AsyncTask<String,Void,String> {
 
                     @Override
                     public void onResponse(JSONObject m_response) {
+                        // TODO We need to encrypt the token
+                        Log.v(AntonsLog.TAG, "We get response");
+                        SharedPreferences login = PreferenceManager.getDefaultSharedPreferences(context);
+                        SharedPreferences.Editor editor = login.edit();
+                        try {
+                            editor.putString("TOKEN", response.getString(JSON_TOKEN));
+                            Log.v(AntonsLog.TAG, login.getString("TOKEN", "Default Value"));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                         response = m_response;
                     }
                 }, new Response.ErrorListener() {
