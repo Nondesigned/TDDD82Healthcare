@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
+import android.util.Base64;
 import android.util.Log;
 
 import com.android.volley.Request;
@@ -82,13 +83,17 @@ class LoginTask extends AsyncTask<String,Void,String> {
                         SharedPreferences login = PreferenceManager.getDefaultSharedPreferences(context);
                         SharedPreferences.Editor editor = login.edit();
                         try {
-                            editor.putString("TOKEN", response.getString(JSON_TOKEN));
-                            Log.v(AntonsLog.TAG, login.getString("TOKEN", "Default Value"));
+                            String encryptedToken = encrypt(response.getString(JSON_TOKEN));
+                            editor.putString("TOKEN", encryptedToken);
+                            editor.commit();
+                            Log.v(AntonsLog.TAG, decrypt(login.getString("TOKEN", "Default Value")));
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
                         response = m_response;
                     }
+
+
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
@@ -106,6 +111,17 @@ class LoginTask extends AsyncTask<String,Void,String> {
         }
         return "ERROR";
     }
+
+    private String decrypt(String input) {
+        //This is weak
+        return new String(Base64.decode(input.getBytes(), Base64.DEFAULT));
+    }
+
+    private String encrypt(String input) {
+        //This is weak
+        return Base64.encodeToString(input.getBytes(), Base64.DEFAULT);
+    }
+
     @Override
     protected void onPreExecute() {
         alertDialog.setTitle("Retriving ID");
