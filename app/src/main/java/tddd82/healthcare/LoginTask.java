@@ -50,6 +50,10 @@ class LoginTask extends AsyncTask<String,Void,String> {
     private AlertDialog alertDialog;
     private static String token;
     private JSONObject response;
+
+    SharedPreferences login;
+    SharedPreferences.Editor editor;
+
     private static final String JSON_ACCEPTED = "accepted";
     private static final String JSON_STATUS = "status";
     private static final String JSON_DECLINED = "declined";
@@ -64,6 +68,8 @@ class LoginTask extends AsyncTask<String,Void,String> {
         this.context = context;
         alertDialog = new AlertDialog.Builder(context).create();
         alertDialog.setTitle("test");
+        login = PreferenceManager.getDefaultSharedPreferences(context);
+        editor = login.edit();
     }
     // you may separate this or combined to caller class.
     public interface AsyncResponse {
@@ -124,11 +130,12 @@ class LoginTask extends AsyncTask<String,Void,String> {
             Log.v(AntonsLog.TAG, "issuer = " + jwt.getIssuer());
             Log.v(AntonsLog.TAG, "subject = " + jwt.getSubject());
 
-            SharedPreferences login = PreferenceManager.getDefaultSharedPreferences(context);
-            SharedPreferences.Editor editor = login.edit();
+
 
             String encryptedToken = encrypt(response.getString(JSON_TOKEN));
             editor.putString("TOKEN", encryptedToken);
+            editor.commit();
+            editor.putString("ID",card);
             editor.commit();
 
 
@@ -169,5 +176,7 @@ class LoginTask extends AsyncTask<String,Void,String> {
     protected void onPostExecute(String result) {
         Toast toast = Toast.makeText(context, result, Toast.LENGTH_SHORT);
         toast.show();
+        Toast toast2 = Toast.makeText(context, login.getString("ID", "DEFAULT VALUE"), Toast.LENGTH_SHORT);
+        toast2.show();
     }
 }
