@@ -24,7 +24,6 @@ public class MainActivity extends AppCompatActivity {
 
     TextView UsernameInfo;
     EditText passwordInput;
-    Button loginButton;
     NfcActivity nfcActivity = null;
 
     @Override
@@ -34,7 +33,6 @@ public class MainActivity extends AppCompatActivity {
 
         UsernameInfo = (TextView)findViewById(R.id.cardIDInput);
         passwordInput = (EditText)findViewById(R.id.passwordInput);
-        loginButton = (Button)findViewById(R.id.loginButton);
 
 
         nfcActivity = new NfcActivity(this);
