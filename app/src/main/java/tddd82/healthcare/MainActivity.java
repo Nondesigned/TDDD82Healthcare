@@ -49,7 +49,6 @@ public class MainActivity extends AppCompatActivity {
         super.onNewIntent(intent);
         readTextFromNFCTag(intent);
     }
-
     @Override
     protected void onResume() {
         super.onResume();
