@@ -55,6 +55,8 @@ class LoginTask extends AsyncTask<String,Void,String> {
     SharedPreferences login;
     SharedPreferences.Editor editor;
 
+    private static final String JSON_PASSWORD = "password";
+    private static final String JSON_CARD = "card";
     private static final String JSON_ACCEPTED = "accepted";
     private static final String JSON_STATUS = "status";
     private static final String JSON_DECLINED = "declined";
@@ -83,74 +85,64 @@ class LoginTask extends AsyncTask<String,Void,String> {
         String password = params[1];
         String url = params[2];
 
-        JSONObject credentials = new JSONObject();
-        try {
-            credentials.put("card", card);
-            credentials.put("password", password);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        boolean connectedToServer = false;
 
+        if (connectedToServer) {
+            JSONObject credentials = new JSONObject();
+            try {
+                credentials.put("card", card);
+                credentials.put("password", password);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            JsonObjectRequest jsonRequest = new JsonObjectRequest
+                    (Request.Method.POST, url, credentials, new Response.Listener<JSONObject>() {
 
-/*        JsonObjectRequest jsonRequest = new JsonObjectRequest
-                (Request.Method.POST, url, credentials, new Response.Listener<JSONObject>() {
-
-                    @Override
-                    public void onResponse(JSONObject m_response) {
-                        // TODO We need to encrypt the token
-                        Log.v(AntonsLog.TAG, "We get response");
-                        SharedPreferences login = PreferenceManager.getDefaultSharedPreferences(context);
-                        SharedPreferences.Editor editor = login.edit();
-                        try {
-                            String encryptedToken = encrypt(response.getString(JSON_TOKEN));
-                            editor.putString("TOKEN", encryptedToken);
-                            editor.commit();
-                            Log.v(AntonsLog.TAG, decrypt(login.getString("TOKEN", "Default Value")));
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+                        @Override
+                        public void onResponse(JSONObject m_response) {
+                            response = m_response;
                         }
-                        response = m_response;
-                    }
+                    }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
 
+                        }
+                    });
+        }
+        else {
 
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                    }
-                });*/
-
+            try {
+                response = new JSONObject();
+                response.put(JSON_STATUS, JSON_ACCEPTED);
+                response.put(JSON_MESSAGE, "TESTMEDDELANDE");
+                response.put(JSON_TOKEN, TEST_TOKEN);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
         try {
-            JSONObject response = new JSONObject();
-            response.put(JSON_STATUS, JSON_ACCEPTED);
-            response.put(JSON_MESSAGE, "TESTMEDDELANDE");
-            response.put(JSON_TOKEN, TEST_TOKEN);
-
             JWT jwt = new JWT(response.getString(JSON_TOKEN));
 
             Log.v(AntonsLog.TAG, "issuer = " + jwt.getIssuer());
             Log.v(AntonsLog.TAG, "subject = " + jwt.getSubject());
 
 
-
             String encryptedToken = encrypt(response.getString(JSON_TOKEN));
             editor.putString("TOKEN", encryptedToken);
             editor.commit();
-            editor.putString("ID",card);
+            editor.putString("ID", card);
             editor.commit();
-
 
 
             Log.v(AntonsLog.TAG, "Innan decrypt är token " + login.getString("TOKEN", "Default Value"));
             Log.v(AntonsLog.TAG, "Efter encrypt + decrypt är token " + decrypt(login.getString("TOKEN", "Default Value")));
 
-            if(response.getString(JSON_STATUS).equals(JSON_ACCEPTED)) {
+            if (response.getString(JSON_STATUS).equals(JSON_ACCEPTED)) {
                 Log.v(AntonsLog.TAG, "Token är " + response.getString(JSON_TOKEN));
                 Intent startDummy = new Intent(context, DummyActivity.class);
                 context.startActivity(startDummy);
                 return response.getString(JSON_TOKEN);
-            }
-            else {
+            } else {
                 Log.v(AntonsLog.TAG, "Message är " + response.getString(JSON_MESSAGE));
                 return response.getString(JSON_MESSAGE);
             }
