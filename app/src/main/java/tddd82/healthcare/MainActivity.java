@@ -11,6 +11,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.Manifest;
@@ -20,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
     private final static int MY_PERMISSIONS_REQUEST = 1;
 
     TextView UsernameInfo;
+    EditText passwordInput;
     NfcActivity nfcActivity = null;
 
     @Override
@@ -28,7 +31,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
-        UsernameInfo = (TextView)findViewById(R.id.UsernameInfo);
+        UsernameInfo = (TextView)findViewById(R.id.cardIDInput);
+        passwordInput = (EditText)findViewById(R.id.passwordInput);
+
         nfcActivity = new NfcActivity(this);
         NfcAdapter mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
 
@@ -42,11 +47,8 @@ public class MainActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.NFC},MY_PERMISSIONS_REQUEST);
 
         }
-        if(this.token==null){
-            Intent startLoginActivity = new Intent(this, LoginActivity.class);
-            startActivity(startLoginActivity);
-        }
-
+        LoginTask loginTask = new LoginTask(this);
+        loginTask.execute(UsernameInfo.toString(), passwordInput.toString(), "www.test.se");
     }
 
     //Activated when NFC device is found
@@ -55,7 +57,6 @@ public class MainActivity extends AppCompatActivity {
         super.onNewIntent(intent);
         readTextFromNFCTag(intent);
     }
-
     @Override
     protected void onResume() {
         super.onResume();
