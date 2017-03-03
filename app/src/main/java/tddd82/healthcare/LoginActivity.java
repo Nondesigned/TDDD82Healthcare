@@ -33,25 +33,8 @@ public class LoginActivity extends AppCompatActivity {
         String password = passwordInput.getText().toString();
         String username = usernameInput.getText().toString();
 
-        LoginTask loginTask = new LoginTask(this, new LoginTask.AsyncResponse(){
-            @Override
-            public void processFinish(String output){
-                setToken(output);
-                Intent intent=new Intent();
-                intent.putExtra("RESULT_STRING", output);
-                setResult(RESULT_OK, intent);
-                finish();
-            }
-        });
+        LoginTask loginTask = new LoginTask(this);
         loginTask.execute(username, password, "www.test.se");
     }
 
-    public void setToken(String token) {
-        this.token = token;
-        //Toast toast = Toast.makeText(getApplicationContext(), this.token, Toast.LENGTH_SHORT);
-        //toast.show();
-    }
-    public String getToken(){
-        return this.token;
-    }
 }

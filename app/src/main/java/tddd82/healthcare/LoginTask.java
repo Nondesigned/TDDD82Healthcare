@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.util.Base64;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -48,7 +49,6 @@ class LoginTask extends AsyncTask<String,Void,String> {
     private Context context;
     private AlertDialog alertDialog;
     private static String token;
-    public AsyncResponse delegate = null;
     private JSONObject response;
     private static final String JSON_ACCEPTED = "accepted";
     private static final String JSON_STATUS = "status";
@@ -60,9 +60,8 @@ class LoginTask extends AsyncTask<String,Void,String> {
             "sHeY559a4DFOd50_OqgHGuERTqYZyuhtF39yxJPAjUESwxk2J5k_4zM3O-vtd1Ghyo4IbqKKSy6J9mTniYJPenn5-HIirE";
 
 
-    public LoginTask(Context context, AsyncResponse delegate){
+    public LoginTask(Context context){
         this.context = context;
-        this.delegate = delegate;
         alertDialog = new AlertDialog.Builder(context).create();
         alertDialog.setTitle("test");
     }
@@ -168,6 +167,7 @@ class LoginTask extends AsyncTask<String,Void,String> {
 
     @Override
     protected void onPostExecute(String result) {
-        delegate.processFinish(result);
+        Toast toast = Toast.makeText(context, result, Toast.LENGTH_SHORT);
+        toast.show();
     }
 }
