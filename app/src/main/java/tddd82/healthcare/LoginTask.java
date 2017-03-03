@@ -2,6 +2,7 @@ package tddd82.healthcare;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
@@ -145,6 +146,8 @@ class LoginTask extends AsyncTask<String,Void,String> {
 
             if(response.getString(JSON_STATUS).equals(JSON_ACCEPTED)) {
                 Log.v(AntonsLog.TAG, "Token är " + response.getString(JSON_TOKEN));
+                Intent startDummy = new Intent(context, DummyActivity.class);
+                context.startActivity(startDummy);
                 return response.getString(JSON_TOKEN);
             }
             else {
