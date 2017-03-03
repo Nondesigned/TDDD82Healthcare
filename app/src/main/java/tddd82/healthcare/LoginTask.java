@@ -122,7 +122,7 @@ class LoginTask extends AsyncTask<String,Void,String> {
 
         try {
             JSONObject response = new JSONObject();
-            response.put(JSON_STATUS, JSON_DECLINED);
+            response.put(JSON_STATUS, JSON_ACCEPTED);
             response.put(JSON_MESSAGE, "TESTMEDDELANDE");
             response.put(JSON_TOKEN, TEST_TOKEN);
 

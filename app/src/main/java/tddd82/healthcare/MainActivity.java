@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void login(View view){
         LoginTask loginTask = new LoginTask(this);
-        loginTask.execute(UsernameInfo.toString(), passwordInput.toString(), "www.test.se");
+        loginTask.execute(UsernameInfo.getText().toString(), passwordInput.getText().toString(), "www.test.se");
 
     }
     //Activated when NFC device is found
