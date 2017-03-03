@@ -70,7 +70,6 @@
                 android:id="@+id/passwordInput"
                 android:layout_marginLeft="40dp"
                 android:background="#FFFFFF"
-                android:phoneNumber="false"
                 android:hint="@string/password" />
         </TableRow>
 
