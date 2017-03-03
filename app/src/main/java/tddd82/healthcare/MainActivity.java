@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         UsernameInfo = (TextView)findViewById(R.id.UsernameInfo);
         nfcActivity = new NfcActivity(this);
         NfcAdapter mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
@@ -41,6 +42,11 @@ public class MainActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.NFC},MY_PERMISSIONS_REQUEST);
 
         }
+        if(this.token==null){
+            Intent startLoginActivity = new Intent(this, LoginActivity.class);
+            startActivity(startLoginActivity);
+        }
+
     }
 
     //Activated when NFC device is found
