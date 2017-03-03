@@ -12,6 +12,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
 
     TextView UsernameInfo;
     EditText passwordInput;
+    Button loginButton;
     NfcActivity nfcActivity = null;
 
     @Override
@@ -30,9 +32,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         UsernameInfo = (TextView)findViewById(R.id.cardIDInput);
         passwordInput = (EditText)findViewById(R.id.passwordInput);
+        loginButton = (Button)findViewById(R.id.loginButton);
+
 
         nfcActivity = new NfcActivity(this);
         NfcAdapter mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
@@ -47,10 +50,13 @@ public class MainActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.NFC},MY_PERMISSIONS_REQUEST);
 
         }
-        LoginTask loginTask = new LoginTask(this);
-        loginTask.execute(UsernameInfo.toString(), passwordInput.toString(), "www.test.se");
     }
 
+    public void login(View view){
+        LoginTask loginTask = new LoginTask(this);
+        loginTask.execute(UsernameInfo.toString(), passwordInput.toString(), "www.test.se");
+
+    }
     //Activated when NFC device is found
     @Override
     protected void onNewIntent(Intent intent){
