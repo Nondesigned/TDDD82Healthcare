@@ -17,6 +17,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.auth0.android.jwt.JWT;
+import com.securepreferences.SecurePreferences;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -54,14 +55,13 @@ import java.util.Date;
 class LoginTask extends AsyncTask<String,Void,String> {
     private Context context;
     private AlertDialog alertDialog;
-    private static String token;
     private JSONObject response;
 
     SharedPreferences login;
     SharedPreferences.Editor editor;
 
-    private static final int maxTokenLength = 10000;
 
+    private static final String SHARED_PREDS_TOKEN = "TOKEN";
     private static final String JSON_PASSWORD = "password";
     private static final String JSON_CARD = "card";
     private static final String JSON_ACCEPTED = "accepted";
@@ -73,17 +73,11 @@ class LoginTask extends AsyncTask<String,Void,String> {
             "kpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.EkN-DOsnsuRjRO6BxXemmJDm3HbxrbRzXglbN2S4sOkopdU4IsDxTI8jO19W_A4K8ZPJijNLis4EZ" +
             "sHeY559a4DFOd50_OqgHGuERTqYZyuhtF39yxJPAjUESwxk2J5k_4zM3O-vtd1Ghyo4IbqKKSy6J9mTniYJPenn5-HIirE";
 
-    private static final byte[] OTPKey = new byte[maxTokenLength];
-
-
-
     public LoginTask(Context context){
         this.context = context;
         alertDialog = new AlertDialog.Builder(context).create();
         alertDialog.setTitle("test");
-        login = PreferenceManager.getDefaultSharedPreferences(context);
-        editor = login.edit();
-        new SecureRandom().nextBytes(OTPKey);
+
     }
     // you may separate this or combined to caller class.
     public interface AsyncResponse {
@@ -96,13 +90,16 @@ class LoginTask extends AsyncTask<String,Void,String> {
         String password = params[1];
         String url = params[2];
 
-        boolean connectedToServer = true;
+        login = new SecurePreferences(context);
+        editor = login.edit();
+
+        boolean connectedToServer = false;
 
         if (connectedToServer) {
             JSONObject credentials = new JSONObject();
             try {
-                credentials.put("card", card);
-                credentials.put("password", password);
+                credentials.put(JSON_CARD, card);
+                credentials.put(JSON_PASSWORD, password);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -113,6 +110,9 @@ class LoginTask extends AsyncTask<String,Void,String> {
                         @Override
                         public void onResponse(JSONObject m_response) {
                             response = m_response;
+                            if(response.equals(null)){
+                                startDummy();
+                            }
                         }
                     }, new Response.ErrorListener() {
                         @Override
@@ -137,24 +137,16 @@ class LoginTask extends AsyncTask<String,Void,String> {
         try {
             JWT jwt = new JWT(response.getString(JSON_TOKEN));
 
-            Log.v(AntonsLog.TAG, "issuer = " + jwt.getIssuer());
-            Log.v(AntonsLog.TAG, "subject = " + jwt.getSubject());
+            Log.v(AntonsLog.TAG, "TVÅ");
 
-
-            String encryptedToken = encrypt(response.getString(JSON_TOKEN));
-            editor.putString("TOKEN", encryptedToken);
-            editor.commit();
-            editor.putString("ID", card);
+            editor.putString(SHARED_PREDS_TOKEN, response.getString(JSON_TOKEN));
             editor.commit();
 
-
-            Log.v(AntonsLog.TAG, "Innan decrypt är token " + login.getString("TOKEN", "Default Value"));
-            Log.v(AntonsLog.TAG, "Efter encrypt + decrypt är token " + decrypt(login.getString("TOKEN", "Default Value")));
+            Log.v(AntonsLog.TAG, "TRE");
 
             if (response.getString(JSON_STATUS).equals(JSON_ACCEPTED)) {
                 Log.v(AntonsLog.TAG, "Token är " + response.getString(JSON_TOKEN));
-                Intent startDummy = new Intent(context, DummyActivity.class);
-                context.startActivity(startDummy);
+                startDummy();
                 return response.getString(JSON_TOKEN);
             } else {
                 Log.v(AntonsLog.TAG, "Message är " + response.getString(JSON_MESSAGE));
@@ -166,6 +158,12 @@ class LoginTask extends AsyncTask<String,Void,String> {
         return "ERROR";
     }
 
+    private void startDummy() {
+        Intent startDummy = new Intent(context, DummyActivity.class);
+        context.startActivity(startDummy);
+    }
+
+/*
     private String decrypt(String input) {
         //This is weak
         byte[] encoded = input.getBytes();
@@ -185,6 +183,7 @@ class LoginTask extends AsyncTask<String,Void,String> {
         }
         return new String(encoded);
     }
+*/
 
     @Override
     protected void onPreExecute() {
