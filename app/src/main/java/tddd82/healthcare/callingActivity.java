@@ -1,7 +1,9 @@
 package tddd82.healthcare;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -14,7 +16,9 @@ public class callingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_calling);
 
         TextView tokenText = (TextView) findViewById(R.id.textviewtoken);
-        tokenText.setText(getIntent().getStringExtra("token"));
+        Intent intent = getIntent();
+        tokenText.setText(intent.getStringExtra("CALLER") + " is calling");
+
         Button decline = (Button) findViewById(R.id.decline);
         Button answer = (Button) findViewById(R.id.answer);
         answer.setOnClickListener(new View.OnClickListener() {
