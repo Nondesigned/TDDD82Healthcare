@@ -10,4 +10,14 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="tddd82.healthcare.DummyActivity">
 
+    <Button
+        android:text="Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="287dp"
+        android:layout_marginTop="27dp"
+        android:id="@+id/button"
+        android:onClick="startContactActivity" />
 </RelativeLayout>

@@ -28,8 +28,12 @@
                 <action android:name="android.nfc.action.TECH_DISCOVERED" />
             </intent-filter>
         </activity>
-        <activity android:name=".LoginActivity"></activity>
-        <activity android:name=".DummyActivity"></activity>
+        <activity android:name=".LoginActivity" />
+        <activity android:name=".DummyActivity" />
+        <activity
+            android:name=".ContactActivity"
+            android:label="@string/title_activity_contact"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>
