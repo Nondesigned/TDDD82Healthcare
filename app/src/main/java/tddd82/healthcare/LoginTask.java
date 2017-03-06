@@ -11,9 +11,11 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.auth0.android.jwt.JWT;
 
 import org.json.JSONException;
@@ -94,7 +96,7 @@ class LoginTask extends AsyncTask<String,Void,String> {
         String password = params[1];
         String url = params[2];
 
-        boolean connectedToServer = false;
+        boolean connectedToServer = true;
 
         if (connectedToServer) {
             JSONObject credentials = new JSONObject();
@@ -104,6 +106,7 @@ class LoginTask extends AsyncTask<String,Void,String> {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+            RequestQueue RQ = Volley.newRequestQueue(context);
             JsonObjectRequest jsonRequest = new JsonObjectRequest
                     (Request.Method.POST, url, credentials, new Response.Listener<JSONObject>() {
 
@@ -117,6 +120,8 @@ class LoginTask extends AsyncTask<String,Void,String> {
 
                         }
                     });
+            RQ.add(jsonRequest);
+            RQ.start();
         }
         else {
 
