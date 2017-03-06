@@ -19,6 +19,8 @@ import com.auth0.android.jwt.JWT;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import javax.crypto.Cipher;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -36,6 +38,7 @@ import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.SecureRandom;
 import java.security.interfaces.RSAKey;
 import java.util.Date;
 
@@ -55,6 +58,8 @@ class LoginTask extends AsyncTask<String,Void,String> {
     SharedPreferences login;
     SharedPreferences.Editor editor;
 
+    private static final int maxTokenLength = 10000;
+
     private static final String JSON_PASSWORD = "password";
     private static final String JSON_CARD = "card";
     private static final String JSON_ACCEPTED = "accepted";
@@ -66,6 +71,9 @@ class LoginTask extends AsyncTask<String,Void,String> {
             "kpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.EkN-DOsnsuRjRO6BxXemmJDm3HbxrbRzXglbN2S4sOkopdU4IsDxTI8jO19W_A4K8ZPJijNLis4EZ" +
             "sHeY559a4DFOd50_OqgHGuERTqYZyuhtF39yxJPAjUESwxk2J5k_4zM3O-vtd1Ghyo4IbqKKSy6J9mTniYJPenn5-HIirE";
 
+    private static final byte[] OTPKey = new byte[maxTokenLength];
+
+
 
     public LoginTask(Context context){
         this.context = context;
@@ -73,6 +81,7 @@ class LoginTask extends AsyncTask<String,Void,String> {
         alertDialog.setTitle("test");
         login = PreferenceManager.getDefaultSharedPreferences(context);
         editor = login.edit();
+        new SecureRandom().nextBytes(OTPKey);
     }
     // you may separate this or combined to caller class.
     public interface AsyncResponse {
@@ -154,12 +163,22 @@ class LoginTask extends AsyncTask<String,Void,String> {
 
     private String decrypt(String input) {
         //This is weak
-        return new String(Base64.decode(input.getBytes(), Base64.DEFAULT));
+        byte[] encoded = input.getBytes();
+        byte[] restored = new byte[encoded.length];
+        for (int i = 0; i < encoded.length; i++){
+            restored[i] = (byte) (encoded[i] ^ OTPKey[i]);
+        }
+        return new String(restored);
     }
 
     private String encrypt(String input) {
         //This is weak
-        return Base64.encodeToString(input.getBytes(), Base64.DEFAULT);
+        byte[] secret = input.getBytes();
+        byte[] encoded = new byte[secret.length];
+        for (int i = 0; i < secret.length; i++){
+            encoded[i] = (byte) (secret[i] ^ OTPKey[i]);
+        }
+        return new String(encoded);
     }
 
     @Override
