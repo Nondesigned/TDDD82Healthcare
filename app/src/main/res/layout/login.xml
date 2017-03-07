@@ -10,7 +10,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="tddd82.healthcare.MainActivity">
     android:background="#be9967" >
-  
+
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -42,11 +42,15 @@
                 android:id="@+id/cardIDTV"
                 android:layout_marginLeft="20dp" />
 
-            <TextView
+            <EditText
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:inputType="textPersonName"
+                android:ems="10"
                 android:id="@+id/cardIDInput"
-                android:layout_marginLeft="40dp" />
+                android:layout_marginLeft="40dp"
+                android:background="#FFFFFF"
+                android:hint="@string/card_id" />
         </TableRow>
 
         <TableRow
@@ -70,9 +74,11 @@
                 android:id="@+id/passwordInput"
                 android:layout_marginLeft="40dp"
                 android:background="#FFFFFF"
+                android:phoneNumber="false"
                 android:hint="@string/password" />
         </TableRow>
 
     </TableLayout>
+
 </RelativeLayout>
 
