@@ -1,11 +1,13 @@
 package tddd82.healthcare;
 
+import android.provider.ContactsContract;
+
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class VoiceBuffer {
 
-    private Queue<byte[]> sendQueue;
+    private Queue<DataPacket> sendQueue;
     private final int MAX_SIZE = 1000;
 
     public VoiceBuffer(){
@@ -16,14 +18,14 @@ public class VoiceBuffer {
         return sendQueue.isEmpty();
     }
 
-    public byte[] poll(){
+    public DataPacket poll(){
         return sendQueue.poll();
     }
 
     public int size(){
         return sendQueue.size();
     }
-    public void push(byte[] data){
+    public void push(DataPacket data){
         if (sendQueue.size() >= MAX_SIZE)
             sendQueue.remove();
         sendQueue.add(data);

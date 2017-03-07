@@ -15,12 +15,22 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+
 public class MainActivity extends AppCompatActivity {
+
+    Call call;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        call = null;
 
         findViewById(R.id.start).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -28,9 +38,11 @@ public class MainActivity extends AppCompatActivity {
                 final String address = ((EditText) findViewById(R.id.address)).getText().toString();
                 new Thread(new Runnable() {
                     @Override
-                    public void run(){
-                        Call c = new Call(address, 5001);
-                        c.initialize();
+                    public void run() {
+                        if (call == null) {
+                            call = new Call("130.236.181.196", 1338);
+                            call.initialize();
+                        }
                     }
                 }).start();
 
@@ -38,6 +50,21 @@ public class MainActivity extends AppCompatActivity {
 
         });
 
+        findViewById(R.id.stop).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v){
+                new Thread(new Runnable(){
+                    @Override
+                    public void run(){
+                        if (call != null){
+                            call.terminate();
+                            call = null;
+                        }
+                    }
+                }).start();
+            }
+
+        });
 
 
     }

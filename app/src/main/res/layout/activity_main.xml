@@ -18,11 +18,22 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/address"
-            android:layout_weight="0.31" />
+            android:layout_weight="0.31"
+            android:text="10.253.230.73"/>
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/start"/>
+            android:id="@+id/start"
+            android:width="50px"
+            android:height="50px"
+            android:text="START"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/stop"
+            android:width="50px"
+            android:height="50px"
+            android:text="STOP"/>
     </LinearLayout>
 </RelativeLayout>

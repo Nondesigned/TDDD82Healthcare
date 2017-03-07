@@ -61,12 +61,12 @@ public class Call {
 
         this.alive = true;
 
-        new Thread(new Runnable(){
+        /*new Thread(new Runnable(){
             @Override
             public void run(){
                 receiverWorker();
             }
-        }).start();
+        }).start();*/
 
         new Thread(new Runnable(){
             @Override
@@ -92,40 +92,57 @@ public class Call {
         return true;
     }
 
-    private void playbackWorker(){
-        AudioTrack track = new AudioTrack(AudioManager.STREAM_MUSIC, recorder.getSampleRate(), AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT, bufferSize, AudioTrack.MODE_STATIC);
-        while(alive){
-            if (!receiverBuffer.empty()){
-                byte[] buffer = receiverBuffer.poll();
+    public void terminate(){
+        alive = false;
+        recorder.stop();
+        recorder.release();
+        socket.close();
+    }
 
-                track.write(buffer, 0, buffer.length);
+    private void playbackWorker(){
+        while(alive){
+            //if (!receiverBuffer.empty()){
+                byte[] buffer = new byte[bufferSize];
+                DatagramPacket p = new DatagramPacket(buffer, bufferSize);
+
+                try{
+                    socket.receive(p);
+                } catch (Exception ex){
+
+                }
+
+              //  receiverBuffer.push(buffer);
+                AudioTrack track = new AudioTrack(AudioManager.STREAM_MUSIC, recorder.getSampleRate(), AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT, bufferSize, AudioTrack.MODE_STATIC);
+
+               // buffer = receiverBuffer.poll();
+
+                track.write(buffer, 0, p.getLength());
                 track.play();
+            try {
+                Thread.sleep(100);
+            } catch(Exception ex){
+
             }
+                track.release();
+            //}
         }
     }
 
     private void receiverWorker(){
 
         while(alive){
-            byte[] buffer = new byte[bufferSize];
-            DatagramPacket p = new DatagramPacket(buffer, 0, bufferSize);
 
-            try{
-                socket.receive(p);
-            } catch (Exception ex){
-
-            }
-
-            receiverBuffer.push(buffer);
         }
     }
 
     private void recorderWorker(){
         while(alive){
-            byte[] buffer = new byte[bufferSize];
-            recorder.read(buffer, 0, bufferSize);
+            DataPacket p = new DataPacket(bufferSize);
 
-            recordBuffer.push(buffer);
+            recorder.read(p.getBuffer(), p.getDataIndex(), bufferSize);
+            p.setSource(0xDEAD);
+            p.setDestination(0xFFFF);
+            recordBuffer.push(p);
 
         }
     }
@@ -134,20 +151,16 @@ public class Call {
 
         while(alive){
             if (!recordBuffer.empty()) {
-            /*AudioTrack player = new AudioTrack(AudioManager.STREAM_MUSIC, recorder.getSampleRate(), AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT, bufferSize, AudioTrack.MODE_STATIC);
 
-            byte[] buffer = recordBuffer.poll();
-            player.write(buffer, 0, bufferSize);
-            player.play();*/
+                DataPacket data = recordBuffer.poll();
 
-                byte[] buffer = recordBuffer.poll();
-
-                DatagramPacket p = new DatagramPacket(buffer, 0, bufferSize, this.address, this.port);
+                DatagramPacket p = new DatagramPacket(data.getBuffer(), 0, data.getLength(), this.address, this.port);
 
                 try {
                     socket.send(p);
                 } catch (Exception ex) {
-                    System.out.println(ex.getMessage());
+                    String msg = ex.getMessage();
+                    System.out.println(ex);
                 }
             }
 
@@ -157,7 +170,7 @@ public class Call {
 
     private void getAudioRecord(){
         for (int rate : new int[] {44100, 8000, 11025, 16000, 22050}) {
-            bufferSize = AudioRecord.getMinBufferSize(rate, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT);
+            bufferSize = AudioRecord.getMinBufferSize(rate, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT)*5;
             if (bufferSize > 0) {
                 // buffer size is valid, Sample rate supported
                 recorder = new AudioRecord(MediaRecorder.AudioSource.MIC, rate, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, bufferSize);
