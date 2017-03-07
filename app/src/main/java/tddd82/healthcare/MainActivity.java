@@ -10,7 +10,6 @@ import android.widget.Button;
 public class MainActivity extends AppCompatActivity {
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -41,6 +40,8 @@ public class MainActivity extends AppCompatActivity {
         call.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                     // TODO skapa tcp anslutning till java samt pushnotisen via HTTP
+
+
             }
         });
     }
