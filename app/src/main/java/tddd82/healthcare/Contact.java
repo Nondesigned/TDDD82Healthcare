@@ -1,6 +1,7 @@
 package tddd82.healthcare;
 
 import android.content.Context;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -11,21 +12,19 @@ import android.widget.TextView;
  */
 
 public class Contact {
-    LinearLayout rowLL;
-    TextView contactNameTV;
-    Button callButton;
-    Context context;
-    public Contact(Context context, String name){
-        this.context = context;
-        contactNameTV = new TextView(context);
-        callButton = new Button(context);
-        rowLL = new LinearLayout(context);
+    private String name;
+    private int number;
 
-        rowLL.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        callButton.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        contactNameTV.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+    Contact(String name, int number){
+        this.name = name;
+        this.number = number;
+    }
 
-        rowLL.addView(contactNameTV, 0);
-        rowLL.addView(callButton, 0);
+    public int getNumber() {
+        return number;
+    }
+
+    public String getName() {
+        return name;
     }
 }

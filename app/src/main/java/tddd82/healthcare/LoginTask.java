@@ -44,6 +44,7 @@ import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.interfaces.RSAKey;
 import java.util.Date;
+import java.util.prefs.Preferences;
 
 /**
  * Created by Clynch on 2017-02-15.
@@ -61,7 +62,7 @@ class LoginTask extends AsyncTask<String,Void,String> {
     SharedPreferences.Editor editor;
 
 
-    private static final String SHARED_PREDS_TOKEN = "TOKEN";
+    private static final String SHARED_PREFS_TOKEN = "TOKEN";
     private static final String JSON_PASSWORD = "password";
     private static final String JSON_CARD = "card";
     private static final String JSON_ACCEPTED = "accepted";
@@ -98,8 +99,8 @@ class LoginTask extends AsyncTask<String,Void,String> {
         if (connectedToServer) {
             JSONObject credentials = new JSONObject();
             try {
-                credentials.put(JSON_CARD, card);
-                credentials.put(JSON_PASSWORD, password);
+                credentials.put(GlobalVariables.getJsonCardTag(), card);
+                credentials.put(GlobalVariables.getJsonPasswordTag(), password);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -110,9 +111,6 @@ class LoginTask extends AsyncTask<String,Void,String> {
                         @Override
                         public void onResponse(JSONObject m_response) {
                             response = m_response;
-                            if(response.equals(null)){
-                                startDummy();
-                            }
                         }
                     }, new Response.ErrorListener() {
                         @Override
@@ -127,30 +125,30 @@ class LoginTask extends AsyncTask<String,Void,String> {
 
             try {
                 response = new JSONObject();
-                response.put(JSON_STATUS, JSON_ACCEPTED);
-                response.put(JSON_MESSAGE, "TESTMEDDELANDE");
-                response.put(JSON_TOKEN, TEST_TOKEN);
+                response.put(GlobalVariables.getJsonStatusTag(), GlobalVariables.getJsonAcceptedTag());
+                response.put(GlobalVariables.getJsonMessageTag(), "TESTMEDDELANDE");
+                response.put(GlobalVariables.getJsonTokenTag(), GlobalVariables.getTestToken());
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
         try {
-            JWT jwt = new JWT(response.getString(JSON_TOKEN));
+            JWT jwt = new JWT(response.getString(GlobalVariables.getJsonTokenTag()));
 
             Log.v(AntonsLog.TAG, "TVÅ");
 
-            editor.putString(SHARED_PREDS_TOKEN, response.getString(JSON_TOKEN));
+            editor.putString(GlobalVariables.getSharedPrefsTokenTag(), response.getString(GlobalVariables.getJsonTokenTag()));
             editor.commit();
 
             Log.v(AntonsLog.TAG, "TRE");
 
-            if (response.getString(JSON_STATUS).equals(JSON_ACCEPTED)) {
-                Log.v(AntonsLog.TAG, "Token är " + response.getString(JSON_TOKEN));
+            if (response.getString(GlobalVariables.getJsonStatusTag()).equals(GlobalVariables.getJsonAcceptedTag())) {
+                Log.v(AntonsLog.TAG, "Token är " + response.getString(GlobalVariables.getJsonTokenTag()));
                 startDummy();
-                return response.getString(JSON_TOKEN);
+                return response.getString(GlobalVariables.getJsonTokenTag());
             } else {
-                Log.v(AntonsLog.TAG, "Message är " + response.getString(JSON_MESSAGE));
-                return response.getString(JSON_MESSAGE);
+                Log.v(AntonsLog.TAG, "Message är " + response.getString(GlobalVariables.getJsonMessageTag()));
+                return response.getString(GlobalVariables.getJsonMessageTag());
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -162,28 +160,6 @@ class LoginTask extends AsyncTask<String,Void,String> {
         Intent startDummy = new Intent(context, DummyActivity.class);
         context.startActivity(startDummy);
     }
-
-/*
-    private String decrypt(String input) {
-        //This is weak
-        byte[] encoded = input.getBytes();
-        byte[] restored = new byte[encoded.length];
-        for (int i = 0; i < encoded.length; i++){
-            restored[i] = (byte) (encoded[i] ^ OTPKey[i]);
-        }
-        return new String(restored);
-    }
-
-    private String encrypt(String input) {
-        //This is weak
-        byte[] secret = input.getBytes();
-        byte[] encoded = new byte[secret.length];
-        for (int i = 0; i < secret.length; i++){
-            encoded[i] = (byte) (secret[i] ^ OTPKey[i]);
-        }
-        return new String(encoded);
-    }
-*/
 
     @Override
     protected void onPreExecute() {
@@ -197,4 +173,6 @@ class LoginTask extends AsyncTask<String,Void,String> {
         Toast toast2 = Toast.makeText(context, login.getString("ID", "DEFAULT VALUE"), Toast.LENGTH_SHORT);
         toast2.show();
     }
+
+
 }
