@@ -5,13 +5,24 @@ import java.util.Arrays;
 
 public class DataPacket {
 
-    private final int HEADER_SIZE = 8;
+
+    private final static int HEADER_SIZE = 25;
+    public final static int MAX_SIZE = 65507 - HEADER_SIZE;
+
     private byte[] buffer;
+    private int dataSize;
     private int length;
+    private long creationTime;
 
     public DataPacket(int dataSize){
-        this.length = dataSize;
+        this.dataSize = dataSize;
+        this.length = dataSize + HEADER_SIZE;
         this.buffer = new byte[HEADER_SIZE + dataSize];
+        this.creationTime = System.currentTimeMillis();
+    }
+
+    public long getAge(){
+        return creationTime;
     }
 
     public byte[] getBuffer(){
@@ -19,21 +30,83 @@ public class DataPacket {
     }
 
     public int getLength(){
-        return this.length;
+        return length;
     }
 
-    public int getDataIndex(){
+    public int getPayloadIndex(){
         return HEADER_SIZE;
     }
 
+    public int getPayloadLength(){
+        return dataSize;
+    }
+
+    public int getSource(){
+        byte[] tmp = Arrays.copyOfRange(this.buffer, 0, 4);
+        return ByteBuffer.wrap(tmp).getInt();
+    }
+
+    public int getDestination(){
+        byte[] tmp = Arrays.copyOfRange(this.buffer, 4, 8);
+        return ByteBuffer.wrap(tmp).getInt();
+    }
+
+    public int getSampleRate(){
+        byte[] tmp = Arrays.copyOfRange(this.buffer, 8, 12);
+        return ByteBuffer.wrap(tmp).getInt();
+    }
+
+    public int getBufferSize(){
+        byte[] tmp = Arrays.copyOfRange(this.buffer, 12, 16);
+        return ByteBuffer.wrap(tmp).getInt();
+    }
+
+    public byte getFlags(){
+        return buffer[16];
+    }
+
+    public int getChecksum(){
+        byte[] tmp = Arrays.copyOfRange(this.buffer, 17, 21);
+        return ByteBuffer.wrap(tmp).getInt();
+    }
+
+    public int getSequenceNumber(){
+        byte[] tmp = Arrays.copyOfRange(this.buffer, 21, 25);
+        return ByteBuffer.wrap(tmp).getInt();
+    }
+
     public void setSource(int src){
-        byte[] source = ByteBuffer.allocate(4).putInt(src).array();
-        setRange(source, this.buffer, 0);
+        byte[] tmp = ByteBuffer.allocate(4).putInt(src).array();
+        setRange(tmp, this.buffer, 0);
     }
 
     public void setDestination(int dst){
-        byte[] destination = ByteBuffer.allocate(4).putInt(dst).array();
-        setRange(destination, this.buffer, 4);
+        byte[] tmp = ByteBuffer.allocate(4).putInt(dst).array();
+        setRange(tmp, this.buffer, 4);
+    }
+
+    public void setSampleRate(int sampleRate){
+        byte[] tmp = ByteBuffer.allocate(4).putInt(sampleRate).array();
+        setRange(tmp, this.buffer, 8);
+    }
+
+    public void setBufferSize(int bufferSize){
+        byte[] tmp = ByteBuffer.allocate(4).putInt(bufferSize).array();
+        setRange(tmp, this.buffer, 12);
+    }
+
+    public void setFlags(byte flags){
+        this.buffer[16] = flags;
+    }
+
+    public void setChecksum(int checksum){
+        byte[] tmp = ByteBuffer.allocate(4).putInt(checksum).array();
+        setRange(tmp, this.buffer, 17);
+    }
+
+    public void setSequenceNumber(int sequenceNumber){
+        byte[] tmp = ByteBuffer.allocate(4).putInt(sequenceNumber).array();
+        setRange(tmp, this.buffer, 21);
     }
 
     public static byte[] setRange(byte[] source, byte[] destination, int start){

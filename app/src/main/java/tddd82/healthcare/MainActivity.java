@@ -1,26 +1,14 @@
 package tddd82.healthcare;
 
+
 import android.Manifest;
-import android.content.Context;
 import android.content.pm.PackageManager;
-import android.media.AudioFormat;
-import android.media.AudioManager;
-import android.media.AudioRecord;
-import android.media.MediaRecorder;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.SocketException;
-import java.net.UnknownHostException;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -31,21 +19,16 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         call = null;
-
+        requestRecordAudioPermission();
         findViewById(R.id.start).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 final String address = ((EditText) findViewById(R.id.address)).getText().toString();
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (call == null) {
-                            call = new Call("130.236.181.196", 1338);
-                            call.initialize();
-                        }
-                    }
-                }).start();
-
+                if (call == null) {
+                    call = new Call("130.236.181.196", 1338, 10, 20);
+                    call.initialize();
+                    call.start();
+                }
             }
 
         });
@@ -53,19 +36,36 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.stop).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v){
-                new Thread(new Runnable(){
-                    @Override
-                    public void run(){
-                        if (call != null){
-                            call.terminate();
-                            call = null;
-                        }
-                    }
-                }).start();
+                if (call != null){
+                    call.terminate();
+                    call = null;
+                }
             }
 
         });
+    }
 
+    private void requestRecordAudioPermission() {
+        //check API version, do nothing if API version < 23!
+        int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+        if (currentapiVersion > android.os.Build.VERSION_CODES.LOLLIPOP){
 
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+
+                // Should we show an explanation?
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.RECORD_AUDIO)) {
+
+                    // Show an expanation to the user *asynchronously* -- don't block
+                    // this thread waiting for the user's response! After the user
+                    // sees the explanation, try again to request the permission.
+
+                } else {
+
+                    // No explanation needed, we can request the permission.
+
+                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, 1);
+                }
+            }
+        }
     }
 }
