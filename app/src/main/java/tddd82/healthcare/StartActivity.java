@@ -21,7 +21,8 @@ public class StartActivity extends AppCompatActivity {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
-        new PushNoticeId().onTokenRefresh();
+        requestRecordAudioPermission();
+
 //TODO Check from sharedPreferences if user is logged in or not!
         boolean inloggad = true;
 
@@ -56,4 +57,25 @@ public class StartActivity extends AppCompatActivity {
 
         }
     }
-    }
+
+    private void requestRecordAudioPermission(){
+        //check API version, do nothing if API version < 23
+            if (ContextCompat.checkSelfPermissi on(this, android.Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+
+                // Should we show an explanation?
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.RECORD_AUDIO)) {
+
+                    // Show an expanation to the user *asynchronously* -- don't block
+                    // this thread waiting for the user's response! After the user
+                    // sees the explanation, try again to request the permission.
+
+                } else {
+
+                    // No explanation needed, we can request the permission.
+
+                    ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.RECORD_AUDIO}, 1);
+                }
+            }
+        }
+}
+
