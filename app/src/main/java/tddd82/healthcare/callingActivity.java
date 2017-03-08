@@ -23,17 +23,18 @@ public class callingActivity extends AppCompatActivity {
 
         final TextView tokenText = (TextView) findViewById(R.id.textviewtoken);
         Intent intent = getIntent();
-        caller = Integer.parseInt(intent.getStringExtra("CALLER"));
-        tokenText.setText(caller);
 
+            caller = Integer.parseInt(intent.getStringExtra("CALLER"));
+            tokenText.setText(Integer.toString(caller));
         Button decline = (Button) findViewById(R.id.decline);
         Button answer = (Button) findViewById(R.id.answer);
 
+        /*
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         String token = sharedPreferences.getString("TOKEN","default");
         JWT jwt = new JWT(token);
         sourceNr = Integer.parseInt(jwt.getSubject());
-
+*/
         //Sends accept message
         answer.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -47,8 +48,8 @@ public class callingActivity extends AppCompatActivity {
         decline.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 init.initialize(sourceNr,caller,3);
+                finish();
             }
         });
-
 }
 }

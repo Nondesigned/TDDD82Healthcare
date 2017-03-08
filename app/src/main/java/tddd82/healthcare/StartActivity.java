@@ -7,9 +7,11 @@ import android.os.StrictMode;
 import android.preference.Preference;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.securepreferences.SecurePreferences;
 
 import java.io.IOException;
@@ -57,9 +59,11 @@ public class StartActivity extends AppCompatActivity {
             Button contactList =(Button)findViewById(R.id.contactButton);
             contactList.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-               // InitCall init = new InitCall();
-                //    init.initialize(1,1,0);
+               InitCall init = new InitCall();
+               init.initialize(111,111,0);
                     Intent callIntent = new Intent(context,ActiveCall.class);
+
+
                 }
             });
 
