@@ -91,7 +91,7 @@ class LoginTask extends AsyncTask<String,Void,String> {
         String password = params[1];
         String url = params[2];
 
-        login = new SecurePreferences(context);
+        login = PreferenceManager.getDefaultSharedPreferences(context);
         editor = login.edit();
 
         boolean connectedToServer = false;
@@ -134,7 +134,6 @@ class LoginTask extends AsyncTask<String,Void,String> {
         }
         try {
             JWT jwt = new JWT(response.getString(GlobalVariables.getJsonTokenTag()));
-
             Log.v(AntonsLog.TAG, "TVÅ");
 
             editor.putString(GlobalVariables.getSharedPrefsTokenTag(), response.getString(GlobalVariables.getJsonTokenTag()));
