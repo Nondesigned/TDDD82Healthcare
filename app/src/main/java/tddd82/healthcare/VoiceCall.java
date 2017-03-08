@@ -6,13 +6,20 @@ import android.media.AudioRecord;
 import android.media.AudioTrack;
 import android.media.MediaRecorder;
 
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
-public class Call {
+public class VoiceCall {
+
+    private final int DEFAULT_MINIMUM_BUFFER_SIZE = 300;
+    private final int UDP_SOCKET_TIMEOUT = 10000;
+
+    private int minimumBuffer;
 
     private DatagramSocket socket;
     private AudioRecord recorder;
@@ -26,6 +33,7 @@ public class Call {
     private String host;
     private int port;
     private boolean alive;
+    private boolean initialized;
     private int sendSequenceNumber;
     private int lastReceivedSequenceNumber;
 
@@ -35,9 +43,13 @@ public class Call {
     private VoiceBuffer receiverBuffer;
     private VoiceBuffer recordBuffer;
 
-    public Call(String host, int port, int senderPhoneNumber, int receiverPhoneNumber){
+    private CallEvent eventHandler;
+
+    public VoiceCall(String host, int port, int senderPhoneNumber, int receiverPhoneNumber, CallEvent eventHandler){
         this.host = host;
         this.port = port;
+        this.eventHandler = eventHandler;
+        this.minimumBuffer = DEFAULT_MINIMUM_BUFFER_SIZE;
         this.senderNumber = senderPhoneNumber;
         this.receiverNumber = receiverPhoneNumber;
         this.sendSequenceNumber = 0;
@@ -45,6 +57,7 @@ public class Call {
         this.playbackSampleRate = -1;
         this.playbackBufferSize = -1;
         this.alive = false;
+        this.initialized = false;
     }
 
     public CallError initialize(){
@@ -63,17 +76,30 @@ public class Call {
 
         try {
             socket = new DatagramSocket(this.port);
+            socket.setSoTimeout(UDP_SOCKET_TIMEOUT);
         } catch (SocketException ex){
             System.out.println(ex.getMessage());
             return CallError.SOCKET_ERROR;
         }
 
         this.track = null;
+        this.initialized = true;
 
         return CallError.SUCCESS;
     }
 
-    public void start(){
+    public void setMinimumBufferSize(int milliseconds){
+        this.minimumBuffer = milliseconds;
+    }
+
+    public int getMininmumBuffer(){
+        return this.minimumBuffer;
+    }
+
+    public boolean start(){
+        if (!initialized)
+            return false;
+
         this.receiverBuffer = new VoiceBuffer();
         this.recordBuffer = new VoiceBuffer();
         this.recorder.startRecording();
@@ -107,10 +133,13 @@ public class Call {
                 playbackWorker();
             }
         }).start();
+
+        return true;
     }
 
     public void terminate(){
         alive = false;
+        initialized = false;
         recorder.stop();
         recorder.release();
         socket.disconnect();
@@ -121,7 +150,7 @@ public class Call {
         while(alive) {
 
             if (receiverBuffer.empty()) {
-                while (receiverBuffer.estimateTime() < 300) {
+                while (receiverBuffer.estimateTime() < minimumBuffer) {
                     sleep(1);
                 }
             }
@@ -155,7 +184,9 @@ public class Call {
 
             try {
                 socket.receive(p);
-            } catch (Exception ex) {
+            } catch (SocketTimeoutException ex) {
+                eventHandler.onTimeout(this.sendSequenceNumber, this.receiverNumber);
+            } catch (IOException ex){
 
             }
 
@@ -192,12 +223,11 @@ public class Call {
                 try {
                     socket.send(p);
                 } catch (Exception ex) {
-                    String msg = ex.getMessage();
-                    System.out.println(ex);
+
                 }
+            } else {
+                sleep(1);
             }
-
-
         }
     }
 

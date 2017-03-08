@@ -8,24 +8,27 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.EditText;
 
 public class MainActivity extends AppCompatActivity {
 
-    Call call;
+    VoiceCall call;
 
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         call = null;
         requestRecordAudioPermission();
         findViewById(R.id.start).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final String address = ((EditText) findViewById(R.id.address)).getText().toString();
                 if (call == null) {
-                    call = new Call("130.236.181.196", 1338, 10, 20);
+                    call = new VoiceCall("130.236.181.196", 1338, 20, 10, new CallEvent() {
+                        @Override
+                        public void onTimeout(int currentSequenceNumber, int destinationNumber) {
+                            System.out.println(currentSequenceNumber);
+                        }
+                    });
                     call.initialize();
                     call.start();
                 }

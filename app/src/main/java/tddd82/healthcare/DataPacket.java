@@ -21,7 +21,7 @@ public class DataPacket {
         this.creationTime = System.currentTimeMillis();
     }
 
-    public long getAge(){
+    public long getCreationTime(){
         return creationTime;
     }
 

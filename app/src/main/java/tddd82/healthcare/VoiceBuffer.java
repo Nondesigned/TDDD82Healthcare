@@ -6,7 +6,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class VoiceBuffer {
 
     private Queue<DataPacket> sendQueue;
-    private final int MAX_SIZE = 1000;
+    private final int MAX_SIZE = 500;
     private final int PACKET_LIFETIME = 1500;
 
     public VoiceBuffer(){
@@ -17,12 +17,13 @@ public class VoiceBuffer {
         return sendQueue.isEmpty();
     }
 
+
     public DataPacket poll(){
         DataPacket ret;
         long current = System.currentTimeMillis();
         do{
             ret = sendQueue.poll();
-        } while(!sendQueue.isEmpty() && ret.getAge() + PACKET_LIFETIME < current);
+        } while(!sendQueue.isEmpty() && ret.getCreationTime() + PACKET_LIFETIME < current);
         return ret;
     }
 
