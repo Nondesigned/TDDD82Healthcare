@@ -21,6 +21,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Iterator;
+
+
 /**
  * Created by Clynch on 2017-03-08.
  */
@@ -30,6 +33,8 @@ public class GetContactsTask extends AsyncTask<String, Void, String>{
     private Context context;
     private AlertDialog alertDialog;
     private JSONObject response;
+    private JSONObject mackeExempel;
+    private JSONObject perExempel;
 
     SharedPreferences login;
     SharedPreferences.Editor editor;
@@ -46,6 +51,8 @@ public class GetContactsTask extends AsyncTask<String, Void, String>{
     private static final String TEST_TOKEN = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6I" +
             "kpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.EkN-DOsnsuRjRO6BxXemmJDm3HbxrbRzXglbN2S4sOkopdU4IsDxTI8jO19W_A4K8ZPJijNLis4EZ" +
             "sHeY559a4DFOd50_OqgHGuERTqYZyuhtF39yxJPAjUESwxk2J5k_4zM3O-vtd1Ghyo4IbqKKSy6J9mTniYJPenn5-HIirE";
+
+
 
     public GetContactsTask(Context context){
         this.context = context;
@@ -76,7 +83,8 @@ public class GetContactsTask extends AsyncTask<String, Void, String>{
                 (Request.Method.POST, url, credentials, new Response.Listener<JSONObject>() {
 
                         @Override
-                        public void onResponse(JSONObject m_response) {response = m_response;
+                        public void onResponse(JSONObject m_response) {
+                            response = m_response;
                         }
                     }, new Response.ErrorListener() {
                     @Override
@@ -86,6 +94,8 @@ public class GetContactsTask extends AsyncTask<String, Void, String>{
         RQ.add(jsonRequest);
         RQ.start();
 
+        getStringContact(response);
+
         //TODO Response är svaret från server. Lös så att vi får ut kontakterna från den.
         return "ERROR";
     }
@@ -94,6 +104,29 @@ public class GetContactsTask extends AsyncTask<String, Void, String>{
         Intent startDummy = new Intent(context, DummyActivity.class);
         context.startActivity(startDummy);
     }
+
+    public void getStringContact(JSONObject response) {
+
+
+        JSONArray array = new JSONArray();
+        String[] name = new String[array.length()];
+        int[] phonenr = new int[array.length()];
+
+        for (int i = 0; i < array.length(); i++) {
+
+            try {
+                JSONObject row = array.getJSONObject(i);
+                phonenr[i] = row.getInt("phonenumber");
+                name[i] = row.getString("name");
+            } catch (JSONException e) {
+
+            }
+
+
+            System.out.println(name[i] + ", " + phonenr[i]);
+        }
+    }
+
 
     @Override
     protected void onPreExecute() {
