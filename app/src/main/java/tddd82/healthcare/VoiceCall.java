@@ -150,7 +150,7 @@ public class VoiceCall {
         while(alive) {
 
             if (receiverBuffer.empty()) {
-                while (receiverBuffer.estimateTime() < minimumBuffer) {
+                while (receiverBuffer.estimateTime() < minimumBuffer  && alive) {
                     sleep(1);
                 }
             }

@@ -12,6 +12,40 @@ import android.widget.TextView;
 import java.util.EventObject;
 
 public class ActiveCall extends AppCompatActivity {
+
+    private final Event CallState = new Event(){
+
+        @Override
+        public void onCallEnded() {
+            callInstance.terminate();
+            runOnUiThread(new Runnable(){
+
+                @Override
+                public void run() {
+                    finish();
+                }
+            });
+        }
+
+        @Override
+        public void onCallStarted(String host, int port, int sender, int receiver) {
+            callInstance = new VoiceCall(host, 1338, sender, receiver, new CallEvent() {
+                @Override
+                public void onTimeout(int currentSequenceNumber, int destinationNumber) {
+
+                }
+            });
+
+            if (callInstance.initialize() != CallError.SUCCESS){
+
+            }
+
+            callInstance.start();
+
+        }
+    };
+
+
     InitCall init;
     int sourceNr;
     int destNr;
@@ -40,44 +74,13 @@ public class ActiveCall extends AppCompatActivity {
 
         init = new InitCall();
         //init.init(sourceNr,destNr);
-        init.init(222,111, new Event(){
-
-            @Override
-            public void onCallEnded() {
-                callInstance.terminate();
-                runOnUiThread(new Runnable(){
-
-                    @Override
-                    public void run() {
-                        finish();
-                    }
-                });
-            }
-
-            @Override
-            public void onCallStarted(String host, int port, int sender, int receiver) {
-                callInstance = new VoiceCall(host, 1338, sender, receiver, new CallEvent() {
-                    @Override
-                    public void onTimeout(int currentSequenceNumber, int destinationNumber) {
-
-                    }
-                });
-
-                if (callInstance.initialize() != CallError.SUCCESS){
-
-                }
-
-                callInstance.start();
-
-            }
-
-
-        });
+        init.init(222,111, CallState);
         init.send(initCall);
         init.start();
         endCall.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 init.send(stopCall);
+                CallState.onCallEnded();
                 finish();
             }
         });

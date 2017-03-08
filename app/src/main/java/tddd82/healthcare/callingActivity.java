@@ -12,6 +12,26 @@ import android.widget.TextView;
 import com.auth0.android.jwt.JWT;
 
 public class callingActivity extends AppCompatActivity {
+
+    private final Event CallState = new Event(){
+        @Override
+        public void onCallEnded() {
+
+            runOnUiThread(new Runnable(){
+
+                @Override
+                public void run() {
+                    finish();
+                }
+            });
+        }
+
+        @Override
+        public void onCallStarted(String host, int port, int sender, int receiver) {
+
+        }
+    };
+
     int caller;
     int sourceNr;
     Context context = this;
@@ -37,25 +57,7 @@ public class callingActivity extends AppCompatActivity {
         JWT jwt = new JWT(token);
         sourceNr = Integer.parseInt(jwt.getSubject());
 */
-        init.init(sourceNr,caller, new Event(){
-
-            @Override
-            public void onCallEnded() {
-
-                runOnUiThread(new Runnable(){
-
-                    @Override
-                    public void run() {
-                        finish();
-                    }
-                });
-            }
-
-            @Override
-            public void onCallStarted(String host, int port, int sender, int receiver) {
-
-            }
-        });
+        init.init(sourceNr,caller, CallState);
 
         //Sends accept message
         answer.setOnClickListener(new View.OnClickListener() {
@@ -85,6 +87,7 @@ public class callingActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if(activeCall){
                     init.send(1);
+                    CallState.onCallEnded();
                 }
                 else {
                     init.send(3);
