@@ -25,16 +25,16 @@ public class ContactActivity extends AppCompatActivity {
         ListView contactListView = (ListView) findViewById(R.id.list_view);
         contactList = new Contact[20];
 
-        contactList[0] = new Contact("Pelle", 1337);
-        contactList[1] = new Contact("Pelle2", 1337);
-        contactList[2] = new Contact("Pelle3", 1337);
-        contactList[3] = new Contact("Pelle4", 1337);
-        contactList[4] = new Contact("Pelle5", 1337);
-        contactList[5] = new Contact("Pelle6", 1337);
-        contactList[6] = new Contact("Pelle7", 1337);
-        contactList[7] = new Contact("Pelle8", 1337);
-        contactList[8] = new Contact("Pelle9", 1337);
-        contactList[9] = new Contact("Pelle10", 1337);
+        contactList[0] = new Contact("Pelle", 0000);
+        contactList[1] = new Contact("Pelle2", 1111);
+        contactList[2] = new Contact("Pelle3", 2222);
+        contactList[3] = new Contact("Pelle4", 3333);
+        contactList[4] = new Contact("Pelle5", 4444);
+        contactList[5] = new Contact("Pelle6", 5555);
+        contactList[6] = new Contact("Pelle7", 6666);
+        contactList[7] = new Contact("Pelle8", 7777);
+        contactList[8] = new Contact("Pelle9", 8888);
+        contactList[9] = new Contact("Pelle10", 9999);
         contactList[10] = new Contact("Pelle", 1337);
         contactList[11] = new Contact("Pelle2", 1337);
         contactList[12] = new Contact("Pelle3", 1337);

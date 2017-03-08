@@ -36,8 +36,10 @@ class CustomAdapter extends ArrayAdapter<Contact> {
         callButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent startCallIntent = new Intent(this, ActiveCall.class);
-//                startCallIntent.putExtra()
+                Log.v(AntonsLog.TAG, "Vi ringer nummer " + contacts[position].getNumber());
+                Intent startCallIntent = new Intent(getContext(), DummyActivity.class);
+                startCallIntent.putExtra(GlobalVariables.getIntentCallNumber(), contacts[position].getNumber());
+                getContext().startActivity(startCallIntent);
             }
         });
         numberTV.setText(String.valueOf(contacts[position].getNumber()));
