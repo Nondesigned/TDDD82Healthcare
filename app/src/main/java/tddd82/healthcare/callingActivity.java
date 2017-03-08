@@ -36,13 +36,32 @@ public class callingActivity extends AppCompatActivity {
         JWT jwt = new JWT(token);
         sourceNr = Integer.parseInt(jwt.getSubject());
 */
-        init.init(sourceNr,caller);
+        init.init(sourceNr,caller, new Event(){
+
+            @Override
+            public void onCallEnded() {
+
+                runOnUiThread(new Runnable(){
+
+                    @Override
+                    public void run() {
+                        finish();
+                    }
+                });
+            }
+
+            @Override
+            public void onCallStarted() {
+
+            }
+        });
 
         //Sends accept message
         answer.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // TODO get sourceNr
                 init.send(2);
+                init.start();
                 //Intent activeCallIntent = new Intent(context,ActiveCall.class);
                 //startActivity(activeCallIntent);
                 answer.setVisibility(View.GONE);
@@ -62,5 +81,6 @@ public class callingActivity extends AppCompatActivity {
                 finish();
             }
         });
+
 }
 }
