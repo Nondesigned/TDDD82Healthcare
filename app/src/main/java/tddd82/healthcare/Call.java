@@ -5,8 +5,6 @@ import android.media.AudioManager;
 import android.media.AudioRecord;
 import android.media.AudioTrack;
 import android.media.MediaRecorder;
-import android.media.MediaSyncEvent;
-import android.provider.MediaStore;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -44,6 +42,8 @@ public class Call {
         this.receiverNumber = receiverPhoneNumber;
         this.sendSequenceNumber = 0;
         this.lastReceivedSequenceNumber = 0;
+        this.playbackSampleRate = -1;
+        this.playbackBufferSize = -1;
         this.alive = false;
     }
 
@@ -121,7 +121,7 @@ public class Call {
         while(alive) {
 
             if (receiverBuffer.empty()) {
-                while (receiverBuffer.estimateTime() < 500) {
+                while (receiverBuffer.estimateTime() < 300) {
                     sleep(1);
                 }
             }
@@ -131,14 +131,11 @@ public class Call {
             int sampleRate = data.getSampleRate();
             int bufferSize = data.getBufferSize();
 
-            if (track == null) {
-                playbackSampleRate = sampleRate;
-                playbackBufferSize = bufferSize;
-                track = new AudioTrack(AudioManager.STREAM_MUSIC, playbackSampleRate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT, playbackBufferSize, AudioTrack.MODE_STREAM);
-                track.play();
-            } else if (playbackSampleRate != sampleRate || bufferSize != playbackBufferSize) {
-                track.stop();
-                track.release();
+            if (playbackSampleRate != sampleRate || bufferSize != playbackBufferSize) {
+                if (track != null){
+                    track.stop();
+                    track.release();
+                }
                 playbackSampleRate = sampleRate;
                 playbackBufferSize = bufferSize;
                 track = new AudioTrack(AudioManager.STREAM_MUSIC, playbackSampleRate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT, playbackBufferSize, AudioTrack.MODE_STREAM);
