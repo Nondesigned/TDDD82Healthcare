@@ -13,9 +13,10 @@ import com.auth0.android.jwt.JWT;
 
 public class callingActivity extends AppCompatActivity {
     int caller;
-    InitCall init = new InitCall();
     int sourceNr;
     Context context = this;
+    InitCall init = new InitCall();
+    boolean activeCall = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,10 +25,10 @@ public class callingActivity extends AppCompatActivity {
         final TextView tokenText = (TextView) findViewById(R.id.textviewtoken);
         Intent intent = getIntent();
 
-            caller = Integer.parseInt(intent.getStringExtra("CALLER"));
-            tokenText.setText(Integer.toString(caller));
-        Button decline = (Button) findViewById(R.id.decline);
-        Button answer = (Button) findViewById(R.id.answer);
+        caller = Integer.parseInt(intent.getStringExtra("CALLER"));
+        tokenText.setText(Integer.toString(caller));
+        final Button decline = (Button) findViewById(R.id.decline);
+        final Button answer = (Button) findViewById(R.id.answer);
 
         /*
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -35,19 +36,29 @@ public class callingActivity extends AppCompatActivity {
         JWT jwt = new JWT(token);
         sourceNr = Integer.parseInt(jwt.getSubject());
 */
+        init.init(sourceNr,caller);
+
         //Sends accept message
         answer.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // TODO get sourceNr
-                init.initialize(sourceNr,caller,2);
-                Intent conversationIntent = new Intent(context,ActiveCall.class);
-                startActivity(conversationIntent);
+                init.send(2);
+                //Intent activeCallIntent = new Intent(context,ActiveCall.class);
+                //startActivity(activeCallIntent);
+                answer.setVisibility(View.GONE);
+                activeCall = true;
+                decline.setText("Hang Up");
             }
         });
         //Sends reject message
         decline.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                init.initialize(sourceNr,caller,3);
+                if(activeCall){
+                    init.send(1);
+                }
+                else {
+                    init.send(3);
+                }
                 finish();
             }
         });

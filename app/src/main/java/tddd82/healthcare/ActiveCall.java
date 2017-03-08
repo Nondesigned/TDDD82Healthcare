@@ -8,16 +8,20 @@ import android.widget.Button;
 import android.widget.TextView;
 
 public class ActiveCall extends AppCompatActivity {
-    InitCall init;
+    InitCall init = new InitCall();
+
     int sourceNr;
     int destNr;
+    int initCall = 0;
+    int stopCall = 1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_active_call);
         TextView status = (TextView) findViewById(R.id.callStatus);
         status.setText("Initializing call");
-        Button endCall = (Button) findViewById(R.id.endCall);
+        final Button endCall = (Button) findViewById(R.id.endCall);
+
 
         //TODO set value of sourceNr - sourceNr gets from sharePreferences
         Intent intent = getIntent();
@@ -26,14 +30,18 @@ public class ActiveCall extends AppCompatActivity {
         }
 
 
-        init = new InitCall();
-        init.initialize(sourceNr,destNr,0);
+
+
+
+        //init.init(sourceNr,destNr);
+        init.init(222,111);
+        init.send(initCall);
+        init.run();
+
         endCall.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                //TODO endcall - borde göras asynkront
-                init.initialize(sourceNr,destNr,1);
+                //init.send(stopCall);
                 finish();
-
             }
         });
 

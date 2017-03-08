@@ -56,14 +56,12 @@ public class StartActivity extends AppCompatActivity {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            Button contactList =(Button)findViewById(R.id.contactButton);
+            final Button contactList =(Button)findViewById(R.id.contactButton);
             contactList.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-               InitCall init = new InitCall();
-               init.initialize(111,111,0);
                     Intent callIntent = new Intent(context,ActiveCall.class);
-
-
+                    callIntent.putExtra("DEST","111");
+                    startActivity(callIntent);
                 }
             });
 
