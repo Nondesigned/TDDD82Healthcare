@@ -1,12 +1,11 @@
 package tddd82.healthcare;
 
-import android.*;
-import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.StrictMode;
-import android.preference.Preference;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -34,8 +33,8 @@ public class StartActivity extends AppCompatActivity {
         setContentView(R.layout.activity_start);
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
-        String x = Manifest.permission.RECORD_AUDIO;
-        Log.v("MANIFEST!", x);
+
+        requestRecordAudioPermission();
 
 //TODO Check from sharedPreferences if user is logged in or not!
         boolean inloggad = false;
@@ -71,5 +70,25 @@ public class StartActivity extends AppCompatActivity {
 
         }
     }
-    
-    }
+
+    private void requestRecordAudioPermission(){
+        //check API version, do nothing if API version < 23
+            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+
+                // Should we show an explanation?
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.RECORD_AUDIO)) {
+
+                    // Show an expanation to the user *asynchronously* -- don't block
+                    // this thread waiting for the user's response! After the user
+                    // sees the explanation, try again to request the permission.
+
+                } else {
+
+                    // No explanation needed, we can request the permission.
+
+                    ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.RECORD_AUDIO}, 1);
+                }
+            }
+        }
+}
+
