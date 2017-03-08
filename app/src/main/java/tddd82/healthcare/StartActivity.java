@@ -60,7 +60,7 @@ public class StartActivity extends AppCompatActivity {
 
     private void requestRecordAudioPermission(){
         //check API version, do nothing if API version < 23
-            if (ContextCompat.checkSelfPermissi on(this, android.Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
 
                 // Should we show an explanation?
                 if (ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.RECORD_AUDIO)) {
