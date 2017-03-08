@@ -34,7 +34,7 @@ public class StartActivity extends AppCompatActivity {
         StrictMode.setThreadPolicy(policy);
 
 //TODO Check from sharedPreferences if user is logged in or not!
-        boolean inloggad = true;
+        boolean inloggad = false;
 
         if (inloggad == false) {
             Intent loginScreen = new Intent(this, LoginActivity.class);

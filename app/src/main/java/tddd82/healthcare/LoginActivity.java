@@ -26,7 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.Manifest;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity implements TaskCallback{
 
     private final static int MY_PERMISSIONS_REQUEST = 1;
 
@@ -40,9 +40,6 @@ public class LoginActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-
-
 
         UsernameInfo = (TextView)findViewById(R.id.cardIDInput);
         passwordInput = (EditText)findViewById(R.id.passwordInput);
@@ -65,8 +62,8 @@ public class LoginActivity extends AppCompatActivity {
 
     public void login(View view){
         Log.v(AntonsLog.TAG, "ETT");
-        LoginTask loginTask = new LoginTask(this);
-        loginTask.execute(UsernameInfo.getText().toString(), passwordInput.getText().toString(), "www.test.se");
+        LoginTask loginTask = new LoginTask(this, this);
+        loginTask.execute(UsernameInfo.getText().toString(), passwordInput.getText().toString(), "https://itkand-3-1.tddd82-2017.ida.liu.se:8080/login");
         // TODO listener to finish acitivity instead of starting anotherone on top of it.
         //finish();
     }
@@ -136,4 +133,9 @@ public class LoginActivity extends AppCompatActivity {
         return new String(hexChars);
     }
 
+    @Override
+    public void done() {
+        Toast.makeText(this, "Inloggad", Toast.LENGTH_LONG);
+        finish();
+    }
 }
