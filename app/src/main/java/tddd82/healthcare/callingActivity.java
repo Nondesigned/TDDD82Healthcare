@@ -16,6 +16,7 @@ public class callingActivity extends AppCompatActivity {
     int sourceNr;
     Context context = this;
     InitCall init = new InitCall();
+    VoiceCall callInstance;
     boolean activeCall = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,8 +52,17 @@ public class callingActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onCallStarted() {
+            public void onCallStarted(String host, int port, int sender, int receiver) {
+                callInstance = new VoiceCall("130.236.181.196", 1338, 111, caller, new CallEvent() {
+                    @Override
+                    public void onTimeout(int currentSequenceNumber, int destinationNumber) {
 
+                    }
+                });
+
+                callInstance.initialize();
+
+                callInstance.start();
             }
         });
 

@@ -117,7 +117,7 @@ public class InitCall extends Thread implements Runnable{
 
                 }
                 if(flag2 == true){
-                    callEvent.onCallStarted();
+                    callEvent.onCallStarted(this.ip, this.port, this.sourceNr, this.destNr);
                 }
 
 
