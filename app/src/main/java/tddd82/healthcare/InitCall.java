@@ -22,7 +22,7 @@ import static tddd82.healthcare.ControlFlag.INITCALL;
  * Created by Oskar on 2017-03-07.
  */
 
-public class InitCall extends Thread{
+public class InitCall extends Thread implements Runnable{
     Socket tcpSocket;
     ControlPacket ctrl;
     //private String key;
@@ -30,7 +30,7 @@ public class InitCall extends Thread{
     private int port = 1337;
     int sourceNr;
     int destNr;
-
+    private Event callEvent;
     // Defines header information and sends to server
     // tyeofFlag = 0 , initialize
     //  = 1 endCall
@@ -39,7 +39,7 @@ public class InitCall extends Thread{
     // TODO check if it works
     // Remove key part until sprint 3
 
-    public void init(int sourceNr,int destNr){
+    public void init(int sourceNr,int destNr, Event callEvent){
         // TODO generate key
        /* String key = null;
         try {
@@ -54,7 +54,7 @@ public class InitCall extends Thread{
         }
     */
 
-
+        this.callEvent = callEvent;
         this.sourceNr = sourceNr;
         this.destNr = destNr;
         try {
@@ -62,6 +62,7 @@ public class InitCall extends Thread{
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         byte[] bytes = new byte[2044];
         ctrl = new ControlPacket(bytes);
         ctrl.setSource(sourceNr);
@@ -100,7 +101,8 @@ public class InitCall extends Thread{
     }
     @Override
     public void run() {
-        while(true){
+        boolean connected = true;
+        while(connected){
             try {
                 ControlPacket recievedPacket = new ControlPacket(readData(tcpSocket.getInputStream()));
                 boolean flag0 = recievedPacket.getFlag(0);
@@ -110,10 +112,12 @@ public class InitCall extends Thread{
 
                 if(flag1 == true|| flag3 == true){
                     tcpSocket.close();
+                    connected = false;
+                    callEvent.onCallEnded();
 
                 }
                 if(flag2 == true){
-                    //TODO START UDP
+                    callEvent.onCallStarted();
                 }
 
 

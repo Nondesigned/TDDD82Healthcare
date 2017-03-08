@@ -3,13 +3,15 @@ package tddd82.healthcare;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-public class ActiveCall extends AppCompatActivity {
-    InitCall init = new InitCall();
+import java.util.EventObject;
 
+public class ActiveCall extends AppCompatActivity {
+    InitCall init;
     int sourceNr;
     int destNr;
     int initCall = 0;
@@ -18,10 +20,11 @@ public class ActiveCall extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_active_call);
+        Log.d("VAFAN", "test");
+
         TextView status = (TextView) findViewById(R.id.callStatus);
         status.setText("Initializing call");
         final Button endCall = (Button) findViewById(R.id.endCall);
-
 
         //TODO set value of sourceNr - sourceNr gets from sharePreferences
         Intent intent = getIntent();
@@ -33,14 +36,33 @@ public class ActiveCall extends AppCompatActivity {
 
 
 
+        init = new InitCall();
         //init.init(sourceNr,destNr);
-        init.init(222,111);
-        init.send(initCall);
-        init.run();
+        init.init(222,111, new Event(){
 
+            @Override
+            public void onCallEnded() {
+                runOnUiThread(new Runnable(){
+
+                    @Override
+                    public void run() {
+                        finish();
+                    }
+                });
+            }
+
+            @Override
+            public void onCallStarted() {
+
+            }
+
+
+        });
+        init.send(initCall);
+        init.start();
         endCall.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                //init.send(stopCall);
+                init.send(stopCall);
                 finish();
             }
         });
@@ -49,4 +71,5 @@ public class ActiveCall extends AppCompatActivity {
 
         //UDP samtal
     }
+
 }
