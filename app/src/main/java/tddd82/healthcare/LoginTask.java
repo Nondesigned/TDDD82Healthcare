@@ -18,7 +18,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.auth0.android.jwt.JWT;
 import com.securepreferences.SecurePreferences;
-
+import com.google.firebase.iid.FirebaseInstanceId;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -60,7 +60,7 @@ class LoginTask extends AsyncTask<String,Void,String> {
     SharedPreferences login;
     SharedPreferences.Editor editor;
 
-
+    private static final String FCM_TOKEN = "fcmtoken";
     private static final String SHARED_PREDS_TOKEN = "TOKEN";
     private static final String JSON_PASSWORD = "password";
     private static final String JSON_CARD = "card";
@@ -89,6 +89,7 @@ class LoginTask extends AsyncTask<String,Void,String> {
         String card = params[0];
         String password = params[1];
         String url = params[2];
+        String gcmtoken = FirebaseInstanceId.getInstance().getToken();
 
         login = new SecurePreferences(context);
         editor = login.edit();
@@ -100,6 +101,7 @@ class LoginTask extends AsyncTask<String,Void,String> {
             try {
                 credentials.put(JSON_CARD, card);
                 credentials.put(JSON_PASSWORD, password);
+                credentials.put(FCM_TOKEN,gcmtoken);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -111,7 +113,7 @@ class LoginTask extends AsyncTask<String,Void,String> {
                         public void onResponse(JSONObject m_response) {
                             response = m_response;
                             if(response.equals(null)){
-                                startDummy();
+                                //startDummy();
                             }
                         }
                     }, new Response.ErrorListener() {
@@ -147,6 +149,7 @@ class LoginTask extends AsyncTask<String,Void,String> {
             if (response.getString(JSON_STATUS).equals(JSON_ACCEPTED)) {
                 Log.v(AntonsLog.TAG, "Token är " + response.getString(JSON_TOKEN));
                 startDummy();
+
                 return response.getString(JSON_TOKEN);
             } else {
                 Log.v(AntonsLog.TAG, "Message är " + response.getString(JSON_MESSAGE));
@@ -159,8 +162,9 @@ class LoginTask extends AsyncTask<String,Void,String> {
     }
 
     private void startDummy() {
-        Intent startDummy = new Intent(context, DummyActivity.class);
-        context.startActivity(startDummy);
+        Intent startPage = new Intent(context, StartActivity.class);
+        context.startActivity(startPage);
+
     }
 
 /*
