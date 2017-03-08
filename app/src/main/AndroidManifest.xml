@@ -6,7 +6,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.NFC" />
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permissions.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
     <uses-feature android:name="android.hardware.nfc" />
 
@@ -38,14 +38,14 @@
         </service>
 
         <activity android:name=".StartActivity">
-            <intent-filter>
+            <intent-filter>}
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ActiveCall"></activity>
+        <activity android:name=".ActiveCall" />
     </application>
 
 </manifest>
