@@ -24,7 +24,8 @@ import com.android.volley.toolbox.DiskBasedCache;
 import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.auth0.android.jwt.JWT;
+//import com.auth0.android.jwt.JWT;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.securepreferences.SecurePreferences;
 
 import org.json.JSONException;
@@ -85,43 +86,9 @@ class LoginTask extends AsyncTask<String,Void,String> {
     private TaskCallback callback;
     private AlertDialog alertDialog;
     private JSONObject response;
-    private String serverresponse;
 
-    SharedPreferences login;
+    SharedPreferences preferences;
     SharedPreferences.Editor editor;
-
-    private static final String certifikat = "-----BEGIN CERTIFICATE-----\n"+
-            "MIIFmzCCA4OgAwIBAgIJAOQpp96kigIgMA0GCSqGSIb3DQEBCwUAMGQxCzAJBgNV\n"+
-            "BAYTAlNXMRIwEAYDVQQHDAlMaW5rb3BpbmcxGTAXBgNVBAMMEFREREQ4MkhlYWx0\n"+
-            "aGNhcmUxJjAkBgkqhkiG9w0BCQEWF3Blcmd1NjI3QHN0dWRlbnQubGl1LnNlMB4X\n"+
-            "DTE3MDMwNzA3NTYxMloXDTE4MDMwNzA3NTYxMlowZDELMAkGA1UEBhMCU1cxEjAQ\n"+
-            "BgNVBAcMCUxpbmtvcGluZzEZMBcGA1UEAwwQVERERDgySGVhbHRoY2FyZTEmMCQG\n"+
-            "CSqGSIb3DQEJARYXcGVyZ3U2MjdAc3R1ZGVudC5saXUuc2UwggIiMA0GCSqGSIb3\n"+
-            "DQEBAQUAA4ICDwAwggIKAoICAQDRB3edV2BXn9qzOVg5EQXE141skwYq27ZBNAqo\n"+
-            "OShg6b7WqaxB3K02TGcIBIgTXKCSM06jIvKYKh3ZMAO6AUhtEkYyQoA9jbjRxMLK\n"+
-            "ZmLp6nC2Q4XGasDPyyxyvro9ff5YG+lkT4vJH8SuQRbiB8KWr5yZJIySvqsux8fj\n"+
-            "8+ERbpMIydBcVRrtqeYX5Dqo3rs8aDro1Dp/zCE1nK3e2yVxAjjzS/YdYKLk5SDj\n"+
-            "UMPmdQjLbMon639NgQE8qjMjCH03H/owKVJNqOZKfc5/OZbTpiayHHEdgkP5FxWK\n"+
-            "vVzDWEqvoytf2CU9C3fdWofYdOsSqWoKU4E7CH6So4Cc6b8jZhrHXn+ND8jiM8cC\n"+
-            "SSUsQtzIbLUgxEFklCPbnW4NrJJxbgxk4Qm0a6W1MkCKJyGLmZJRPJcnZoZbxhp2\n"+
-            "U091g6APZJW/OYzeHUaJIqTOTeAObYu07iss8DJDqbMlPFce/VpUiwMbZuMIPeQ0\n"+
-            "MRwzSYR6Img9gIosg3gxrzvksngzAiXTv/HwGBFJxalIctpSTLHe36mRpx4m8/fZ\n"+
-            "eN1o4F7QmlR0Ds52loiupkBb+vZVCr4XoUAwWemeWjf8D3WBK/7cmE6G2wGZrKCQ\n"+
-            "PSB9xn+IawKgEi/XfhthkKwVrLXhUXgscZYJJSNDUBYQcftejCpay9afxN62Utf7\n"+
-            "Tr39eQIDAQABo1AwTjAdBgNVHQ4EFgQUUMOIOsNhAFjgFHlWSHSJqsfNu80wHwYD\n"+
-            "VR0jBBgwFoAUUMOIOsNhAFjgFHlWSHSJqsfNu80wDAYDVR0TBAUwAwEB/zANBgkq\n"+
-            "hkiG9w0BAQsFAAOCAgEADadMJyvCYp/BFYBiU2yKj59DAeBkkZ8F3bTI7+4rj/Bt\n"+
-            "FpjeRCaoTk0Ycc7ZuxU2ZneVgwU/ZA7IGpD2ORdVk6rWocw9e+hWgDJXrZ4qKOKP\n"+
-            "RqGf3hkJZ50UbhmzQH86/WNlOQmNxcAn2DtYOMIEf8xw9olKTqOEIsfEmfSDbyDz\n"+
-            "GQkxDtYr+Dspk93/6ggJoMHQZ/yXcyIEK4cYyCvlfth/3a2guxSN4T8fuxDgvySn\n"+
-            "5sWG+6UII7mvCEd2arcMST2IpH6hNF5IdYstFzjTUBIPam8slrr4dA/uuY14HIq6\n"+
-            "adBNkdYEXtk+mS6PKKT+ZGKBWHIofsB+zprefiMIjgZeSA7h3xfZNKrFaEc7iAlb\n"+
-            "Bj3N9hKRBhJkfF6KoFS230Tii4aoM9TdbSK6kKlI/SIaofOcz+n/RonmVBxG/QMm\n"+
-            "W+3GQXuB0inxSlI5Vqho4u2whm5/QDHStbBSBHRR7OwL5UAyxOX/hy1MZiqo7P9a\n"+
-            "F8g0j8OJtyQKq3zsSUIoMvK4Surln+wDOgB/iDejSYmSLqL3JFEe9IF71JHtGWeb\n"+
-            "7edR84WZLUpSCIFWOr6nudP6BETCmfOtqahbJ1eF4eqnvA9KuN20ymCqCJGPMalK\n"+
-            "p6ItcrQWMVCX3EKHG9mcoOUEz9l+0AzoYJvtpC5jf4sC2vp+yXrJtnhzcmJxUUE=\n"+
-            "-----END CERTIFICATE-----\n";
 
     private static final String SHARED_PREDS_TOKEN = "TOKEN";
     private static final String JSON_PASSWORD = "password";
@@ -152,7 +119,8 @@ class LoginTask extends AsyncTask<String,Void,String> {
         String card = params[0];
         String password = params[1];
         String url = params[2];
-        String fcmtoken = "oanskdjghsdgsdgs";
+
+        String fcmtoken = FirebaseInstanceId.getInstance().getToken();
 
 
 
@@ -186,9 +154,6 @@ class LoginTask extends AsyncTask<String,Void,String> {
         }
 
         Check();
-
-        login = new SecurePreferences(context);
-        editor = login.edit();
 
         final boolean connectedToServer = true;
 
@@ -225,17 +190,20 @@ class LoginTask extends AsyncTask<String,Void,String> {
 
                             try {
                                 Log.v(AntonsLog.TAG, response.getString(JSON_TOKEN));
-                                //  JWT jwt = new JWT(response.getString(JSON_TOKEN));
+                                //JWT jwt = new JWT(response.getString(JSON_TOKEN).getBytes());
 
-                                Log.v(AntonsLog.TAG, "TVÅ");
-
+                                preferences = context.getSharedPreferences("tddd82.healthcare", context.MODE_PRIVATE);
+                                editor = preferences.edit();
                                 editor.putString(SHARED_PREDS_TOKEN, response.getString(JSON_TOKEN));
-                                editor.commit();
-                                Log.v(AntonsLog.TAG, "TRE");
+                                editor.apply();
+
+                                String token = preferences.getString("TOKEN", null);
+                                if(token!= null){
+                                    Log.v("TOKENEN", token);
+                                }
 
                                 if (response.getString(JSON_STATUS).equals(JSON_ACCEPTED)) {
                                     Log.v(AntonsLog.TAG, "RESPONSE: " + response.getString(JSON_STATUS));
-                                    serverresponse = JSON_ACCEPTED;
                                     callback.done();
                                     //return response.getString(JSON_TOKEN);
                                 }else if(response.getString(JSON_STATUS).equals(JSON_DECLINED)){

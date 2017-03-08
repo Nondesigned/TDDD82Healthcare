@@ -1,5 +1,7 @@
 package tddd82.healthcare;
 
+import android.*;
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -32,6 +34,8 @@ public class StartActivity extends AppCompatActivity {
         setContentView(R.layout.activity_start);
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
+        String x = Manifest.permission.RECORD_AUDIO;
+        Log.v("MANIFEST!", x);
 
 //TODO Check from sharedPreferences if user is logged in or not!
         boolean inloggad = false;
@@ -67,4 +71,5 @@ public class StartActivity extends AppCompatActivity {
 
         }
     }
+    
     }
