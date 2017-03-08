@@ -116,7 +116,8 @@ class LoginTask extends AsyncTask<String,Void,String> {
     }
 
     protected String doInBackground(String... params) {
-        String card = params[0];
+        //String card = params[0];
+        String card = "145633596";
         String password = params[1];
         String url = params[2];
 
@@ -163,7 +164,7 @@ class LoginTask extends AsyncTask<String,Void,String> {
                 credentials.put(JSON_CARD, Integer.parseInt(card));
                 credentials.put(JSON_PASSWORD, password);
                 credentials.put(JSON_FCMTOKEN, fcmtoken);
-            } catch (JSONException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
 

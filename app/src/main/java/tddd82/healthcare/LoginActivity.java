@@ -1,6 +1,7 @@
 package tddd82.healthcare;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
@@ -30,6 +31,9 @@ public class LoginActivity extends AppCompatActivity implements TaskCallback{
 
     private final static int MY_PERMISSIONS_REQUEST = 1;
 
+    SharedPreferences preferences;
+    SharedPreferences.Editor editor;
+
     TextView UsernameInfo;
     EditText passwordInput;
     NfcActivity nfcActivity = null;
@@ -40,6 +44,10 @@ public class LoginActivity extends AppCompatActivity implements TaskCallback{
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
+        preferences = this.getSharedPreferences("tddd82.healthcare", this.MODE_PRIVATE);
+        Log.v("TOKENENE", String.valueOf(preferences.contains("TOKEN")));
 
         UsernameInfo = (TextView)findViewById(R.id.cardIDInput);
         passwordInput = (EditText)findViewById(R.id.passwordInput);
