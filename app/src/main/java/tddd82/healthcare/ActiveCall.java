@@ -57,6 +57,7 @@ public class ActiveCall extends AppCompatActivity {
     private VoiceCall callInstance;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.v(AntonsLog.TAG, "AKTIVITET STARTAR");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_active_call);
 
@@ -72,9 +73,7 @@ public class ActiveCall extends AppCompatActivity {
         sourceNr = Integer.parseInt(jwt.getSubject());
         Log.d("bob",token);
         Intent intent = getIntent();
-        if (intent.hasExtra("DEST")) {
-            destNr = Integer.parseInt(intent.getStringExtra("DEST"));
-        }
+        destNr = intent.getIntExtra(GlobalVariables.getIntentCallNumber(), -1);
 
 
         init = new InitCall();

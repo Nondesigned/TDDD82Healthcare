@@ -102,8 +102,7 @@ public class StartActivity extends AppCompatActivity {
         startActivity(intent);
     }
     public void getContacts(View view){
-        Intent callIntent = new Intent(context,ActiveCall.class);
-        callIntent.putExtra("DEST","111");
+        Intent callIntent = new Intent(context,ContactActivity.class);
         startActivity(callIntent);
     }
 }

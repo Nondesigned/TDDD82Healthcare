@@ -140,10 +140,15 @@ public class VoiceCall {
     public void terminate(){
         alive = false;
         initialized = false;
-        recorder.stop();
-        recorder.release();
-        socket.disconnect();
-        socket.close();
+        if(recorder != null){
+            recorder.stop();
+            recorder.release();
+        }
+        if(socket != null){
+            socket.disconnect();
+            socket.close();
+        }
+
     }
 
     private void playbackWorker(){
