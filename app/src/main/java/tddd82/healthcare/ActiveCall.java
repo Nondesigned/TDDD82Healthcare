@@ -67,7 +67,6 @@ public class ActiveCall extends AppCompatActivity {
         String token = sharedPreferences.getString("TOKEN","default");
         com.auth0.android.jwt.JWT jwt = new com.auth0.android.jwt.JWT(token);
         sourceNr = Integer.parseInt(jwt.getSubject());
-        Log.d("bob",token);
         Intent intent = getIntent();
         destNr = intent.getIntExtra(GlobalVariables.getIntentCallNumber(), -1);
 

@@ -52,7 +52,7 @@ public class StartActivity extends AppCompatActivity {
             startActivity(loginScreen);
         }
         if (preferences.contains("TOKEN")) {
-            Log.d("bob","tjotjotjo");
+
             try {
                 Intent intent = getIntent();
                 //TODO add field with key.
@@ -96,7 +96,6 @@ public class StartActivity extends AppCompatActivity {
         editor = preferences.edit();
         editor.remove("TOKEN");
         editor.apply();
-        Log.v(AntonsLog.TAG,"LOGGAR UT");
         Intent intent = getIntent();
         finish();
         startActivity(intent);
