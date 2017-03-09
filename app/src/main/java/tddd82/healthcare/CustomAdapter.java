@@ -37,11 +37,11 @@ class CustomAdapter extends ArrayAdapter<Contact> {
             @Override
             public void onClick(View v) {
                 Log.v(AntonsLog.TAG, "Vi ringer nummer " + contacts[position].getNumber());
-                Intent startCallIntent = new Intent(getContext(), DummyActivity.class);
+                Intent startCallIntent = new Intent(getContext(), ActiveCall.class);
                 startCallIntent.putExtra(GlobalVariables.getIntentCallNumber(), contacts[position].getNumber());
                 getContext().startActivity(startCallIntent);
-                GetContactsTask conTask = new GetContactsTask(getContext());
-                conTask.execute("asd");
+                /*GetContactsTask conTask = new GetContactsTask(getContext());
+                conTask.execute("asd");*/
             }
         });
         numberTV.setText(String.valueOf(contacts[position].getNumber()));
