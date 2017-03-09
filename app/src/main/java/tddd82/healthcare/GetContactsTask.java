@@ -150,10 +150,6 @@ public class GetContactsTask extends AsyncTask<String, Void, String>{
         return "ERROR";
     }
 
-    private void startDummy() {
-        Intent startDummy = new Intent(context, DummyActivity.class);
-        context.startActivity(startDummy);
-    }
 
     public void getStringContact(JSONObject response) {
 

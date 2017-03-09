@@ -47,6 +47,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".ActiveCall" />
+        <activity android:name=".ContactActivity"/>
     </application>
 
 </manifest>
