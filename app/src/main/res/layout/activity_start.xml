@@ -40,5 +40,13 @@
         android:layout_centerVertical="true"
         android:onClick="getContactsFromServer"
         android:text="Get Contacts From Server" />
+    <Button
+        android:id="@+id/showMap"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:onClick="showMap"
+        android:text="Show map" />
 
 </RelativeLayout>
