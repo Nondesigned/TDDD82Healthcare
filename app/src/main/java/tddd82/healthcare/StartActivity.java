@@ -52,6 +52,7 @@ public class StartActivity extends AppCompatActivity {
             startActivity(loginScreen);
         }
         if (preferences.contains("TOKEN")) {
+            Log.d("bob","tjotjotjo");
             try {
                 Intent intent = getIntent();
                 //TODO add field with key.
@@ -68,15 +69,6 @@ public class StartActivity extends AppCompatActivity {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            final Button contactList =(Button)findViewById(R.id.contactButton);
-            contactList.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    Intent callIntent = new Intent(context,ActiveCall.class);
-                    callIntent.putExtra("DEST","111");
-                    startActivity(callIntent);
-                }
-            });
-
         }
     }
 
@@ -108,6 +100,11 @@ public class StartActivity extends AppCompatActivity {
         Intent intent = getIntent();
         finish();
         startActivity(intent);
+    }
+    public void getContacts(View view){
+        Intent callIntent = new Intent(context,ActiveCall.class);
+        callIntent.putExtra("DEST","111");
+        startActivity(callIntent);
     }
 }
 

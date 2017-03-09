@@ -51,13 +51,13 @@ public class callingActivity extends AppCompatActivity {
         final Button decline = (Button) findViewById(R.id.decline);
         final Button answer = (Button) findViewById(R.id.answer);
 
-        /*
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+        SharedPreferences sharedPreferences = context.getSharedPreferences("tddd82.healthcare", context.MODE_PRIVATE);
         String token = sharedPreferences.getString("TOKEN","default");
         JWT jwt = new JWT(token);
         sourceNr = Integer.parseInt(jwt.getSubject());
-*/
-        init.init(sourceNr,caller, CallState);
+
+        init.init(sourceNr,caller, CallState,this);
 
         //Sends accept message
         answer.setOnClickListener(new View.OnClickListener() {
@@ -67,7 +67,7 @@ public class callingActivity extends AppCompatActivity {
                 init.start();
                 //Intent activeCallIntent = new Intent(context,ActiveCall.class);
                 //startActivity(activeCallIntent);
-                callInstance = new VoiceCall("130.236.181.196", 1338, 111, caller, new CallEvent() {
+                callInstance = new VoiceCall("130.236.181.196", 1338, sourceNr, caller, new CallEvent() {
                     @Override
                     public void onTimeout(int currentSequenceNumber, int destinationNumber) {
 

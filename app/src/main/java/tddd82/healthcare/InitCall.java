@@ -1,15 +1,14 @@
 package tddd82.healthcare;
 
-import android.os.AsyncTask;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
-
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.math.BigInteger;
 import java.net.Socket;
-import java.security.NoSuchAlgorithmException;
 
+import java.security.NoSuchAlgorithmException;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 
@@ -30,6 +29,7 @@ public class InitCall extends Thread implements Runnable{
     private int port = 1337;
     int sourceNr;
     int destNr;
+    private Context context;
     private Event callEvent;
     // Defines header information and sends to server
     // tyeofFlag = 0 , initialize
@@ -39,7 +39,8 @@ public class InitCall extends Thread implements Runnable{
     // TODO check if it works
     // Remove key part until sprint 3
 
-    public void init(int sourceNr,int destNr, Event callEvent){
+    public void init(int sourceNr,int destNr, Event callEvent,Context context){
+        this.context = context;
         // TODO generate key
        /* String key = null;
         try {
@@ -67,8 +68,11 @@ public class InitCall extends Thread implements Runnable{
         ctrl = new ControlPacket(bytes);
         ctrl.setSource(sourceNr);
         ctrl.setDestination(destNr);
-        //TODO token shall come from sharedpref
-        String token = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJtb2JpbGUiLCJleHAiOjE1MjA1MTcxNTMsImlhdCI6MTQ4ODk4MTE1MywiaXNzIjoiU2p1a3bDpXJkc2dydXBwZW4iLCJzdWIiOiIxMTEifQ.nEzzywquyCcwkdseTKiF9WMlWcQxJZBoD0z5zOF6Xla-Qjl7RHX6EuQMC6k7jL5FFQajn_-pndokrv5kKGY1ZJU7ejSU324xSaaz5ci46FC6teBFgk57iFL191nmFz4I9tqzQ90QzgOHE4hf3fG2WBhB5WxR27-OaYw7MLVjoGVMoqWfzKGAYfpbP3xq16G3ppDJ1QkxJAw4IotPYWP4yws_bQVjqgLabkYOQbnRb4RHZ-pHxtcXnnhewfpmfmt05JnT18ufjVf3l4hRdJ3RfMSANiwU9mgHDSucchrtWhSyScGcgMjZDn3iN4wd9O7H7VFc2mNDxnN2FceERP3URQ7YtK26_ugTEwm9cNOvE4mSZvyhGldIwVy2IkUW2wJ75Q-NYqvwIavF1ND1U49csqWNIK63ifkUMJ8jfCFFxi-0NoFIieE4GmId1HtctBkAsbGYneX4OZnBTNv_Z1adoGoWHNkSs1np75sjzFiQFOkKIYbRXa3ptR-rB2MbfQNz8z6WJQeByvBAwvokQ903kbAMnszmeGUk7CwZwY6_HSypuqU9wZpaDvyN0YJFkGJjBzMrrA98GPrKT5i8-w5qjoBjdwQdO3Aiju_G1Zh0DY99TJAp1e7MLz4zF0JGa1KQXqwql0ZFs71fhCLtTBHfHyDBXikhLufWTx2eh4oJAHY";
+
+        SharedPreferences sharedPreferences = context.getSharedPreferences("tddd82.healthcare", context.MODE_PRIVATE);
+        String token = sharedPreferences.getString("TOKEN","default");
+
+        //String token = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJtb2JpbGUiLCJleHAiOjE1MjA1MTcxNTMsImlhdCI6MTQ4ODk4MTE1MywiaXNzIjoiU2p1a3bDpXJkc2dydXBwZW4iLCJzdWIiOiIxMTEifQ.nEzzywquyCcwkdseTKiF9WMlWcQxJZBoD0z5zOF6Xla-Qjl7RHX6EuQMC6k7jL5FFQajn_-pndokrv5kKGY1ZJU7ejSU324xSaaz5ci46FC6teBFgk57iFL191nmFz4I9tqzQ90QzgOHE4hf3fG2WBhB5WxR27-OaYw7MLVjoGVMoqWfzKGAYfpbP3xq16G3ppDJ1QkxJAw4IotPYWP4yws_bQVjqgLabkYOQbnRb4RHZ-pHxtcXnnhewfpmfmt05JnT18ufjVf3l4hRdJ3RfMSANiwU9mgHDSucchrtWhSyScGcgMjZDn3iN4wd9O7H7VFc2mNDxnN2FceERP3URQ7YtK26_ugTEwm9cNOvE4mSZvyhGldIwVy2IkUW2wJ75Q-NYqvwIavF1ND1U49csqWNIK63ifkUMJ8jfCFFxi-0NoFIieE4GmId1HtctBkAsbGYneX4OZnBTNv_Z1adoGoWHNkSs1np75sjzFiQFOkKIYbRXa3ptR-rB2MbfQNz8z6WJQeByvBAwvokQ903kbAMnszmeGUk7CwZwY6_HSypuqU9wZpaDvyN0YJFkGJjBzMrrA98GPrKT5i8-w5qjoBjdwQdO3Aiju_G1Zh0DY99TJAp1e7MLz4zF0JGa1KQXqwql0ZFs71fhCLtTBHfHyDBXikhLufWTx2eh4oJAHY";
         ctrl.setPayload(token.getBytes());
     }
 
@@ -95,7 +99,6 @@ public class InitCall extends Thread implements Runnable{
             ServerUtils.sendBytes(ctrl.getPacketBytes(),tcpSocket);
         } catch (IOException e) {
             e.printStackTrace();
-            Log.d("bob","Lyckas inte skicka");
         }
 
     }

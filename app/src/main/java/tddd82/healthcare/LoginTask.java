@@ -116,8 +116,7 @@ class LoginTask extends AsyncTask<String,Void,String> {
     }
 
     protected String doInBackground(String... params) {
-        //String card = params[0];
-        String card = "145633596";
+        String card = params[0];
         String password = params[1];
         String url = params[2];
 

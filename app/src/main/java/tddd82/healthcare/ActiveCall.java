@@ -1,6 +1,7 @@
 package tddd82.healthcare;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.telecom.Call;
@@ -8,6 +9,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import com.auth0.android.jwt.*;
 
 import java.util.EventObject;
 
@@ -56,25 +59,26 @@ public class ActiveCall extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_active_call);
-        Log.d("VAFAN", "test");
 
         TextView status = (TextView) findViewById(R.id.callStatus);
         status.setText("Initializing call");
         final Button endCall = (Button) findViewById(R.id.endCall);
 
         //TODO set value of sourceNr - sourceNr gets from sharePreferences
+
+        SharedPreferences sharedPreferences = this.getSharedPreferences("tddd82.healthcare", this.MODE_PRIVATE);
+        String token = sharedPreferences.getString("TOKEN","default");
+        com.auth0.android.jwt.JWT jwt = new com.auth0.android.jwt.JWT(token);
+        sourceNr = Integer.parseInt(jwt.getSubject());
+        Log.d("bob",token);
         Intent intent = getIntent();
         if (intent.hasExtra("DEST")) {
             destNr = Integer.parseInt(intent.getStringExtra("DEST"));
         }
 
 
-
-
-
         init = new InitCall();
-        //init.init(sourceNr,destNr);
-        init.init(222,111, CallState);
+        init.init(sourceNr,destNr, CallState,this);
         init.send(initCall);
         init.start();
         endCall.setOnClickListener(new View.OnClickListener() {
