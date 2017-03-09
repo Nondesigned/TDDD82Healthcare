@@ -15,7 +15,7 @@ import android.widget.TextView;
 
 public class ContactActivity extends AppCompatActivity {
 
-    Contact[] contactList;
+    private static Contact[] contactList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,5 +51,12 @@ public class ContactActivity extends AppCompatActivity {
 
         ListAdapter customAdapter = new CustomAdapter(this, contactList);
         contactListView.setAdapter(customAdapter);
+    }
+
+    public static Contact[] getContactList() {
+        return contactList;
+    }
+    public static void setContactList(Contact[] list){
+        contactList = list;
     }
 }

@@ -21,7 +21,20 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
+import java.io.InputStream;
+import java.security.KeyStore;
+import java.security.SecureRandom;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateFactory;
 import java.util.Iterator;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManagerFactory;
 
 
 /**
@@ -33,24 +46,9 @@ public class GetContactsTask extends AsyncTask<String, Void, String>{
     private Context context;
     private AlertDialog alertDialog;
     private JSONObject response;
-    private JSONObject mackeExempel;
-    private JSONObject perExempel;
 
     SharedPreferences login;
     SharedPreferences.Editor editor;
-
-
-    private static final String SHARED_PREFS_TOKEN = "TOKEN";
-    private static final String JSON_PASSWORD = "password";
-    private static final String JSON_CARD = "card";
-    private static final String JSON_ACCEPTED = "accepted";
-    private static final String JSON_STATUS = "status";
-    private static final String JSON_DECLINED = "declined";
-    private static final String JSON_TOKEN = "token";
-    private static final String JSON_MESSAGE = "message";
-    private static final String TEST_TOKEN = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6I" +
-            "kpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.EkN-DOsnsuRjRO6BxXemmJDm3HbxrbRzXglbN2S4sOkopdU4IsDxTI8jO19W_A4K8ZPJijNLis4EZ" +
-            "sHeY559a4DFOd50_OqgHGuERTqYZyuhtF39yxJPAjUESwxk2J5k_4zM3O-vtd1Ghyo4IbqKKSy6J9mTniYJPenn5-HIirE";
 
 
 
@@ -68,6 +66,35 @@ public class GetContactsTask extends AsyncTask<String, Void, String>{
 
     protected String doInBackground(String... params) {
         String url = params[0];
+
+        try {
+            KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
+            trustStore.load(null);
+            InputStream stream = context.getAssets().open("cert.pem");
+            BufferedInputStream bis = new BufferedInputStream(stream);
+            CertificateFactory cf = CertificateFactory.getInstance("X.509");
+            while (bis.available() > 0) {
+                Certificate cert = cf.generateCertificate(bis);
+                trustStore.setCertificateEntry("cert" + bis.available(), cert);
+            }
+            KeyManagerFactory kmfactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+            kmfactory.init(trustStore, "1234".toCharArray());
+            TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+            tmf.init(trustStore);
+
+
+            SSLContext sc = SSLContext.getInstance("SSL");
+            sc.init(null, tmf.getTrustManagers(), new SecureRandom());
+            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+            HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
+                @Override
+                public boolean verify(String arg0, SSLSession arg1) {
+                    return true;
+                }
+            });
+        }catch (Exception e){
+            Log.v(AntonsLog.TAG, e.getMessage());
+        }
 
         login = PreferenceManager.getDefaultSharedPreferences(context);
         editor = login.edit();
@@ -94,7 +121,30 @@ public class GetContactsTask extends AsyncTask<String, Void, String>{
         RQ.add(jsonRequest);
         RQ.start();
 
-        getStringContact(response);
+        JSONArray array;
+
+        try {
+            array = response.getJSONArray(GlobalVariables.getJsonContactList());
+            Contact[] contactList = new Contact[array.length()];
+
+            for (int i = 0; i < array.length(); i++) {
+
+                try {
+                    JSONObject row = array.getJSONObject(i);
+                    contactList[i] = new Contact(row.getString("name"), row.getInt("number"));
+
+                } catch (JSONException e) {
+
+                }
+
+            }
+            ContactActivity.setContactList(contactList);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+
 
         //TODO Response är svaret från server. Lös så att vi får ut kontakterna från den.
         return "ERROR";
@@ -108,23 +158,7 @@ public class GetContactsTask extends AsyncTask<String, Void, String>{
     public void getStringContact(JSONObject response) {
 
 
-        JSONArray array = new JSONArray();
-        String[] name = new String[array.length()];
-        int[] phonenr = new int[array.length()];
 
-        for (int i = 0; i < array.length(); i++) {
-
-            try {
-                JSONObject row = array.getJSONObject(i);
-                phonenr[i] = row.getInt("phonenumber");
-                name[i] = row.getString("name");
-            } catch (JSONException e) {
-
-            }
-
-
-            System.out.println(name[i] + ", " + phonenr[i]);
-        }
     }
 
 
@@ -135,10 +169,10 @@ public class GetContactsTask extends AsyncTask<String, Void, String>{
 
     @Override
     protected void onPostExecute(String result) {
-        Toast toast = Toast.makeText(context, result, Toast.LENGTH_SHORT);
+       /* Toast toast = Toast.makeText(context, result, Toast.LENGTH_SHORT);
         toast.show();
         Toast toast2 = Toast.makeText(context, login.getString("ID", "DEFAULT VALUE"), Toast.LENGTH_SHORT);
-        toast2.show();
+        toast2.show();*/
     }
 
 

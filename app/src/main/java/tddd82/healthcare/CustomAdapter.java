@@ -40,6 +40,8 @@ class CustomAdapter extends ArrayAdapter<Contact> {
                 Intent startCallIntent = new Intent(getContext(), DummyActivity.class);
                 startCallIntent.putExtra(GlobalVariables.getIntentCallNumber(), contacts[position].getNumber());
                 getContext().startActivity(startCallIntent);
+                GetContactsTask conTask = new GetContactsTask(getContext());
+                conTask.execute("asd");
             }
         });
         numberTV.setText(String.valueOf(contacts[position].getNumber()));
