@@ -1,6 +1,7 @@
 package tddd82.healthcare;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
@@ -26,9 +27,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.Manifest;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity implements TaskCallback{
 
     private final static int MY_PERMISSIONS_REQUEST = 1;
+
+    SharedPreferences preferences;
+    SharedPreferences.Editor editor;
 
     TextView UsernameInfo;
     EditText passwordInput;
@@ -42,7 +46,8 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
-
+        preferences = this.getSharedPreferences("tddd82.healthcare", this.MODE_PRIVATE);
+        Log.v("TOKENENE", String.valueOf(preferences.contains("TOKEN")));
 
         UsernameInfo = (TextView)findViewById(R.id.cardIDInput);
         passwordInput = (EditText)findViewById(R.id.passwordInput);
@@ -65,8 +70,8 @@ public class LoginActivity extends AppCompatActivity {
 
     public void login(View view){
         Log.v(AntonsLog.TAG, "ETT");
-        LoginTask loginTask = new LoginTask(this);
-        loginTask.execute(UsernameInfo.getText().toString(), passwordInput.getText().toString(), "www.test.se");
+        LoginTask loginTask = new LoginTask(this, this);
+        loginTask.execute(UsernameInfo.getText().toString(), passwordInput.getText().toString(), "https://itkand-3-1.tddd82-2017.ida.liu.se:8080/login");
         // TODO listener to finish acitivity instead of starting anotherone on top of it.
         //finish();
     }
@@ -136,4 +141,9 @@ public class LoginActivity extends AppCompatActivity {
         return new String(hexChars);
     }
 
+    @Override
+    public void done() {
+        Toast.makeText(this, "Inloggad", Toast.LENGTH_LONG);
+        finish();
+    }
 }
