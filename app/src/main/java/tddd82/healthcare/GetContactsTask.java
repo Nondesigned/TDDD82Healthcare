@@ -17,12 +17,15 @@ import android.widget.Toast;
 import com.android.volley.AuthFailureError;
 import com.android.volley.Cache;
 import com.android.volley.Network;
+import com.android.volley.NetworkResponse;
+import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.BasicNetwork;
 import com.android.volley.toolbox.DiskBasedCache;
+import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
@@ -58,6 +61,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -165,6 +169,7 @@ class GetContactsTask extends AsyncTask<String,Void,String> {
             JSONObject credentials = new JSONObject();
             try {
                 credentials.put(GlobalVariables.getJsonTokenTag(), GlobalVariables.getSharedPrefsTokenTag());
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -206,28 +211,34 @@ class GetContactsTask extends AsyncTask<String,Void,String> {
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     Log.v(AntonsLog.TAG, "error");
-//                    Log.v(AntonsLog.TAG, error.getMessage());
+//                  Log.v(AntonsLog.TAG, error.getMessage());
 
                     Log.v("ERRRRROOOORRRRRRR", error.toString());
 
 
                 }
             }){
+
                 @Override
                 public Map<String, String> getHeaders() throws AuthFailureError {
-                    Map<String, String> params = super.getHeaders();
-                    Log.v(AntonsLog.TAG, "Vi stoppar token");
-                    Log.v(AntonsLog.TAG, context.getSharedPreferences("tddd82.healthcare", context.MODE_PRIVATE).getString("TOKEN", "def"));
-                    params.put("Token", context.getSharedPreferences("tddd82.healthcare", context.MODE_PRIVATE).getString("TOKEN", "def"));
-                    return params;
+                    HashMap<String, String> headers = new HashMap<String, String>();
+                    headers.put("Token", context.getSharedPreferences("tddd82.healthcare", context.MODE_PRIVATE).getString("TOKEN", "def"));
+                    return headers;
+                }
+
+                @Override
+                protected Response<JSONArray> parseNetworkResponse(NetworkResponse networkResponse){
+                    try{
+                        String jsonString = new String(networkResponse.data, HttpHeaderParser.parseCharset(networkResponse.headers));
+                        return Response.success(new JSONArray(jsonString),HttpHeaderParser.parseCacheHeaders(networkResponse));
+                    }catch (UnsupportedEncodingException e){
+                        return Response.error(new ParseError(e));
+                    }catch (JSONException je){
+                        return Response.error(new ParseError(je));
+                    }
                 }
             };
-            try {
-                jsonRequest.getHeaders();
-                Log.v(AntonsLog.TAG, "works");
-            } catch (AuthFailureError authFailureError) {
-                authFailureError.printStackTrace();
-            }
+
             mRequestQueue.add(jsonRequest);
 
             //RQ.start();
