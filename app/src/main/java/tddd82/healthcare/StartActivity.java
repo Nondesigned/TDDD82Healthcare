@@ -107,7 +107,7 @@ public class StartActivity extends AppCompatActivity {
     }
     public void getContactsFromServer(View v){
         GetContactsTask task = new GetContactsTask(this);
-        task.execute("https://itkand-3-1.tddd82-2017.ida.liu.se:8080/contacs");
+        task.execute("https://itkand-3-1.tddd82-2017.ida.liu.se:8080/contacts");
     }
 }
 

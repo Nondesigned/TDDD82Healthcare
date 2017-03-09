@@ -9,6 +9,7 @@ import android.net.NetworkInfo;
 import android.net.SSLCertificateSocketFactory;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
+import android.util.ArrayMap;
 import android.util.Base64;
 import android.util.Log;
 import android.widget.Toast;
@@ -205,21 +206,30 @@ class GetContactsTask extends AsyncTask<String,Void,String> {
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     Log.v(AntonsLog.TAG, "error");
-                    Log.v(AntonsLog.TAG, error.getMessage());
+//                    Log.v(AntonsLog.TAG, error.getMessage());
 
-                    Log.v(AntonsLog.TAG, error.toString());
+                    Log.v("ERRRRROOOORRRRRRR", error.toString());
 
 
                 }
             }){
                 @Override
                 public Map<String, String> getHeaders() throws AuthFailureError {
-                    Map<String, String> params = new HashMap<String, String>();
-                    params.put(GlobalVariables.getJsonTokenTag(), GlobalVariables.getJsonTokenTag());
+                    Map<String, String> params = super.getHeaders();
+                    Log.v(AntonsLog.TAG, "Vi stoppar token");
+                    Log.v(AntonsLog.TAG, context.getSharedPreferences("tddd82.healthcare", context.MODE_PRIVATE).getString("TOKEN", "def"));
+                    params.put("Token", context.getSharedPreferences("tddd82.healthcare", context.MODE_PRIVATE).getString("TOKEN", "def"));
                     return params;
                 }
             };
+            try {
+                jsonRequest.getHeaders();
+                Log.v(AntonsLog.TAG, "works");
+            } catch (AuthFailureError authFailureError) {
+                authFailureError.printStackTrace();
+            }
             mRequestQueue.add(jsonRequest);
+
             //RQ.start();
             Log.v(AntonsLog.TAG,"INNAN START");
             // Start the queue

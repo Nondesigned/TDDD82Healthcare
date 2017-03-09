@@ -234,6 +234,17 @@ class LoginTask extends AsyncTask<String,Void,String> {
             mRequestQueue.start();
             Log.v(AntonsLog.TAG, "EFTER START");
         }
+        else {
+
+            try {
+                response = new JSONObject();
+                response.put(JSON_STATUS, JSON_ACCEPTED);
+                response.put(JSON_MESSAGE, "TESTMEDDELANDE");
+                response.put(JSON_TOKEN, TEST_TOKEN);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
 
         return "Initialized login";
     }
