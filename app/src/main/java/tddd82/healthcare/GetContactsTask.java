@@ -13,6 +13,7 @@ import android.util.Base64;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Cache;
 import com.android.volley.Network;
 import com.android.volley.Request;
@@ -22,10 +23,12 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.BasicNetwork;
 import com.android.volley.toolbox.DiskBasedCache;
 import com.android.volley.toolbox.HurlStack;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 //import com.auth0.android.jwt.JWT;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.gson.JsonArray;
 import com.securepreferences.SecurePreferences;
 
 import org.json.JSONArray;
@@ -74,6 +77,8 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAKey;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Clynch on 2017-02-15.
@@ -86,7 +91,7 @@ class GetContactsTask extends AsyncTask<String,Void,String> {
     private Context context;
     private TaskCallback callback;
     private AlertDialog alertDialog;
-    private JSONObject response;
+    private JSONArray response;
 
     SharedPreferences preferences;
     SharedPreferences.Editor editor;
@@ -174,64 +179,52 @@ class GetContactsTask extends AsyncTask<String,Void,String> {
             // Instantiate the RequestQueue with the cache and network.
             mRequestQueue = new RequestQueue(cache, network);
 
-            Log.v(AntonsLog.TAG, credentials.toString());
+            JsonArrayRequest jsonRequest = new JsonArrayRequest(url, new Response.Listener<JSONArray>() {
 
-            final JsonObjectRequest jsonRequest = new JsonObjectRequest
-                    (Request.Method.POST, url, credentials, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONArray m_response) {
+                    response = m_response;
+                    Log.v(AntonsLog.TAG,"RESPONSE!");
 
-                        @Override
-                        public void onResponse(JSONObject m_response) {
-                            response = m_response;
-                            Log.v(AntonsLog.TAG,"RESPONSE!");
+                    Contact[] contactList = new Contact[response.length()];
 
-                            try {
-                                JSONArray array = response.getJSONArray(GlobalVariables.getJsonContactList());
-                                Contact[] contactList = new Contact[array.length()];
+                    for (int i = 0; i < response.length(); i++) {
 
-                                for (int i = 0; i < array.length(); i++) {
+                        try {
+                            JSONObject row = response.getJSONObject(i);
+                            contactList[i] = new Contact(row.getString("name"), row.getInt("phonenumber"));
 
-                                    try {
-                                        JSONObject row = array.getJSONObject(i);
-                                        contactList[i] = new Contact(row.getString("name"), row.getInt("number"));
-
-                                    } catch (JSONException e) {
-
-                                    }
-
-                                }
-                                ContactActivity.setContactList(contactList);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }, new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            Log.v(AntonsLog.TAG, "error");
-                            Log.v(AntonsLog.TAG, error.getMessage());
-
-                            Log.v(AntonsLog.TAG, error.toString());
-
+                        } catch (JSONException e) {
 
                         }
-                    });
+
+                    }
+                    ContactActivity.setContactList(contactList);
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.v(AntonsLog.TAG, "error");
+                    Log.v(AntonsLog.TAG, error.getMessage());
+
+                    Log.v(AntonsLog.TAG, error.toString());
+
+
+                }
+            }){
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    Map<String, String> params = new HashMap<String, String>();
+                    params.put(GlobalVariables.getJsonTokenTag(), GlobalVariables.getJsonTokenTag());
+                    return params;
+                }
+            };
             mRequestQueue.add(jsonRequest);
             //RQ.start();
             Log.v(AntonsLog.TAG,"INNAN START");
             // Start the queue
             mRequestQueue.start();
             Log.v(AntonsLog.TAG, "EFTER START");
-        }
-        else {
-
-            try {
-                response = new JSONObject();
-                response.put(JSON_STATUS, JSON_ACCEPTED);
-                response.put(JSON_MESSAGE, "TESTMEDDELANDE");
-                response.put(JSON_TOKEN, TEST_TOKEN);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
         }
 
         return "Initialized login";
