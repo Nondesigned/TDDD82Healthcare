@@ -6,6 +6,7 @@ import android.util.Log;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigInteger;
 import java.net.Socket;
 
 import java.security.NoSuchAlgorithmException;
@@ -36,7 +37,6 @@ public class InitCall extends Thread implements Runnable{
     //  = 1 endCall
     // = 2 accept
     //= 3 decline
-    // TODO check if it works
     // Remove key part until sprint 3
 
     public void init(int sourceNr,int destNr, Event callEvent,Context context){
@@ -71,7 +71,6 @@ public class InitCall extends Thread implements Runnable{
 
         SharedPreferences sharedPreferences = context.getSharedPreferences("tddd82.healthcare", context.MODE_PRIVATE);
         String token = sharedPreferences.getString("TOKEN","default");
-
         //String token = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJtb2JpbGUiLCJleHAiOjE1MjA1MTcxNTMsImlhdCI6MTQ4ODk4MTE1MywiaXNzIjoiU2p1a3bDpXJkc2dydXBwZW4iLCJzdWIiOiIxMTEifQ.nEzzywquyCcwkdseTKiF9WMlWcQxJZBoD0z5zOF6Xla-Qjl7RHX6EuQMC6k7jL5FFQajn_-pndokrv5kKGY1ZJU7ejSU324xSaaz5ci46FC6teBFgk57iFL191nmFz4I9tqzQ90QzgOHE4hf3fG2WBhB5WxR27-OaYw7MLVjoGVMoqWfzKGAYfpbP3xq16G3ppDJ1QkxJAw4IotPYWP4yws_bQVjqgLabkYOQbnRb4RHZ-pHxtcXnnhewfpmfmt05JnT18ufjVf3l4hRdJ3RfMSANiwU9mgHDSucchrtWhSyScGcgMjZDn3iN4wd9O7H7VFc2mNDxnN2FceERP3URQ7YtK26_ugTEwm9cNOvE4mSZvyhGldIwVy2IkUW2wJ75Q-NYqvwIavF1ND1U49csqWNIK63ifkUMJ8jfCFFxi-0NoFIieE4GmId1HtctBkAsbGYneX4OZnBTNv_Z1adoGoWHNkSs1np75sjzFiQFOkKIYbRXa3ptR-rB2MbfQNz8z6WJQeByvBAwvokQ903kbAMnszmeGUk7CwZwY6_HSypuqU9wZpaDvyN0YJFkGJjBzMrrA98GPrKT5i8-w5qjoBjdwQdO3Aiju_G1Zh0DY99TJAp1e7MLz4zF0JGa1KQXqwql0ZFs71fhCLtTBHfHyDBXikhLufWTx2eh4oJAHY";
         ctrl.setPayload(token.getBytes());
     }
@@ -89,6 +88,8 @@ public class InitCall extends Thread implements Runnable{
                 break;
             case 2:
                 flags.setFlag(ACCEPTCALL,true);
+                String key = getKey();
+                ctrl.setKey(key);
                 break;
             case 3:
                 flags.setFlag(DECLINECALL,true);
@@ -107,24 +108,20 @@ public class InitCall extends Thread implements Runnable{
         boolean connected = true;
         while(connected){
             try {
-                ControlPacket recievedPacket = new ControlPacket(readData(tcpSocket.getInputStream()));
-                boolean flag0 = recievedPacket.getFlag(0);
-                boolean flag1 = recievedPacket.getFlag(1);
-                boolean flag2 = recievedPacket.getFlag(2);
-                boolean flag3 = recievedPacket.getFlag(3);
+                ControlPacket receivedPacket = new ControlPacket(readData(tcpSocket.getInputStream()));
+                boolean flag0 = receivedPacket.getFlag(0);
+                boolean flag1 = receivedPacket.getFlag(1);
+                boolean flag2 = receivedPacket.getFlag(2);
+                boolean flag3 = receivedPacket.getFlag(3);
 
                 if(flag1 == true|| flag3 == true){
                     tcpSocket.close();
                     connected = false;
                     callEvent.onCallEnded();
-
                 }
                 if(flag2 == true){
-                    callEvent.onCallStarted(this.ip, this.port, this.sourceNr, this.destNr);
+                    callEvent.onCallStarted(this.ip, this.port, this.sourceNr, this.destNr,receivedPacket.getKey());
                 }
-
-
-
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -142,5 +139,18 @@ public class InitCall extends Thread implements Runnable{
             input.close();
         }
         return data;
+    }
+    //Gets symmetric 32-bytes key generated using AES
+    public String getKey() {
+        KeyGenerator keyGen = null;
+        try {
+            keyGen = KeyGenerator.getInstance("AES");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        keyGen.init(256);
+        SecretKey secret = keyGen.generateKey();
+        byte[] binary = secret.getEncoded();
+        return String.format("%032X", new BigInteger(+1,binary));
     }
 }

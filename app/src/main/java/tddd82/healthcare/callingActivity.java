@@ -3,7 +3,6 @@ package tddd82.healthcare;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -27,7 +26,7 @@ public class callingActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onCallStarted(String host, int port, int sender, int receiver) {
+        public void onCallStarted(String host, int port, int sender, int receiver, String key) {
 
         }
     };
@@ -62,7 +61,7 @@ public class callingActivity extends AppCompatActivity {
         //Sends accept message
         answer.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                // TODO get sourceNr
+                //TODO generara key
                 init.send(2);
                 init.start();
                 //Intent activeCallIntent = new Intent(context,ActiveCall.class);

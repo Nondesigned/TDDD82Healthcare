@@ -4,15 +4,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.telecom.Call;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-
-import com.auth0.android.jwt.*;
-
-import java.util.EventObject;
 
 public class ActiveCall extends AppCompatActivity {
 
@@ -31,7 +26,8 @@ public class ActiveCall extends AppCompatActivity {
         }
 
         @Override
-        public void onCallStarted(String host, int port, int sender, int receiver) {
+        public void onCallStarted(String host, int port, int sender, int receiver, String key) {
+            //TODO pass key to VoiceCall
             callInstance = new VoiceCall(host, 1338, sender, receiver, new CallEvent() {
                 @Override
                 public void onTimeout(int currentSequenceNumber, int destinationNumber) {
