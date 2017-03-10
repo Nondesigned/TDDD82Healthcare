@@ -168,6 +168,7 @@ class GetContactsTask extends AsyncTask<String,Void,String> {
         if (connectedToServer) {
             JSONObject credentials = new JSONObject();
             try {
+
                 credentials.put(GlobalVariables.getJsonTokenTag(), GlobalVariables.getSharedPrefsTokenTag());
 
             } catch (Exception e) {
@@ -222,6 +223,7 @@ class GetContactsTask extends AsyncTask<String,Void,String> {
                 @Override
                 public Map<String, String> getHeaders() throws AuthFailureError {
                     HashMap<String, String> headers = new HashMap<String, String>();
+
                     headers.put("Token", context.getSharedPreferences("tddd82.healthcare", context.MODE_PRIVATE).getString("TOKEN", "def"));
                     return headers;
                 }
@@ -254,6 +256,7 @@ class GetContactsTask extends AsyncTask<String,Void,String> {
 
     @Override
     protected void onPreExecute() {
+
         alertDialog.setTitle("Retriving ID");
     }
 

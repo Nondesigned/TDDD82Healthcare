@@ -71,7 +71,7 @@ public class LoginActivity extends AppCompatActivity implements TaskCallback{
     public void login(View view){
         Log.v(AntonsLog.TAG, "ETT");
         LoginTask loginTask = new LoginTask(this, this);
-        loginTask.execute("145633596", "asdf", "https://itkand-3-1.tddd82-2017.ida.liu.se:8080/login");
+        loginTask.execute(UsernameInfo.getText().toString(), passwordInput.getText().toString(), "https://itkand-3-1.tddd82-2017.ida.liu.se:8080/login");
         // TODO listener to finish acitivity instead of starting anotherone on top of it.
         //finish();
     }
