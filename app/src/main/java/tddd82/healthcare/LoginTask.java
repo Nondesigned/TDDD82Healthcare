@@ -106,6 +106,7 @@ class LoginTask extends AsyncTask<String,Void,String> {
     public LoginTask(Context context, TaskCallback callback){
         this.context = context;
         this.callback = callback;
+
         alertDialog = new AlertDialog.Builder(context).create();
         alertDialog.setTitle("test");
 
@@ -183,6 +184,7 @@ class LoginTask extends AsyncTask<String,Void,String> {
             final JsonObjectRequest jsonRequest = new JsonObjectRequest
                     (Request.Method.POST, url, credentials, new Response.Listener<JSONObject>() {
 
+
                         @Override
                         public void onResponse(JSONObject m_response) {
                             response = m_response;
@@ -207,7 +209,7 @@ class LoginTask extends AsyncTask<String,Void,String> {
                                     callback.done();
                                     //return response.getString(JSON_TOKEN);
                                 }else if(response.getString(JSON_STATUS).equals(JSON_DECLINED)){
-                                    Toast.makeText(context, "Wrong credentials", Toast.LENGTH_LONG);
+
 
                                 }else {
                                     Log.v(AntonsLog.TAG, "Message är " + response.getString(JSON_MESSAGE));
@@ -222,11 +224,18 @@ class LoginTask extends AsyncTask<String,Void,String> {
                     }, new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
-                            Log.v(AntonsLog.TAG, error.toString());
+                            ((LoginActivity)context).runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(context, "Wrong credentials", Toast.LENGTH_LONG).show();
+
+                                }
+                            });
 
 
                         }
-                    });
+                    }
+                    );
             mRequestQueue.add(jsonRequest);
             //RQ.start();
             Log.v(AntonsLog.TAG,"INNAN START");
@@ -267,8 +276,7 @@ class LoginTask extends AsyncTask<String,Void,String> {
         if (nf != null && nf.isConnected() == true) {
             return true;
         } else {
-            Toast.makeText(context, "No internet connection.!",
-                    Toast.LENGTH_LONG).show();
+            Toast.makeText(context, "No internet connection.!", Toast.LENGTH_LONG).show();
             return false;
         }
     }

@@ -9,23 +9,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.Toast;
-
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.securepreferences.SecurePreferences;
-
-import java.io.IOException;
-import java.math.BigInteger;
-import java.net.Socket;
-import java.security.NoSuchAlgorithmException;
-
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
-
-import static tddd82.healthcare.ControlFlag.INITCALL;
 
 public class StartActivity extends AppCompatActivity {
     Context context = this;
