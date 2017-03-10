@@ -14,6 +14,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
+    private static LatLng[] pinList;
+    private static String[] damageList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,9 +41,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
+        GetMapPinsTask getMapPinsTask = new GetMapPinsTask(this, mMap);
+        getMapPinsTask.execute("https://itkand-3-1.tddd82-2017.ida.liu.se:8080/pins");
+
+
+        Log.d("sydney", "sydney");
         // Add a marker in Sydney and move the camera
         LatLng sydney = new LatLng(-34, 151);
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+    }
+    public static void addPinsToMap(GoogleMap mMap){
+        for(int i=0; i < pinList.length; i++){
+            mMap.addMarker(new MarkerOptions().position(pinList[i]).title(damageList[i]));
+        }
+    }
+
+    public static void setMapPinsList(LatLng[] mapPinsList, String[] typeOfDamageList) {
+        pinList = mapPinsList;
+        damageList = typeOfDamageList;
     }
 }
