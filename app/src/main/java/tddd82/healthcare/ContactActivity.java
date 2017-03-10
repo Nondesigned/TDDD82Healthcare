@@ -23,7 +23,7 @@ public class ContactActivity extends AppCompatActivity {
         setContentView(R.layout.activity_contact);
 
         ListView contactListView = (ListView) findViewById(R.id.list_view);
-        contactList = new Contact[20];
+        /*contactList = new Contact[20];
 
         contactList[0] = new Contact("Pelle", 0000);
         contactList[1] = new Contact("Pelle2", 1111);
@@ -46,7 +46,7 @@ public class ContactActivity extends AppCompatActivity {
         contactList[18] = new Contact("Pelle9", 1337);
         contactList[19] = new Contact("Pelle10", 1337);
 
-        String[] test = {"ett", "två", "tre"};
+        String[] test = {"ett", "två", "tre"};*/
 
 
         ListAdapter customAdapter = new CustomAdapter(this, contactList);
