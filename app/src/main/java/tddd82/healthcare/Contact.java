@@ -1,12 +1,5 @@
 package tddd82.healthcare;
 
-import android.content.Context;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-
 /**
  * Created by Clynch on 2017-03-06.
  */

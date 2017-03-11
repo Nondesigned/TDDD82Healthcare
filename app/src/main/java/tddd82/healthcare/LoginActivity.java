@@ -1,31 +1,23 @@
 package tddd82.healthcare;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Bundle;
-import android.os.StrictMode;
-import android.support.v7.app.AppCompatActivity;
-import android.view.View;
-import android.widget.Button;
-
 import android.content.pm.PackageManager;
-import android.content.Intent;
 import android.nfc.NdefMessage;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
+import android.os.Bundle;
 import android.os.Parcelable;
 import android.os.Vibrator;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.Manifest;
 
 public class LoginActivity extends AppCompatActivity implements TaskCallback{
 
@@ -45,10 +37,7 @@ public class LoginActivity extends AppCompatActivity implements TaskCallback{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         preferences = this.getSharedPreferences("tddd82.healthcare", this.MODE_PRIVATE);
-        Log.v("TOKENENE", String.valueOf(preferences.contains("TOKEN")));
-
         UsernameInfo = (TextView)findViewById(R.id.cardIDInput);
         passwordInput = (EditText)findViewById(R.id.passwordInput);
 
@@ -69,11 +58,8 @@ public class LoginActivity extends AppCompatActivity implements TaskCallback{
     }
 
     public void login(View view){
-        Log.v(AntonsLog.TAG, "ETT");
         LoginTask loginTask = new LoginTask(this, this);
         loginTask.execute(UsernameInfo.getText().toString(), passwordInput.getText().toString(), "https://itkand-3-1.tddd82-2017.ida.liu.se:8080/login");
-        // TODO listener to finish acitivity instead of starting anotherone on top of it.
-        //finish();
     }
     //Activated when NFC device is found
     @Override

@@ -24,9 +24,6 @@ public class StartActivity extends AppCompatActivity {
         StrictMode.setThreadPolicy(policy);
 
         requestRecordAudioPermission();
-
-//TODO Check from sharedPreferences if user is logged in or not!
-        boolean inloggad = true;
         preferences = context.getSharedPreferences("tddd82.healthcare", context.MODE_PRIVATE);
         editor = preferences.edit();
 

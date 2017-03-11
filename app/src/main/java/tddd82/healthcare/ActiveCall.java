@@ -1,10 +1,8 @@
 package tddd82.healthcare;
-
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -53,16 +51,13 @@ public class ActiveCall extends AppCompatActivity {
     private VoiceCall callInstance;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.v(AntonsLog.TAG, "AKTIVITET STARTAR");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_active_call);
-
         TextView status = (TextView) findViewById(R.id.callStatus);
         status.setText("Initializing call");
         final Button endCall = (Button) findViewById(R.id.endCall);
 
-        //TODO set value of sourceNr - sourceNr gets from sharePreferences
-
+        //Get token from SharedPref
         SharedPreferences sharedPreferences = this.getSharedPreferences("tddd82.healthcare", this.MODE_PRIVATE);
         String token = sharedPreferences.getString("TOKEN","default");
         com.auth0.android.jwt.JWT jwt = new com.auth0.android.jwt.JWT(token);
@@ -82,10 +77,6 @@ public class ActiveCall extends AppCompatActivity {
                 finish();
             }
         });
-
-        //String key = init.getKey();
-
-        //UDP samtal
     }
 
 }
