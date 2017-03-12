@@ -8,7 +8,8 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="tddd82.healthcare.callingActivity">
+    tools:context="tddd82.healthcare.callingActivity"
+    android:background="@color/colorBackgroundBlue">
 
     <Button
         android:text="Answer"
@@ -18,7 +19,13 @@
         android:layout_marginBottom="129dp"
         android:id="@+id/answer"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:fontFamily="sans-serif-condensed"
+        android:textSize="20dp"
+        android:backgroundTint="@color/colorWhite"
+        android:textColor="@color/colorGreen"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="52dp" />
 
     <Button
         android:text="Decline"
@@ -28,7 +35,13 @@
         android:id="@+id/decline"
         android:layout_alignBaseline="@+id/answer"
         android:layout_alignBottom="@+id/answer"
-        android:layout_toEndOf="@+id/answer" />
+        android:layout_toEndOf="@+id/answer"
+        android:fontFamily="sans-serif-condensed"
+        android:textSize="20dp"
+        android:backgroundTint="@color/colorWhite"
+        android:textColor="@color/colorRed"
+        android:layout_toRightOf="@+id/answer"
+        android:layout_marginLeft="39dp" />
 
     <TextView
         android:text="TextView"
@@ -37,5 +50,8 @@
         android:layout_marginTop="135dp"
         android:id="@+id/textviewtoken"
         android:layout_alignParentTop="true"
-        android:layout_toEndOf="@+id/answer" />
+        android:layout_centerHorizontal="true"
+        android:fontFamily="sans-serif-condensed"
+        android:textSize="20dp"
+        android:textColor="@color/colorWhite"/>
 </RelativeLayout>

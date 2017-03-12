@@ -11,6 +11,7 @@ import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.util.Base64;
 import android.util.Log;
+import android.view.Gravity;
 import android.widget.Toast;
 
 import com.android.volley.Cache;
@@ -227,8 +228,9 @@ class LoginTask extends AsyncTask<String,Void,String> {
                             ((LoginActivity)context).runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    Toast.makeText(context, "Wrong credentials", Toast.LENGTH_LONG).show();
-
+                                    Toast wrong = Toast.makeText(context, "Wrong credentials", Toast.LENGTH_LONG);
+                                    wrong.setGravity(Gravity.TOP|Gravity.CENTER,0,20);
+                                    wrong.show();
                                 }
                             });
 
