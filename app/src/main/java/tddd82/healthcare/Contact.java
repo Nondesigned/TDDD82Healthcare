@@ -1,10 +1,6 @@
 package tddd82.healthcare;
 
-/**
- * Created by Clynch on 2017-03-06.
- */
-
-public class Contact {
+class Contact {
     private String name;
     private int number;
 
@@ -13,7 +9,7 @@ public class Contact {
         this.number = number;
     }
 
-    public int getNumber() {
+    int getNumber() {
         return number;
     }
 

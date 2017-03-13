@@ -16,11 +16,12 @@ public class callingActivity extends AppCompatActivity {
     private final Event CallState = new Event(){
         @Override
         public void onCallEnded() {
-
+            callInstance.terminate();
             runOnUiThread(new Runnable(){
 
                 @Override
                 public void run() {
+
                     finish();
                 }
             });
@@ -86,6 +87,7 @@ public class callingActivity extends AppCompatActivity {
                 if(activeCall){
                     init.send(1);
                     CallState.onCallEnded();
+
                 }
                 else {
                     init.send(3);
