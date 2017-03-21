@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "562203013848",
+    "firebase_url": "https://tddd82healthcare.firebaseio.com",
+    "project_id": "tddd82healthcare",
+    "storage_bucket": "tddd82healthcare.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:562203013848:android:5dda97726b020b47",
+        "android_client_info": {
+          "package_name": "tddd82.healthcare"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "562203013848-mc58moo96r3221ravbjfu1vpg8erf5cd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBdVrcRRuUekuTcLx0S5p_Uk4zXIw5anh0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

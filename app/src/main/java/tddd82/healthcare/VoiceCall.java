@@ -140,17 +140,22 @@ public class VoiceCall {
     public void terminate(){
         alive = false;
         initialized = false;
-        recorder.stop();
-        recorder.release();
-        socket.disconnect();
-        socket.close();
+        if(recorder != null){
+            recorder.stop();
+            recorder.release();
+        }
+        if(socket != null){
+            socket.disconnect();
+            socket.close();
+        }
+
     }
 
     private void playbackWorker(){
         while(alive) {
 
             if (receiverBuffer.empty()) {
-                while (receiverBuffer.estimateTime() < minimumBuffer) {
+                while (receiverBuffer.estimateTime() < minimumBuffer  && alive) {
                     sleep(1);
                 }
             }
@@ -178,7 +183,6 @@ public class VoiceCall {
     private void receiverWorker(){
 
         while(alive){
-
             DataPacket data = new DataPacket(DataPacket.MAX_SIZE);
             DatagramPacket p = new DatagramPacket(data.getBuffer(), data.getLength());
 
@@ -198,7 +202,7 @@ public class VoiceCall {
     private void recorderWorker(){
         while(alive){
             DataPacket p = new DataPacket(recorderBufferSize);
-
+            //p.decryptPacket(key);
             recorder.read(p.getBuffer(), p.getPayloadIndex(), p.getPayloadLength());
             p.setSource(senderNumber);
             p.setDestination(receiverNumber);
@@ -207,7 +211,6 @@ public class VoiceCall {
             p.setSequenceNumber(sendSequenceNumber++);
 
             recordBuffer.push(p);
-
         }
     }
 
@@ -217,7 +220,7 @@ public class VoiceCall {
             if (!recordBuffer.empty()) {
 
                 DataPacket data = recordBuffer.poll();
-
+                //data.encryptPacket(key);
                 DatagramPacket p = new DatagramPacket(data.getBuffer(), 0, data.getLength(), this.address, this.port);
 
                 try {

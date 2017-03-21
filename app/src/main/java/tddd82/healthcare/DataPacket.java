@@ -121,5 +121,10 @@ public class DataPacket {
             destination[i]=source[i-start];
         return destination;
     }
+    public static void encryptPacket(String key){
 
+    }
+    public static void decryptPacket(String key){
+
+    }
 }
