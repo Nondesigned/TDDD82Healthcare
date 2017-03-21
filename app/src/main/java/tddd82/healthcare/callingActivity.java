@@ -3,9 +3,9 @@ package tddd82.healthcare;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -16,18 +16,19 @@ public class callingActivity extends AppCompatActivity {
     private final Event CallState = new Event(){
         @Override
         public void onCallEnded() {
-
+            callInstance.terminate();
             runOnUiThread(new Runnable(){
 
                 @Override
                 public void run() {
+
                     finish();
                 }
             });
         }
 
         @Override
-        public void onCallStarted(String host, int port, int sender, int receiver) {
+        public void onCallStarted(String host, int port, int sender, int receiver, String key) {
 
         }
     };
@@ -56,17 +57,15 @@ public class callingActivity extends AppCompatActivity {
         String token = sharedPreferences.getString("TOKEN","default");
         JWT jwt = new JWT(token);
         sourceNr = Integer.parseInt(jwt.getSubject());
-
+        Log.d("bob",Integer.toString(sourceNr) + Integer.toString(caller));
         init.init(sourceNr,caller, CallState,this);
 
         //Sends accept message
         answer.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                // TODO get sourceNr
+                //TODO generara key
                 init.send(2);
                 init.start();
-                //Intent activeCallIntent = new Intent(context,ActiveCall.class);
-                //startActivity(activeCallIntent);
                 callInstance = new VoiceCall("130.236.181.196", 1338, sourceNr, caller, new CallEvent() {
                     @Override
                     public void onTimeout(int currentSequenceNumber, int destinationNumber) {
@@ -88,6 +87,7 @@ public class callingActivity extends AppCompatActivity {
                 if(activeCall){
                     init.send(1);
                     CallState.onCallEnded();
+
                 }
                 else {
                     init.send(3);

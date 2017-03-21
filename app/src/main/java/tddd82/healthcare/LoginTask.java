@@ -2,17 +2,13 @@ package tddd82.healthcare;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.SSLCertificateSocketFactory;
 import android.os.AsyncTask;
-import android.preference.PreferenceManager;
-import android.util.Base64;
 import android.util.Log;
+import android.view.Gravity;
 import android.widget.Toast;
-
 import com.android.volley.Cache;
 import com.android.volley.Network;
 import com.android.volley.Request;
@@ -23,56 +19,21 @@ import com.android.volley.toolbox.BasicNetwork;
 import com.android.volley.toolbox.DiskBasedCache;
 import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
-//import com.auth0.android.jwt.JWT;
 import com.google.firebase.iid.FirebaseInstanceId;
-import com.securepreferences.SecurePreferences;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import javax.crypto.Cipher;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
-import javax.net.ssl.X509TrustManager;
-
 import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintStream;
-import java.math.BigInteger;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.security.KeyManagementException;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
 import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.cert.Certificate;
-import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
-import java.security.interfaces.RSAKey;
-import java.util.Date;
 
 /**
  * Created by Clynch on 2017-02-15.
@@ -106,13 +67,10 @@ class LoginTask extends AsyncTask<String,Void,String> {
     public LoginTask(Context context, TaskCallback callback){
         this.context = context;
         this.callback = callback;
+
         alertDialog = new AlertDialog.Builder(context).create();
         alertDialog.setTitle("test");
 
-    }
-    // you may separate this or combined to caller class.
-    public interface AsyncResponse {
-        void processFinish(String output);
     }
 
     protected String doInBackground(String... params) {
@@ -150,8 +108,7 @@ class LoginTask extends AsyncTask<String,Void,String> {
                 }
             });
         }catch (Exception e){
-            Log.v(AntonsLog.TAG, e.getMessage());
-        }
+            }
 
         Check();
 
@@ -178,19 +135,16 @@ class LoginTask extends AsyncTask<String,Void,String> {
             // Instantiate the RequestQueue with the cache and network.
             mRequestQueue = new RequestQueue(cache, network);
 
-            Log.v(AntonsLog.TAG, credentials.toString());
 
             final JsonObjectRequest jsonRequest = new JsonObjectRequest
                     (Request.Method.POST, url, credentials, new Response.Listener<JSONObject>() {
 
+
                         @Override
                         public void onResponse(JSONObject m_response) {
                             response = m_response;
-                            Log.v(AntonsLog.TAG,"RESPONSE!");
 
                             try {
-                                Log.v(AntonsLog.TAG, response.getString(JSON_TOKEN));
-                                //JWT jwt = new JWT(response.getString(JSON_TOKEN).getBytes());
 
                                 preferences = context.getSharedPreferences("tddd82.healthcare", context.MODE_PRIVATE);
                                 editor = preferences.edit();
@@ -203,36 +157,39 @@ class LoginTask extends AsyncTask<String,Void,String> {
                                 }
 
                                 if (response.getString(JSON_STATUS).equals(JSON_ACCEPTED)) {
-                                    Log.v(AntonsLog.TAG, "RESPONSE: " + response.getString(JSON_STATUS));
                                     callback.done();
                                     //return response.getString(JSON_TOKEN);
                                 }else if(response.getString(JSON_STATUS).equals(JSON_DECLINED)){
-                                    Toast.makeText(context, "Wrong credentials", Toast.LENGTH_LONG);
+
 
                                 }else {
-                                    Log.v(AntonsLog.TAG, "Message är " + response.getString(JSON_MESSAGE));
                                     //return response.getString(JSON_MESSAGE);
                                 }
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             } catch (NullPointerException e){
-                                Log.v(AntonsLog.TAG, e.getMessage());
                             }
                         }
                     }, new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
-                            Log.v(AntonsLog.TAG, error.toString());
+                            ((LoginActivity)context).runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast wrong = Toast.makeText(context, "Wrong credentials", Toast.LENGTH_LONG);
+                                    wrong.setGravity(Gravity.TOP|Gravity.CENTER,0,20);
+                                    wrong.show();
+                                }
+                            });
 
 
                         }
-                    });
+                    }
+                    );
             mRequestQueue.add(jsonRequest);
             //RQ.start();
-            Log.v(AntonsLog.TAG,"INNAN START");
             // Start the queue
             mRequestQueue.start();
-            Log.v(AntonsLog.TAG, "EFTER START");
         }
         else {
 
@@ -267,8 +224,7 @@ class LoginTask extends AsyncTask<String,Void,String> {
         if (nf != null && nf.isConnected() == true) {
             return true;
         } else {
-            Toast.makeText(context, "No internet connection.!",
-                    Toast.LENGTH_LONG).show();
+            Toast.makeText(context, "No internet connection.!", Toast.LENGTH_LONG).show();
             return false;
         }
     }

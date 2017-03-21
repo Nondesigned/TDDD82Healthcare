@@ -29,8 +29,7 @@ import javax.crypto.Cipher;
 public class JWT {
     String token;
     String certLoc = "cert.pem";
-    public JWT (byte[] token) {
-        this.token = new String(token);
+    public JWT (byte[] token) {this.token = new String(token);
     }
 
     public JWT (byte[] token, String certloc) {

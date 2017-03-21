@@ -4,28 +4,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Typeface;
 import android.os.StrictMode;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
-
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.securepreferences.SecurePreferences;
-
-import java.io.IOException;
-import java.math.BigInteger;
-import java.net.Socket;
-import java.security.NoSuchAlgorithmException;
-
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
-
-import static tddd82.healthcare.ControlFlag.INITCALL;
 
 public class StartActivity extends AppCompatActivity {
     Context context = this;
@@ -40,9 +26,6 @@ public class StartActivity extends AppCompatActivity {
         StrictMode.setThreadPolicy(policy);
 
         requestRecordAudioPermission();
-
-//TODO Check from sharedPreferences if user is logged in or not!
-        boolean inloggad = true;
         preferences = context.getSharedPreferences("tddd82.healthcare", context.MODE_PRIVATE);
         editor = preferences.edit();
 
@@ -52,7 +35,7 @@ public class StartActivity extends AppCompatActivity {
             startActivity(loginScreen);
         }
         if (preferences.contains("TOKEN")) {
-            Log.d("bob","tjotjotjo");
+
             try {
                 Intent intent = getIntent();
                 //TODO add field with key.
@@ -96,7 +79,6 @@ public class StartActivity extends AppCompatActivity {
         editor = preferences.edit();
         editor.remove("TOKEN");
         editor.apply();
-        Log.v(AntonsLog.TAG,"LOGGAR UT");
         Intent intent = getIntent();
         finish();
         startActivity(intent);
@@ -104,10 +86,12 @@ public class StartActivity extends AppCompatActivity {
     public void getContacts(View view){
         Intent callIntent = new Intent(context,ContactActivity.class);
         startActivity(callIntent);
+
     }
     public void getContactsFromServer(View v){
         GetContactsTask task = new GetContactsTask(this);
         task.execute("https://itkand-3-1.tddd82-2017.ida.liu.se:8080/contacts");
+
     }
     public void showMap(View view){
         Intent showMap = new Intent(context,MapsActivity.class);

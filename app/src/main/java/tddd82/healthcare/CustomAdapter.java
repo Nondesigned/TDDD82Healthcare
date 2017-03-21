@@ -2,8 +2,6 @@ package tddd82.healthcare;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.LayoutRes;
-import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,12 +34,10 @@ class CustomAdapter extends ArrayAdapter<Contact> {
         callButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.v(AntonsLog.TAG, "Vi ringer nummer " + contacts[position].getNumber());
                 Intent startCallIntent = new Intent(getContext(), ActiveCall.class);
                 startCallIntent.putExtra(GlobalVariables.getIntentCallNumber(), contacts[position].getNumber());
                 getContext().startActivity(startCallIntent);
-               /* GetContactsTask conTask = new GetContactsTask(getContext());
-                conTask.execute("asd");*/
+
             }
         });
         numberTV.setText(String.valueOf(contacts[position].getNumber()));
