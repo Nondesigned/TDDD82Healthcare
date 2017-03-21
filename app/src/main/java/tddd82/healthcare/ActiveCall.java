@@ -25,8 +25,8 @@ public class ActiveCall extends AppCompatActivity {
 
         @Override
         public void onCallStarted(String host, int port, int sender, int receiver, String key) {
-            //TODO pass key to VoiceCall
-            callInstance = new VoiceCall(host, 1338, sender, receiver, new CallEvent() {
+            //TODO pass key to Call
+            callInstance = new Call(host, 1338, sender, receiver, new CallEvent() {
                 @Override
                 public void onTimeout(int currentSequenceNumber, int destinationNumber) {
 
@@ -48,7 +48,7 @@ public class ActiveCall extends AppCompatActivity {
     int destNr;
     int initCall = 0;
     int stopCall = 1;
-    private VoiceCall callInstance;
+    private Call callInstance;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

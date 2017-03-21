@@ -1,34 +1,58 @@
 package tddd82.healthcare;
 
-import android.hardware.camera2.CameraDevice;
-import android.hardware.camera2.CameraManager;
+import android.graphics.SurfaceTexture;
+import android.hardware.Camera;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 
-public class VideoCall {
+import java.io.IOException;
 
-    /*private CameraDevice cameraDevice;
-    private CameraManager cameraManager;
-    private String cameraId;
+public class VideoCall{
 
-    private final CameraDevice.StateCallback onCameraState = new CameraDevice.StateCallback(){
+    private Camera cameraInstance;
 
-        @Override
-        public void onOpened(CameraDevice camera) {
-            cameraDevice = camera;
-        }
-
-        @Override
-        public void onDisconnected(CameraDevice camera) {
-            camera.close();
-        }
-
-        @Override
-        public void onError(CameraDevice camera, int error) {
-
-        }
-    };*/
+    private SurfaceTexture displayTexture;
+    private SurfaceHolder displayHolder;
 
 
     public VideoCall(){
-       // cameraManager.openCamera(cameraId, onCameraState, );
+        cameraInstance = openFrontCamera();
+        displayTexture = new SurfaceTexture(10);
+
+        try {
+            cameraInstance.setPreviewTexture(displayTexture);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        cameraInstance.setPreviewCallback(new Camera.PreviewCallback() {
+            @Override
+            public void onPreviewFrame(byte[] data, Camera camera) {
+                System.out.println("BP");
+            }
+        });
+
+        cameraInstance.startPreview();
+
     }
-}
+
+    private Camera openFrontCamera(){
+        int count = Camera.getNumberOfCameras();
+        Camera camera = null;
+        Camera.CameraInfo info = new Camera.CameraInfo();
+        try {
+            for (int i = 0; i < count; i++) {
+                Camera.getCameraInfo(i, info);
+                if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+                    camera = Camera.open(i);
+                }
+            }
+        } catch (Exception ex){
+            ex.printStackTrace();
+            return null;
+        }
+
+        return camera;
+    }
+
+};
