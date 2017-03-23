@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class ActiveCall extends AppCompatActivity {
@@ -13,7 +14,9 @@ public class ActiveCall extends AppCompatActivity {
 
         @Override
         public void onCallEnded() {
-            callInstance.terminate();
+            if (callInstance != null)
+                callInstance.terminate();
+
             runOnUiThread(new Runnable(){
 
                 @Override
@@ -31,7 +34,7 @@ public class ActiveCall extends AppCompatActivity {
                 public void onTimeout(int currentSequenceNumber, int destinationNumber) {
 
                 }
-            });
+            }, (ImageView)findViewById(R.id.imageView3));
 
             if (callInstance.initialize() != CallError.SUCCESS){
 

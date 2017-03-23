@@ -9,6 +9,9 @@ public class DataPacket {
     private final static int HEADER_SIZE = 25;
     public final static int MAX_SIZE = 65507 - HEADER_SIZE;
 
+    public final static int FLAG_IS_VIDEO = 1;
+    public final static int FLAG_ENCODING = 2;
+
     private byte[] buffer;
     private int dataSize;
     private int length;
@@ -65,6 +68,10 @@ public class DataPacket {
         return buffer[16];
     }
 
+    public boolean hasFlag(int flag){
+        return ServerUtils.getBit(getFlags(), flag) > 0;
+    }
+
     public int getChecksum(){
         byte[] tmp = Arrays.copyOfRange(this.buffer, 17, 21);
         return ByteBuffer.wrap(tmp).getInt();
@@ -73,6 +80,10 @@ public class DataPacket {
     public int getSequenceNumber(){
         byte[] tmp = Arrays.copyOfRange(this.buffer, 21, 25);
         return ByteBuffer.wrap(tmp).getInt();
+    }
+
+    public void setBuffer(byte[] buffer){
+        this.buffer = buffer;
     }
 
     public void setSource(int src){
@@ -97,6 +108,12 @@ public class DataPacket {
 
     public void setFlags(byte flags){
         this.buffer[16] = flags;
+    }
+
+    public void setFlag(int flag, boolean value){
+        byte mod = ServerUtils.setBit(getFlags(), flag, value);
+
+        setFlags(mod);
     }
 
     public void setChecksum(int checksum){

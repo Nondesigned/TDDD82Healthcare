@@ -119,7 +119,7 @@ public class InitCall extends Thread implements Runnable{
         try {
             dataInputStream.readFully(data);
         } catch (Exception e) {
-            input.close();
+
         }
         return data;
     }

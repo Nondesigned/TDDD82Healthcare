@@ -64,8 +64,6 @@ public class VoiceCall {
         if (!initialized)
             return false;
 
-        this.receiverBuffer = new VoiceBuffer();
-        this.recordBuffer = new VoiceBuffer();
         this.recorder.startRecording();
 
         this.alive = true;
@@ -132,7 +130,7 @@ public class VoiceCall {
             recorder.read(p.getBuffer(), p.getPayloadIndex(), p.getPayloadLength());
             p.setSampleRate(recorder.getSampleRate());
             p.setBufferSize(recorderBufferSize);
-
+            p.setFlag(DataPacket.FLAG_IS_VIDEO, false);
 
             recordBuffer.push(p);
         }

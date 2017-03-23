@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import com.auth0.android.jwt.JWT;
 
@@ -71,7 +72,7 @@ public class callingActivity extends AppCompatActivity {
                     public void onTimeout(int currentSequenceNumber, int destinationNumber) {
 
                     }
-                });
+                }, (ImageView)findViewById(R.id.imageView2));
 
                 callInstance.initialize();
 

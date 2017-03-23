@@ -5,7 +5,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class VideoBuffer {
     private Queue<DataPacket> sendQueue;
-    private final int MAX_SIZE = 500;
+    private final int MAX_SIZE = 300;
     private final int PACKET_LIFETIME = 1500;
 
     public VideoBuffer(){
