@@ -100,10 +100,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }*/
 
     public void addPinsToMap(GoogleMap mMap){
+        mMap.clear();
         markerMap = new HashMap<>();
-        Marker marker;
+
         for(int i=0; i < markers.length(); i++) {
             try {
+                Marker marker;
                 JSONObject row = markers.getJSONObject(i);
                 marker = mMap.addMarker(new MarkerOptions().position((LatLng)row.get("latlng")).title(row.getString("type")));
                 markerMap.put(marker, row.getString("id"));
@@ -142,8 +144,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         public boolean onMarkerClick(Marker marker) {
             Bundle bundle = new Bundle();
             bundle.putString("id", markerMap.get(marker));
-            Log.d("id", markerMap.get(marker));
-            bundle.putStringArray("groupArray", groups);
+            bundle.putDouble("longitude", marker.getPosition().longitude);
+            bundle.putDouble("latitude", marker.getPosition().latitude);
 
             DeleteMarkerDialog delete = new DeleteMarkerDialog();
             delete.setArguments(bundle);

@@ -33,6 +33,7 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -124,8 +125,9 @@ public class GetGroupTask extends AsyncTask<String,Void,String> {
                 Log.d("GROUP", "Sets GroupMap");
                 String[] groupArray = new String[groupMap.size()];
                 Object[] valuesArray = groupMap.values().toArray();
+                Object[] idArray = groupMap.keySet().toArray();
                 for(int i=0; i<groupMap.size(); i++){
-                    groupArray[i] = valuesArray[i].toString();
+                    groupArray[i] = idArray[i].toString()+":"+valuesArray[i].toString();
                 }
 
                 mapsActivity.setGroupArray(groupArray);

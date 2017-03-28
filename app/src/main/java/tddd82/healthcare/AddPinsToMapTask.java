@@ -52,12 +52,13 @@ public class AddPinsToMapTask extends AsyncTask<String,Void,String> {
     private LatLng latLng;
     private JSONObject response;
     private MapsActivity mapsActivity;
+    private String groupId;
 
-    public AddPinsToMapTask(Context context, LatLng latLng, MapsActivity mapsActivity){
+    public AddPinsToMapTask(Context context, LatLng latLng, String groupId, MapsActivity mapsActivity){
         this.context = context;
         this.latLng = latLng;
         this.mapsActivity = mapsActivity;
-
+        this.groupId = groupId;
     }
 
     @Override
@@ -65,16 +66,15 @@ public class AddPinsToMapTask extends AsyncTask<String,Void,String> {
         String url = params[0];
         JSONObject pin = new JSONObject();
         try{
-            pin.put("groupid", "1");
+            pin.put("groupid", groupId.split(":")[0]);
             pin.put("long", String.valueOf(latLng.longitude));
-            Log.d("long", String.valueOf(latLng.longitude));
             pin.put("lat", String.valueOf(latLng.latitude));
-            Log.d("lat", String.valueOf(latLng.latitude));
             pin.put("type", "wounded_guy");
 
         }catch (Exception e){
             Log.d("JsonFailure", e.getMessage());
         }
+
 
         try {
             KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());

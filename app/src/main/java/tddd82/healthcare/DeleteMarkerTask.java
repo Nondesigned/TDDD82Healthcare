@@ -66,7 +66,6 @@ public class DeleteMarkerTask extends AsyncTask<String,Void,String> {
         JSONObject pin = new JSONObject();
         try{
             pin.put("id", pinId);
-            pin.put("groupid", "1");
         }catch (Exception e){
             Log.d("JsonFailure", e.getMessage());
         }
@@ -113,7 +112,7 @@ public class DeleteMarkerTask extends AsyncTask<String,Void,String> {
         Log.d("PIN", pin.toString());
 
         final JsonObjectRequest jsonRequest = new JsonObjectRequest
-                (Request.Method.DELETE, url, pin, new Response.Listener<JSONObject>() {
+                (Request.Method.POST, url, pin, new Response.Listener<JSONObject>() {
 
                     @Override
                     public void onResponse(JSONObject m_response) {

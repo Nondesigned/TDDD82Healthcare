@@ -37,18 +37,18 @@ public class FireMissilesDialogFragment extends DialogFragment {
         ArrayList<String> arrayList = new ArrayList<String>(Arrays.asList(groupArray));
 
         Log.d("STRINGARRAY",groupArray[1].toString());
-        Spinner groupSpin = (Spinner)view.findViewById(R.id.groups);
+        final Spinner groupSpin = (Spinner)view.findViewById(R.id.groups);
         spinAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, arrayList);
         spinAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         groupSpin.setAdapter(spinAdapter);
         TextView latlngTextView = (TextView)view.findViewById(R.id.Latlng);
-        latlngTextView.setText("Latitude: " + String.valueOf(latLng.latitude) + "Longitude: " + String.valueOf(latLng.longitude));
+        latlngTextView.setText("Latitude: " + String.valueOf(latLng.latitude) +"\n" +"Longitude: " + String.valueOf(latLng.longitude));
 
         builder.setMessage(R.string.dialog_fire_missiles)
                 .setPositiveButton(R.string.fire, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         // FIRE ZE MISSILES!
-                        AddPinsToMapTask addPinsToMapTask = new AddPinsToMapTask(view.getContext(), latLng, (MapsActivity) getActivity());
+                        AddPinsToMapTask addPinsToMapTask = new AddPinsToMapTask(view.getContext(), latLng, String.valueOf(groupSpin.getSelectedItem()) , (MapsActivity) getActivity());
                         addPinsToMapTask.execute("https://itkand-3-1.tddd82-2017.ida.liu.se:8080/pins");
                     }
                 })

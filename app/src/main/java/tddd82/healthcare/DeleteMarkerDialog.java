@@ -36,14 +36,14 @@ public class DeleteMarkerDialog extends DialogFragment {
         final String pinId = new String(getArguments().getString("id"));
         final LatLng latLng = new LatLng(getArguments().getDouble("latitude"), getArguments().getDouble("longitude"));
         TextView latlngTextView = (TextView)view.findViewById(R.id.LatlngDelete);
-        latlngTextView.setText("Latitude: " + String.valueOf(latLng.latitude) + "Longitude: " + String.valueOf(latLng.longitude));
+        latlngTextView.setText("Latitude: " + String.valueOf(latLng.latitude) +"\n"+ "Longitude: " + String.valueOf(latLng.longitude));
 
         builder.setMessage(R.string.dialog_delete_pin)
                 .setPositiveButton(R.string.DeletePin, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         // FIRE ZE MISSILES!
                         DeleteMarkerTask deleteMarkerTask = new DeleteMarkerTask(view.getContext(), pinId, (MapsActivity) getActivity());
-                        deleteMarkerTask.execute("https://itkand-3-1.tddd82-2017.ida.liu.se:8080/pins");
+                        deleteMarkerTask.execute("https://itkand-3-1.tddd82-2017.ida.liu.se:8080/deletepin");
                     }
                 })
                 .setNegativeButton(R.string.No, new DialogInterface.OnClickListener() {
