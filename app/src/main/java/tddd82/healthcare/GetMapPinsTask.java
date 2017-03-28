@@ -3,6 +3,7 @@ package tddd82.healthcare;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Cache;
@@ -19,6 +20,7 @@ import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.gson.JsonArray;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -50,10 +52,48 @@ public class GetMapPinsTask extends AsyncTask<String,Void,String> {
     private Context context;
     private JSONArray response;
     private GoogleMap mMap;
+    private LatLng[] testPins;
 
     public GetMapPinsTask(Context context, GoogleMap mMap){
         this.context = context;
         this.mMap = mMap;
+    }
+
+    private void saveInCache(JSONArray pins){
+        CacheManager.put(pins.toString(), "/pins", context);
+    }
+
+    private void saveInCache(LatLng[] pins){
+        JSONArray JSONpins = new JSONArray();
+        for (LatLng pinLatLng: pins) {
+            JSONObject pin = new JSONObject();
+            try {
+                pin.put("Latitude", pinLatLng.latitude);
+                pin.put("Longitude", pinLatLng.longitude);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            JSONpins.put(pin);
+        }
+        CacheManager.put(JSONpins.toString(), "/pins", context);
+    }
+
+    private LatLng[] retrieveFromCache (){
+
+        try {
+            JSONArray pinArrayJSON = new JSONArray(CacheManager.get("/pins",context));
+            LatLng[] pinsToReturn = new LatLng[pinArrayJSON.length()];
+            for (int i = 0; i < pinArrayJSON.length(); i++){
+                JSONObject pinJSON = (JSONObject) pinArrayJSON.get(i);
+                LatLng pin = new LatLng(pinJSON.getDouble("Longitude"), pinJSON.getDouble("Latitude"));
+                pinsToReturn[i] = pin;
+            }
+            return pinsToReturn;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     protected String doInBackground(String... params) {
@@ -86,13 +126,13 @@ public class GetMapPinsTask extends AsyncTask<String,Void,String> {
                 }
             });
         }catch (Exception e){
-            Log.v(AntonsLog.TAG, e.getMessage());
+//            Log.v(AntonsLog.TAG, e.getMessage());
         }
 
         RequestQueue mRequestQueue;
 
         // Instantiate the cache
-        Cache cache = new DiskBasedCache(context.getCacheDir(), 1024 * 1024); // 1MB cap
+        final Cache cache = new DiskBasedCache(context.getCacheDir(), 1024 * 1024); // 1MB cap
 
         // Set up the network to use HttpURLConnection as the HTTP client.
         Network network = new BasicNetwork(new HurlStack());
@@ -104,30 +144,16 @@ public class GetMapPinsTask extends AsyncTask<String,Void,String> {
 
             @Override
             public void onResponse(JSONArray m_response) {
-                response = m_response;
-                Log.v(AntonsLog.TAG,"RESPONSE!");
-
-                LatLng[] mapPinList = new LatLng[response.length()];
-                String[] typeOfDamageList = new String[response.length()];
-
-                for (int i = 0; i < response.length(); i++) {
-                    try {
-                        JSONObject row = response.getJSONObject(i);
-                        mapPinList[i] = new LatLng(Double.parseDouble(row.getString("lat")), Double.parseDouble(row.getString("long")));
-                        typeOfDamageList[i] = new String(row.getString("type"));
-                    } catch (JSONException e) {
-
-                    }
-                }
-                Log.d("PINS", "Sätter ut pins");
-                MapsActivity.setMapPinsList(mapPinList, typeOfDamageList);
-                MapsActivity.addPinsToMap(mMap);
+                Log.e("RESPONSE", m_response.toString());
+                CacheManager.put(m_response.toString(), "/pins", context);
+                addPinsToMap(m_response);
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.v("ERRRRROOOORRRRRRR", error.toString());
-
+                Log.e("ERRRRROOOORRRRRRR", error.toString());
+                Log.e("In ERROR", CacheManager.getJSON("/pins", context).toString());
+                addPinsToMap(CacheManager.getJSON("/pins", context));
             }
         }){
 
@@ -150,9 +176,38 @@ public class GetMapPinsTask extends AsyncTask<String,Void,String> {
                 }
             }
         };
+
         mRequestQueue.add(jsonRequest);
         mRequestQueue.start();
 
         return "Fetching markers";
+    }
+
+    private void addPinsToMap(JSONArray response) {
+        if(response.length() < 1){
+            Toast toast = Toast.makeText(context, "Vi hittar inte några pins :(", Toast.LENGTH_LONG);
+            toast.show();
+            return;
+        }
+        LatLng[] mapPinList = new LatLng[response.length()];
+        String[] typeOfDamageList = new String[response.length()];
+
+        for (int i = 0; i < response.length(); i++) {
+            try {
+                JSONObject row = response.getJSONObject(i);
+                mapPinList[i] = new LatLng(Double.parseDouble(row.getString("lat")), Double.parseDouble(row.getString("long")));
+                typeOfDamageList[i] = new String(row.getString("type"));
+            } catch (JSONException e) {
+
+            }
+        }
+        Log.d("PINS", "Sätter ut pins");
+        MapsActivity.setMapPinsList(mapPinList, typeOfDamageList);
+        MapsActivity.addPinsToMap(mMap);
+
+    }
+
+    public void setPins(LatLng[] pins) {
+        this.testPins = pins;
     }
 }
