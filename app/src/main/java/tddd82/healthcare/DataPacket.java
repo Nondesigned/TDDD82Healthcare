@@ -86,6 +86,10 @@ public class DataPacket {
         this.buffer = buffer;
     }
 
+    public void setPayload(byte[] buffer){
+        setRange(buffer, this.buffer, HEADER_SIZE);
+    }
+
     public void setSource(int src){
         byte[] tmp = ByteBuffer.allocate(4).putInt(src).array();
         setRange(tmp, this.buffer, 0);

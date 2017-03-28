@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.auth0.android.jwt.JWT;
 
+//Mottagare
 public class callingActivity extends AppCompatActivity {
 
     private final Event CallState = new Event(){

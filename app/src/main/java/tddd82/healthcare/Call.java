@@ -66,16 +66,16 @@ public class Call {
     }
 
     public CallError initialize(){
-        CallError voiceErr = voiceCall.initialize();
+       /* CallError voiceErr = voiceCall.initialize();
 
         if (voiceErr != CallError.SUCCESS)
             return voiceErr;
-
-        /*CallError videoErr = videoCall.initialize();
+*/
+        CallError videoErr = videoCall.initialize();
 
         if (videoErr != CallError.SUCCESS)
             return videoErr;
-*/
+
         try{
             this.address = InetAddress.getByName(host);
         } catch (UnknownHostException ex){
@@ -100,8 +100,8 @@ public class Call {
         if (!initialized)
             return false;
 
-        voiceCall.start();
-        //videoCall.start();
+        //voiceCall.start();
+        videoCall.start();
 
         this.alive = true;
 
@@ -147,6 +147,7 @@ public class Call {
                 socket.receive(p);
             } catch (SocketTimeoutException ex) {
                 eventHandler.onTimeout(this.voiceSendSequenceNumber, this.receiverNumber);
+                continue;
             } catch (IOException ex){
 
             }
@@ -178,7 +179,6 @@ public class Call {
 
             DataPacket data = getSendPacket();
             if (data != null){
-
                 data.setSource(this.senderNumber);
                 data.setDestination(this.receiverNumber);
                 data.setSequenceNumber(data.hasFlag(DataPacket.FLAG_IS_VIDEO) ? videoSendSequenceNumber++ : voiceSendSequenceNumber++);
@@ -188,7 +188,7 @@ public class Call {
                 try {
                     socket.send(p);
                 } catch (Exception ex) {
-
+                    ex.printStackTrace();
                 }
             } else {
                 sleep(1);

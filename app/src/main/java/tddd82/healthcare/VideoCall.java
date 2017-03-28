@@ -38,7 +38,7 @@ public class VideoCall{
 
             byte[] compressed = os.toByteArray();
             DataPacket p = new DataPacket(compressed.length);
-            p.setBuffer(compressed);
+            p.setPayload(compressed);
 
             p.setFlag(DataPacket.FLAG_IS_VIDEO, true);
 
@@ -104,8 +104,9 @@ public class VideoCall{
                 DataPacket p = playbackBuffer.poll();
 
                 Bitmap bm = BitmapFactory.decodeByteArray(p.getBuffer(), 0, p.getBufferSize());
+                if (bm != null)
+                    displayView.setImageBitmap(bm);
 
-                displayView.setImageBitmap(bm);
             } else{
                 try{
                     Thread.sleep(1);
