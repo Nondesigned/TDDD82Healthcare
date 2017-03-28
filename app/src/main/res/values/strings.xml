@@ -98,4 +98,10 @@
     <string name="name">name</string>
     <string name="number">number</string>
     <string name="title_activity_maps">Map</string>
+    <string name="dialog_fire_missiles">Go Trump?</string>
+    <string name="fire">FIRE!</string>
+    <string name="cancel">CANCEL</string>
+    <string name="DeletePin">Yes!</string>
+    <string name="No">No</string>
+    <string name="dialog_delete_pin">Do you want to eliminate the pin?</string>
 </resources>

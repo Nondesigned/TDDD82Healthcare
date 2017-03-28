@@ -3,13 +3,13 @@ package tddd82.healthcare;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Cache;
 import com.android.volley.Network;
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -18,7 +18,7 @@ import com.android.volley.toolbox.DiskBasedCache;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.JsonArrayRequest;
-import com.google.android.gms.maps.GoogleMap;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONArray;
@@ -43,25 +43,33 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManagerFactory;
 
 /**
- * Created by pergu on 2017-03-10.
+ * Created by pergu on 21-Mar-17.
  */
 
-public class GetMapPinsTask extends AsyncTask<String,Void,String> {
+public class DeleteMarkerTask extends AsyncTask<String,Void,String> {
 
     private Context context;
-    private JSONArray response;
-    private GoogleMap mMap;
+    private String pinId;
+    private JSONObject response;
     private MapsActivity mapsActivity;
 
-    public GetMapPinsTask(Context context, GoogleMap mMap, MapsActivity mapsActivity){
+    public DeleteMarkerTask(Context context, String pinId, MapsActivity mapsActivity){
         this.context = context;
-        this.mMap = mMap;
+        this.pinId = pinId;
         this.mapsActivity = mapsActivity;
+
     }
 
+    @Override
     protected String doInBackground(String... params) {
-
         String url = params[0];
+        JSONObject pin = new JSONObject();
+        try{
+            pin.put("id", pinId);
+            pin.put("groupid", "1");
+        }catch (Exception e){
+            Log.d("JsonFailure", e.getMessage());
+        }
 
         try {
             KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
@@ -89,7 +97,6 @@ public class GetMapPinsTask extends AsyncTask<String,Void,String> {
                 }
             });
         }catch (Exception e){
-            Log.v("MAP ERROR:", e.getMessage());
         }
 
         RequestQueue mRequestQueue;
@@ -103,60 +110,49 @@ public class GetMapPinsTask extends AsyncTask<String,Void,String> {
         // Instantiate the RequestQueue with the cache and network.
         mRequestQueue = new RequestQueue(cache, network);
 
-        JsonArrayRequest jsonRequest = new JsonArrayRequest(url, new Response.Listener<JSONArray>() {
+        Log.d("PIN", pin.toString());
 
-            @Override
-            public void onResponse(JSONArray m_response) {
-                response = m_response;
+        final JsonObjectRequest jsonRequest = new JsonObjectRequest
+                (Request.Method.DELETE, url, pin, new Response.Listener<JSONObject>() {
 
-                Log.v("MAP RESPONSE","RESPONSE!");
+                    @Override
+                    public void onResponse(JSONObject m_response) {
+                        response = m_response;
 
-                LatLng[] mapPinList = new LatLng[response.length()];
-                String[] typeOfDamageList = new String[response.length()];
-                JSONArray markerArray = new JSONArray();
+                        Log.v("PIN RESPONSE","RESPONSE!");
 
-                for (int i = 0; i < response.length(); i++) {
-                    try {
-                        JSONObject marker = new JSONObject();
-                        JSONObject row = response.getJSONObject(i);
-                        marker.put("type", row.getString("type"));
-                        LatLng markerLatLng =  new LatLng(Double.parseDouble(row.getString("lat")), Double.parseDouble(row.getString("long")));
-                        marker.put("latlng", markerLatLng);
-                        marker.put("id", row.getString("id"));
-                        Log.d("TYPE", marker.toString());
-                        markerArray.put(marker);
-                        //mapPinList[i] = new LatLng(Double.parseDouble(row.getString("lat")), Double.parseDouble(row.getString("long")));
-                        //typeOfDamageList[i] = new String(row.getString("type"));
-                    } catch (JSONException e) {
+                        try {
+                            if(response.getString("status").equals("ok")) {
+                                mapsActivity.updatePinsOnMap();
+
+                            }else{
+                                Log.d("STATUS", response.getString("status"));
+                            }
+                        } catch (Exception e) {
+                            Log.d("MAP FEL", e.getMessage());
+                        }
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.v("ERRRRROOOORRRRRRR", error.toString());
 
                     }
-                }
-                Log.d("PINS", "Sätter ut pins");
-                mapsActivity.setMarkerList(markerArray);
-                Log.d("MARKERARRAY", markerArray.toString());
-                //mapsActivity.setMapPinsList(mapPinList, typeOfDamageList);
-                mapsActivity.addPinsToMap(mMap);
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.v("ERRRRROOOORRRRRRR", error.toString());
-
-            }
-        }){
+                }){
 
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 HashMap<String, String> headers = new HashMap<String, String>();
                 headers.put("Token", context.getSharedPreferences("tddd82.healthcare", context.MODE_PRIVATE).getString("TOKEN", "def"));
+                Log.d("TOKEN", context.getSharedPreferences("tddd82.healthcare", context.MODE_PRIVATE).getString("TOKEN", "def"));
                 return headers;
             }
 
             @Override
-            protected Response<JSONArray> parseNetworkResponse(NetworkResponse networkResponse){
+            protected Response<JSONObject> parseNetworkResponse(NetworkResponse networkResponse){
                 try{
                     String jsonString = new String(networkResponse.data, HttpHeaderParser.parseCharset(networkResponse.headers));
-                    return Response.success(new JSONArray(jsonString),HttpHeaderParser.parseCacheHeaders(networkResponse));
+                    return Response.success(new JSONObject(jsonString),HttpHeaderParser.parseCacheHeaders(networkResponse));
                 }catch (UnsupportedEncodingException e){
                     return Response.error(new ParseError(e));
                 }catch (JSONException je){
@@ -167,12 +163,7 @@ public class GetMapPinsTask extends AsyncTask<String,Void,String> {
         mRequestQueue.add(jsonRequest);
         mRequestQueue.start();
 
-        return "Fetching markers";
-    }
-    @Override
-    protected void onPostExecute(String result) {
-        Toast.makeText(context, result, Toast.LENGTH_SHORT).show();
-        return;
+        return null;
     }
 
 }

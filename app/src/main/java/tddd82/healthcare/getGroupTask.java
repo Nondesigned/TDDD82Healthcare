@@ -3,7 +3,6 @@ package tddd82.healthcare;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Cache;
@@ -43,19 +42,19 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManagerFactory;
 
 /**
- * Created by pergu on 2017-03-10.
+ * Created by pergu on 21-Mar-17.
  */
 
-public class GetMapPinsTask extends AsyncTask<String,Void,String> {
+public class GetGroupTask extends AsyncTask<String,Void,String> {
 
     private Context context;
     private JSONArray response;
     private GoogleMap mMap;
     private MapsActivity mapsActivity;
 
-    public GetMapPinsTask(Context context, GoogleMap mMap, MapsActivity mapsActivity){
+
+    public GetGroupTask(Context context, MapsActivity mapsActivity){
         this.context = context;
-        this.mMap = mMap;
         this.mapsActivity = mapsActivity;
     }
 
@@ -108,34 +107,28 @@ public class GetMapPinsTask extends AsyncTask<String,Void,String> {
             @Override
             public void onResponse(JSONArray m_response) {
                 response = m_response;
+                Log.v("GROUP RESPONSE","RESPONSE!");
 
-                Log.v("MAP RESPONSE","RESPONSE!");
-
-                LatLng[] mapPinList = new LatLng[response.length()];
-                String[] typeOfDamageList = new String[response.length()];
-                JSONArray markerArray = new JSONArray();
+                HashMap<String, String> groupMap = new HashMap<>();
 
                 for (int i = 0; i < response.length(); i++) {
                     try {
-                        JSONObject marker = new JSONObject();
                         JSONObject row = response.getJSONObject(i);
-                        marker.put("type", row.getString("type"));
-                        LatLng markerLatLng =  new LatLng(Double.parseDouble(row.getString("lat")), Double.parseDouble(row.getString("long")));
-                        marker.put("latlng", markerLatLng);
-                        marker.put("id", row.getString("id"));
-                        Log.d("TYPE", marker.toString());
-                        markerArray.put(marker);
-                        //mapPinList[i] = new LatLng(Double.parseDouble(row.getString("lat")), Double.parseDouble(row.getString("long")));
-                        //typeOfDamageList[i] = new String(row.getString("type"));
+                        groupMap.put(row.getString("id"), row.getString("name"));
+                        Log.d("PUTTING", row.getString("id"));
+                        Log.d("PUTTING", row.getString("name"));
                     } catch (JSONException e) {
 
                     }
                 }
-                Log.d("PINS", "Sätter ut pins");
-                mapsActivity.setMarkerList(markerArray);
-                Log.d("MARKERARRAY", markerArray.toString());
-                //mapsActivity.setMapPinsList(mapPinList, typeOfDamageList);
-                mapsActivity.addPinsToMap(mMap);
+                Log.d("GROUP", "Sets GroupMap");
+                String[] groupArray = new String[groupMap.size()];
+                Object[] valuesArray = groupMap.values().toArray();
+                for(int i=0; i<groupMap.size(); i++){
+                    groupArray[i] = valuesArray[i].toString();
+                }
+
+                mapsActivity.setGroupArray(groupArray);
             }
         }, new Response.ErrorListener() {
             @Override
@@ -167,11 +160,10 @@ public class GetMapPinsTask extends AsyncTask<String,Void,String> {
         mRequestQueue.add(jsonRequest);
         mRequestQueue.start();
 
-        return "Fetching markers";
+        return "Fetching groups";
     }
-    @Override
+
     protected void onPostExecute(String result) {
-        Toast.makeText(context, result, Toast.LENGTH_SHORT).show();
         return;
     }
 
