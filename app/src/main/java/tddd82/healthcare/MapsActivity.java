@@ -159,7 +159,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void setGroupArray(String[] newgroups){
-        Log.d("GROUP ARRAY", newgroups[1].toString());
         groups = newgroups;
     }
     public void deletePin(LatLng pin){

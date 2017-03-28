@@ -36,7 +36,6 @@ public class FireMissilesDialogFragment extends DialogFragment {
         final LatLng latLng = new LatLng(getArguments().getDouble("latitude"), getArguments().getDouble("longitude"));
         ArrayList<String> arrayList = new ArrayList<String>(Arrays.asList(groupArray));
 
-        Log.d("STRINGARRAY",groupArray[1].toString());
         final Spinner groupSpin = (Spinner)view.findViewById(R.id.groups);
         spinAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, arrayList);
         spinAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -49,7 +48,7 @@ public class FireMissilesDialogFragment extends DialogFragment {
                     public void onClick(DialogInterface dialog, int id) {
                         // FIRE ZE MISSILES!
                         AddPinsToMapTask addPinsToMapTask = new AddPinsToMapTask(view.getContext(), latLng, String.valueOf(groupSpin.getSelectedItem()) , (MapsActivity) getActivity());
-                        addPinsToMapTask.execute("https://itkand-3-1.tddd82-2017.ida.liu.se:8080/pins");
+                        addPinsToMapTask.execute("https://itkand-3-1.tddd82-2017.ida.liu.se:8080/pins", "new pin");
                     }
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {

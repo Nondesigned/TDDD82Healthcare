@@ -53,6 +53,7 @@ public class AddPinsToMapTask extends AsyncTask<String,Void,String> {
     private JSONObject response;
     private MapsActivity mapsActivity;
     private String groupId;
+    private JSONObject pin;
 
     public AddPinsToMapTask(Context context, LatLng latLng, String groupId, MapsActivity mapsActivity){
         this.context = context;
@@ -64,15 +65,24 @@ public class AddPinsToMapTask extends AsyncTask<String,Void,String> {
     @Override
     protected String doInBackground(String... params) {
         String url = params[0];
-        JSONObject pin = new JSONObject();
-        try{
-            pin.put("groupid", groupId.split(":")[0]);
-            pin.put("long", String.valueOf(latLng.longitude));
-            pin.put("lat", String.valueOf(latLng.latitude));
-            pin.put("type", "wounded_guy");
 
-        }catch (Exception e){
-            Log.d("JsonFailure", e.getMessage());
+        pin = new JSONObject();
+        if(String.valueOf(params[1]) == "new pin"){
+            try{
+                pin.put("groupid", groupId.split(":")[0]);
+                pin.put("long", String.valueOf(latLng.longitude));
+                pin.put("lat", String.valueOf(latLng.latitude));
+                pin.put("type", "wounded_guy");
+
+            }catch (Exception e){
+                Log.d("JsonFailure", e.getMessage());
+            }
+        }else{
+            try {
+                pin = new JSONObject(params[1]);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
 
 
@@ -107,7 +117,7 @@ public class AddPinsToMapTask extends AsyncTask<String,Void,String> {
         RequestQueue mRequestQueue;
 
         // Instantiate the cache
-        Cache cache = new DiskBasedCache(context.getCacheDir(), 1024 * 1024); // 1MB cap
+        final Cache cache = new DiskBasedCache(context.getCacheDir(), 1024 * 1024); // 1MB cap
 
         // Set up the network to use HttpURLConnection as the HTTP client.
         Network network = new BasicNetwork(new HurlStack());
@@ -140,7 +150,7 @@ public class AddPinsToMapTask extends AsyncTask<String,Void,String> {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Log.v("ERRRRROOOORRRRRRR", error.toString());
-
+                        cachePin();
                     }
                 }){
 
@@ -167,6 +177,12 @@ public class AddPinsToMapTask extends AsyncTask<String,Void,String> {
         mRequestQueue.start();
 
         return null;
+    }
+
+    private void cachePin() {
+        JSONArray localPins = CacheManager.getJSON("/localPins", context);
+        localPins.put(pin);
+        CacheManager.put(localPins.toString(), "/localPins", context);
     }
 
 }
