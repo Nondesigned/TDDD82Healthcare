@@ -117,28 +117,13 @@ class GetContactsTask extends AsyncTask<String,Void,String> {
 
                 @Override
                 public void onResponse(JSONArray m_response) {
-                    response = m_response;
-
-                    Contact[] contactList = new Contact[response.length()];
-
-                    for (int i = 0; i < response.length(); i++) {
-
-                        try {
-                            JSONObject row = response.getJSONObject(i);
-                            contactList[i] = new Contact(row.getString("name"), row.getInt("phonenumber"));
-
-                        } catch (JSONException e) {
-
-                        }
-
-                    }
-                    ContactActivity.setContactList(contactList);
+                    CacheManager.put(m_response.toString(),"/contacts", context);
+                    addContacts(m_response);
                 }
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-
-
+                    addContacts(CacheManager.getJSON("/contacts", context));
                 }
             }){
 
@@ -171,6 +156,26 @@ class GetContactsTask extends AsyncTask<String,Void,String> {
         }
 
         return "Initialized login";
+    }
+
+    private void addContacts(JSONArray response) {
+        if(response.length() < 1){
+            return;
+        }
+        Contact[] contactList = new Contact[response.length()];
+
+        for (int i = 0; i < response.length(); i++) {
+
+            try {
+                JSONObject row = response.getJSONObject(i);
+                contactList[i] = new Contact(row.getString("name"), row.getInt("phonenumber"));
+
+            } catch (JSONException e) {
+
+            }
+
+        }
+        ContactActivity.setContactList(contactList);
     }
 
 
