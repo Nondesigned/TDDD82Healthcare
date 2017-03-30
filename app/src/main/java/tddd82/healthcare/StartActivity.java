@@ -10,8 +10,23 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+
+import java.io.BufferedInputStream;
+import java.io.InputStream;
+import java.security.KeyStore;
+import java.security.SecureRandom;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateFactory;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManagerFactory;
 
 public class StartActivity extends AppCompatActivity {
     Context context = this;
@@ -28,6 +43,8 @@ public class StartActivity extends AppCompatActivity {
         requestRecordAudioPermission();
         preferences = context.getSharedPreferences("tddd82.healthcare", context.MODE_PRIVATE);
         editor = preferences.edit();
+
+        trustCertificate();
 
         //Returns true if "TOKEN" exists
         if (!(preferences.contains("TOKEN"))) {
@@ -96,6 +113,37 @@ public class StartActivity extends AppCompatActivity {
     public void showMap(View view){
         Intent showMap = new Intent(context,MapsActivity.class);
         startActivity(showMap);
+    }
+
+    public void trustCertificate(){
+        try {
+            KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
+            trustStore.load(null);
+            InputStream stream = context.getAssets().open("cert.pem");
+            BufferedInputStream bis = new BufferedInputStream(stream);
+            CertificateFactory cf = CertificateFactory.getInstance("X.509");
+            while (bis.available() > 0) {
+                Certificate cert = cf.generateCertificate(bis);
+                trustStore.setCertificateEntry("cert" + bis.available(), cert);
+            }
+            KeyManagerFactory kmfactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+            kmfactory.init(trustStore, "1234".toCharArray());
+            TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+            tmf.init(trustStore);
+
+
+            SSLContext sc = SSLContext.getInstance("SSL");
+            sc.init(null, tmf.getTrustManagers(), new SecureRandom());
+            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+            HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
+                @Override
+                public boolean verify(String arg0, SSLSession arg1) {
+                    return true;
+                }
+            });
+        }catch (Exception e){
+            Log.v("MAP ERROR:", e.getMessage());
+        }
     }
 }
 

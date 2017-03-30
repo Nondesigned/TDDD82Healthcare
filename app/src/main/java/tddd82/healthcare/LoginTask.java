@@ -9,6 +9,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.view.Gravity;
 import android.widget.Toast;
+
 import com.android.volley.Cache;
 import com.android.volley.Network;
 import com.android.volley.Request;
@@ -20,14 +21,17 @@ import com.android.volley.toolbox.DiskBasedCache;
 import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.firebase.iid.FirebaseInstanceId;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManagerFactory;
+
 import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.security.KeyStore;
@@ -42,7 +46,7 @@ import java.security.cert.CertificateFactory;
  * It responds to the user via a message returned from the server.
  * Also gives feedback if something went wrong.
  */
-class LoginTask extends AsyncTask<String,Void,String> {
+class LoginTask extends AsyncTask<String, Void, String> {
     private Context context;
     private TaskCallback callback;
     private AlertDialog alertDialog;
@@ -64,7 +68,7 @@ class LoginTask extends AsyncTask<String,Void,String> {
             "kpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.EkN-DOsnsuRjRO6BxXemmJDm3HbxrbRzXglbN2S4sOkopdU4IsDxTI8jO19W_A4K8ZPJijNLis4EZ" +
             "sHeY559a4DFOd50_OqgHGuERTqYZyuhtF39yxJPAjUESwxk2J5k_4zM3O-vtd1Ghyo4IbqKKSy6J9mTniYJPenn5-HIirE";
 
-    public LoginTask(Context context, TaskCallback callback){
+    public LoginTask(Context context, TaskCallback callback) {
         this.context = context;
         this.callback = callback;
 
@@ -79,36 +83,6 @@ class LoginTask extends AsyncTask<String,Void,String> {
         String url = params[2];
 
         String fcmtoken = FirebaseInstanceId.getInstance().getToken();
-
-
-
-        try {
-            KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
-            trustStore.load(null);
-            InputStream stream = context.getAssets().open("cert.pem");
-            BufferedInputStream bis = new BufferedInputStream(stream);
-            CertificateFactory cf = CertificateFactory.getInstance("X.509");
-            while (bis.available() > 0) {
-                Certificate cert = cf.generateCertificate(bis);
-                trustStore.setCertificateEntry("cert" + bis.available(), cert);
-            }
-            KeyManagerFactory kmfactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-            kmfactory.init(trustStore, "1234".toCharArray());
-            TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-            tmf.init(trustStore);
-
-
-            SSLContext sc = SSLContext.getInstance("SSL");
-            sc.init(null, tmf.getTrustManagers(), new SecureRandom());
-            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-            HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
-                @Override
-                public boolean verify(String arg0, SSLSession arg1) {
-                    return true;
-                }
-            });
-        }catch (Exception e){
-            }
 
         Check();
 
@@ -152,32 +126,32 @@ class LoginTask extends AsyncTask<String,Void,String> {
                                 editor.apply();
 
                                 String token = preferences.getString("TOKEN", null);
-                                if(token!= null){
+                                if (token != null) {
                                     Log.v("TOKENEN", token);
                                 }
 
                                 if (response.getString(JSON_STATUS).equals(JSON_ACCEPTED)) {
                                     callback.done();
                                     //return response.getString(JSON_TOKEN);
-                                }else if(response.getString(JSON_STATUS).equals(JSON_DECLINED)){
+                                } else if (response.getString(JSON_STATUS).equals(JSON_DECLINED)) {
 
 
-                                }else {
+                                } else {
                                     //return response.getString(JSON_MESSAGE);
                                 }
                             } catch (JSONException e) {
                                 e.printStackTrace();
-                            } catch (NullPointerException e){
+                            } catch (NullPointerException e) {
                             }
                         }
                     }, new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
-                            ((LoginActivity)context).runOnUiThread(new Runnable() {
+                            ((LoginActivity) context).runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
                                     Toast wrong = Toast.makeText(context, "Wrong credentials", Toast.LENGTH_LONG);
-                                    wrong.setGravity(Gravity.TOP|Gravity.CENTER,0,20);
+                                    wrong.setGravity(Gravity.TOP | Gravity.CENTER, 0, 20);
                                     wrong.show();
                                 }
                             });
@@ -190,8 +164,7 @@ class LoginTask extends AsyncTask<String,Void,String> {
             //RQ.start();
             // Start the queue
             mRequestQueue.start();
-        }
-        else {
+        } else {
 
             try {
                 response = new JSONObject();
