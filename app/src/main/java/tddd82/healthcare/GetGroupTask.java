@@ -63,35 +63,6 @@ public class GetGroupTask extends AsyncTask<String,Void,String> {
 
         String url = params[0];
 
-        try {
-            KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
-            trustStore.load(null);
-            InputStream stream = context.getAssets().open("cert.pem");
-            BufferedInputStream bis = new BufferedInputStream(stream);
-            CertificateFactory cf = CertificateFactory.getInstance("X.509");
-            while (bis.available() > 0) {
-                Certificate cert = cf.generateCertificate(bis);
-                trustStore.setCertificateEntry("cert" + bis.available(), cert);
-            }
-            KeyManagerFactory kmfactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-            kmfactory.init(trustStore, "1234".toCharArray());
-            TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-            tmf.init(trustStore);
-
-
-            SSLContext sc = SSLContext.getInstance("SSL");
-            sc.init(null, tmf.getTrustManagers(), new SecureRandom());
-            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-            HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
-                @Override
-                public boolean verify(String arg0, SSLSession arg1) {
-                    return true;
-                }
-            });
-        }catch (Exception e){
-            Log.v("MAP ERROR:", e.getMessage());
-        }
-
         RequestQueue mRequestQueue;
 
         // Instantiate the cache

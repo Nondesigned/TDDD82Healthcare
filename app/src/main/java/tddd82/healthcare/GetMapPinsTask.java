@@ -26,22 +26,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.security.KeyStore;
-import java.security.SecureRandom;
-import java.security.cert.Certificate;
-import java.security.cert.CertificateFactory;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.TrustManagerFactory;
 
 /**
  * Created by pergu on 2017-03-10.
@@ -101,35 +88,6 @@ public class GetMapPinsTask extends AsyncTask<String,Void,String> {
     protected String doInBackground(String... params) {
 
         String url = params[0];
-
-        try {
-            KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
-            trustStore.load(null);
-            InputStream stream = context.getAssets().open("cert.pem");
-            BufferedInputStream bis = new BufferedInputStream(stream);
-            CertificateFactory cf = CertificateFactory.getInstance("X.509");
-            while (bis.available() > 0) {
-                Certificate cert = cf.generateCertificate(bis);
-                trustStore.setCertificateEntry("cert" + bis.available(), cert);
-            }
-            KeyManagerFactory kmfactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-            kmfactory.init(trustStore, "1234".toCharArray());
-            TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-            tmf.init(trustStore);
-
-
-            SSLContext sc = SSLContext.getInstance("SSL");
-            sc.init(null, tmf.getTrustManagers(), new SecureRandom());
-            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-            HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
-                @Override
-                public boolean verify(String arg0, SSLSession arg1) {
-                    return true;
-                }
-            });
-        }catch (Exception e){
-            Log.v("MAP ERROR:", e.getMessage());
-        }
 
         RequestQueue mRequestQueue;
 
@@ -192,8 +150,6 @@ public class GetMapPinsTask extends AsyncTask<String,Void,String> {
 
 
     private void addPinsToMap(JSONArray response) {
-        LatLng[] mapPinList = new LatLng[response.length()];
-        String[] typeOfDamageList = new String[response.length()];
         JSONArray markerArray = new JSONArray();
 
         for (int i = 0; i < response.length(); i++) {
@@ -206,16 +162,13 @@ public class GetMapPinsTask extends AsyncTask<String,Void,String> {
                 marker.put("id", row.getString("id"));
                 Log.d("TYPE", marker.toString());
                 markerArray.put(marker);
-                //mapPinList[i] = new LatLng(Double.parseDouble(row.getString("lat")), Double.parseDouble(row.getString("long")));
-                //typeOfDamageList[i] = new String(row.getString("type"));
-            } catch (JSONException e) {
+               } catch (JSONException e) {
 
             }
         }
         Log.d("PINS", "Sätter ut pins");
         mapsActivity.setMarkerList(markerArray);
         Log.d("MARKERARRAY", markerArray.toString());
-        //mapsActivity.setMapPinsList(mapPinList, typeOfDamageList);
         mapsActivity.addPinsToMap(mMap);
 
     }
