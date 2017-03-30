@@ -130,6 +130,14 @@ public class DataPacket {
         setRange(tmp, this.buffer, 21);
     }
 
+    public boolean validChecksum(){
+        return getChecksum() == ServerUtils.getCRC32(buffer, 0, 17);
+    }
+
+    public void addChecksum(){
+        setChecksum(ServerUtils.getCRC32(buffer, 0, 17));
+    }
+
     public static byte[] setRange(byte[] source, byte[] destination, int start){
         for(int i=start; i < start+source.length; i++)
             destination[i]=source[i-start];

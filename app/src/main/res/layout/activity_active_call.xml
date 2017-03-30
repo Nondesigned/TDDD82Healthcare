@@ -31,12 +31,11 @@
         android:id="@+id/endCall" />
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         app:srcCompat="@mipmap/ic_launcher"
         android:layout_alignParentTop="true"
         android:layout_toStartOf="@+id/callStatus"
-        android:id="@+id/imageView2"
-        android:layout_toLeftOf="@+id/callStatus" />
+        android:id="@+id/imageView2" />
 
 </RelativeLayout>

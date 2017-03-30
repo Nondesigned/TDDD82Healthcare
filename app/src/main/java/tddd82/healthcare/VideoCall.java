@@ -1,18 +1,17 @@
 package tddd82.healthcare;
 
+import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.ImageFormat;
+import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
+import android.graphics.YuvImage;
 import android.hardware.Camera;
-import android.provider.MediaStore;
-import android.hardware.Camera.Size;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.widget.ImageView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
 public class VideoCall{
 
@@ -27,27 +26,37 @@ public class VideoCall{
     private ImageView displayView;
 
     private boolean alive;
+    private Activity activity;
+
+    private int imageWidth = 1280;
+    private int imageHeight = 720;
+
+    private int imageQuality = 20;
 
     private final Camera.PreviewCallback onFrame = new Camera.PreviewCallback(){
 
         @Override
         public void onPreviewFrame(byte[] data, Camera camera) {
-            Bitmap bm = Bitmap.createBitmap(640, 480, Bitmap.Config.ARGB_8888);
+
+            YuvImage yuv = new YuvImage(data, cameraParameters.getPreviewFormat(), imageWidth, imageHeight, null);
+
             ByteArrayOutputStream os = new ByteArrayOutputStream();
-            bm.compress(Bitmap.CompressFormat.JPEG, 10, os);
+            boolean ret = yuv.compressToJpeg(new Rect(0, 0, imageWidth, imageHeight), imageQuality, os);
+            if (ret) {
+                byte[] compressed = os.toByteArray();
+                DataPacket p = new DataPacket(compressed.length);
+                p.setPayload(compressed);
+                p.setBufferSize(compressed.length);
+                p.setFlag(DataPacket.FLAG_IS_VIDEO, true);
 
-            byte[] compressed = os.toByteArray();
-            DataPacket p = new DataPacket(compressed.length);
-            p.setPayload(compressed);
-
-            p.setFlag(DataPacket.FLAG_IS_VIDEO, true);
-
-            recorderBuffer.push(p);
+                recorderBuffer.push(p);
+            }
         }
     };
 
-    public VideoCall(final VideoBuffer recorderBuffer, VideoBuffer playbackBuffer, ImageView view){
+    public VideoCall(final VideoBuffer recorderBuffer, VideoBuffer playbackBuffer, ImageView view, Activity activity){
 
+        this.activity = activity;
         displayTexture = new SurfaceTexture(10);
         displayView = view;
         this.recorderBuffer = recorderBuffer;
@@ -68,6 +77,24 @@ public class VideoCall{
         }).start();
     }
 
+    public void setImageSize(int width, int height){
+        this.imageWidth = width;
+        this.imageHeight = height;
+    }
+
+    public void setImageQuality(int quality){
+        this.imageQuality = quality;
+    }
+
+    public void terminate(){
+        this.alive = false;
+        if (cameraInstance != null){
+            cameraInstance.stopPreview();
+            cameraInstance.release();
+            displayTexture.release();
+        }
+    }
+
     public CallError initialize(){
         cameraInstance = openFrontCamera();
 
@@ -76,11 +103,9 @@ public class VideoCall{
         }
 
         cameraParameters = cameraInstance.getParameters();
-        cameraParameters.setJpegQuality(10);
-        for(Size s : cameraParameters.getSupportedPictureSizes()){
-            System.out.println(s.height);
-            System.out.println(s.width);
-        }
+        cameraParameters.setJpegQuality(imageQuality);
+        cameraParameters.setPreviewFormat(ImageFormat.NV21);
+
 
         try {
             cameraInstance.setPreviewTexture(displayTexture);
@@ -89,7 +114,8 @@ public class VideoCall{
             return CallError.CAMERA_PREVIEW_ERROR;
         }
 
-        cameraParameters.setPictureSize(640, 480);
+        cameraParameters.setPictureSize(imageWidth, imageHeight);
+        cameraParameters.setPreviewSize(imageWidth, imageHeight);
         cameraInstance.setParameters(cameraParameters);
 
         cameraInstance.setPreviewCallback(onFrame);
@@ -103,10 +129,15 @@ public class VideoCall{
 
                 DataPacket p = playbackBuffer.poll();
 
-                Bitmap bm = BitmapFactory.decodeByteArray(p.getBuffer(), 0, p.getBufferSize());
-                if (bm != null)
-                    displayView.setImageBitmap(bm);
-
+                final Bitmap bm = BitmapFactory.decodeByteArray(p.getBuffer(), 25, p.getBufferSize());
+                if (bm != null){
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            displayView.setImageBitmap(bm);
+                        }
+                    });
+                }
             } else{
                 try{
                     Thread.sleep(1);

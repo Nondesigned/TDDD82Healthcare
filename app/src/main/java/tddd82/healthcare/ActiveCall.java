@@ -1,4 +1,5 @@
 package tddd82.healthcare;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
@@ -34,7 +35,7 @@ public class ActiveCall extends AppCompatActivity {
                 public void onTimeout(int currentSequenceNumber, int destinationNumber) {
 
                 }
-            }, (ImageView)findViewById(R.id.imageView3));
+            }, (ImageView)findViewById(R.id.imageView2), thisIsIt);
 
             if (callInstance.initialize() != CallError.SUCCESS){
 
@@ -52,10 +53,12 @@ public class ActiveCall extends AppCompatActivity {
     int initCall = 0;
     int stopCall = 1;
     private Call callInstance;
+    Activity thisIsIt;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_active_call);
+        thisIsIt = this;
         TextView status = (TextView) findViewById(R.id.callStatus);
         status.setText("Initializing call");
         final Button endCall = (Button) findViewById(R.id.endCall);

@@ -1,6 +1,7 @@
 package tddd82.healthcare;
 
 
+import android.app.Activity;
 import android.widget.ImageView;
 
 import java.io.IOException;
@@ -41,7 +42,9 @@ public class Call {
     private VoiceCall voiceCall;
     private VideoCall videoCall;
 
-    public Call(String host, int port, int senderPhoneNumber, int receiverPhoneNumber, CallEvent eventHandler, ImageView displayView){
+    private Activity activity;
+
+    public Call(String host, int port, int senderPhoneNumber, int receiverPhoneNumber, CallEvent eventHandler, ImageView displayView, Activity activity){
         this.host = host;
         this.port = port;
         this.eventHandler = eventHandler;
@@ -59,18 +62,18 @@ public class Call {
         this.videoSendSequenceNumber = 0;
 
         this.voiceCall = new VoiceCall(voiceReceiverBuffer, voiceRecordBuffer, eventHandler);
-        this.videoCall = new VideoCall(videoRecordBuffer, videoReceiverBuffer, displayView);
+        this.videoCall = new VideoCall(videoRecordBuffer, videoReceiverBuffer, displayView, activity);
 
         this.alive = false;
         this.initialized = false;
     }
 
     public CallError initialize(){
-       /* CallError voiceErr = voiceCall.initialize();
+       CallError voiceErr = voiceCall.initialize();
 
         if (voiceErr != CallError.SUCCESS)
             return voiceErr;
-*/
+
         CallError videoErr = videoCall.initialize();
 
         if (videoErr != CallError.SUCCESS)
@@ -100,7 +103,7 @@ public class Call {
         if (!initialized)
             return false;
 
-        //voiceCall.start();
+        voiceCall.start();
         videoCall.start();
 
         this.alive = true;
@@ -149,14 +152,17 @@ public class Call {
                 eventHandler.onTimeout(this.voiceSendSequenceNumber, this.receiverNumber);
                 continue;
             } catch (IOException ex){
-
+                continue;
             }
-
-            if (data.hasFlag(DataPacket.FLAG_IS_VIDEO) && data.getSequenceNumber() >= videoLastReceivedSequenceNumber)
-                videoReceiverBuffer.push(data);
-
-            if (!data.hasFlag(DataPacket.FLAG_IS_VIDEO) && data.getSequenceNumber() >= voiceLastReceivedSequenceNumber)
-                voiceReceiverBuffer.push(data);
+            if (data.validChecksum()) {
+                if (data.hasFlag(DataPacket.FLAG_IS_VIDEO) && data.getSequenceNumber() >= videoLastReceivedSequenceNumber) {
+                    videoReceiverBuffer.push(data);
+                    videoLastReceivedSequenceNumber++;
+                } else if (!data.hasFlag(DataPacket.FLAG_IS_VIDEO) && data.getSequenceNumber() >= voiceLastReceivedSequenceNumber) {
+                    voiceReceiverBuffer.push(data);
+                    voiceLastReceivedSequenceNumber++;
+                }
+            }
         }
     }
 
@@ -182,6 +188,7 @@ public class Call {
                 data.setSource(this.senderNumber);
                 data.setDestination(this.receiverNumber);
                 data.setSequenceNumber(data.hasFlag(DataPacket.FLAG_IS_VIDEO) ? videoSendSequenceNumber++ : voiceSendSequenceNumber++);
+                data.addChecksum();
 
                 DatagramPacket p = new DatagramPacket(data.getBuffer(), 0, data.getLength(), this.address, this.port);
 

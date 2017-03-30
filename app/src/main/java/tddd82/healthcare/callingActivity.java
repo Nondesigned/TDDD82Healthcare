@@ -1,5 +1,6 @@
 package tddd82.healthcare;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -61,19 +62,21 @@ public class callingActivity extends AppCompatActivity {
         sourceNr = Integer.parseInt(jwt.getSubject());
         Log.d("bob",Integer.toString(sourceNr) + Integer.toString(caller));
         init.init(sourceNr,caller, CallState,this);
-
+        final Activity thisIsIt = this;
         //Sends accept message
         answer.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 //TODO generara key
                 init.send(2);
                 init.start();
+                ImageView displayView = (ImageView)findViewById(R.id.imageView3);
                 callInstance = new Call("130.236.181.196", 1338, sourceNr, caller, new CallEvent() {
                     @Override
                     public void onTimeout(int currentSequenceNumber, int destinationNumber) {
 
                     }
-                }, (ImageView)findViewById(R.id.imageView2));
+                }, displayView, thisIsIt);
+
 
                 callInstance.initialize();
 
