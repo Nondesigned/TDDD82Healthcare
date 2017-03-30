@@ -91,7 +91,7 @@ class LoginTask extends AsyncTask<String, Void, String> {
         if (connectedToServer) {
             JSONObject credentials = new JSONObject();
             try {
-                credentials.put(JSON_CARD, Integer.parseInt(card));
+                credentials.put(JSON_CARD, Long.parseLong(card));
                 credentials.put(JSON_PASSWORD, password);
                 credentials.put(JSON_FCMTOKEN, fcmtoken);
             } catch (Exception e) {
