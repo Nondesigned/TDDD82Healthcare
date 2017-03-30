@@ -62,6 +62,13 @@ public class AddPinsToMapTask extends AsyncTask<String,Void,String> {
         this.groupId = groupId;
     }
 
+    public AddPinsToMapTask(Context context, MapsActivity mapsActivity){
+        this.context = context;
+        this.latLng = latLng;
+        this.mapsActivity = mapsActivity;
+        this.groupId = groupId;
+    }
+
     @Override
     protected String doInBackground(String... params) {
         String url = params[0];
