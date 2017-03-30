@@ -70,7 +70,7 @@ public class callingActivity extends AppCompatActivity {
                 init.send(2);
                 init.start();
                 ImageView displayView = (ImageView)findViewById(R.id.imageView3);
-                callInstance = new Call("130.236.181.196", 1338, sourceNr, caller, new CallEvent() {
+                callInstance = new Call("130.236.181.196", 1338, sourceNr, caller,  new CallEvent() {
                     @Override
                     public void onTimeout(int currentSequenceNumber, int destinationNumber) {
 

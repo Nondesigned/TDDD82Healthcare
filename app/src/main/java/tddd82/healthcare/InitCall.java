@@ -55,6 +55,7 @@ public class InitCall extends Thread implements Runnable{
 
         SharedPreferences sharedPreferences = context.getSharedPreferences("tddd82.healthcare", context.MODE_PRIVATE);
         String token = sharedPreferences.getString("TOKEN","default");
+
         ctrl.setPayload(token.getBytes());
     }
 

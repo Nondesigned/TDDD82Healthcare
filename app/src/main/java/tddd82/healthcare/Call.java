@@ -44,6 +44,7 @@ public class Call {
 
     private Activity activity;
 
+
     public Call(String host, int port, int senderPhoneNumber, int receiverPhoneNumber, CallEvent eventHandler, ImageView displayView, Activity activity){
         this.host = host;
         this.port = port;
@@ -154,6 +155,7 @@ public class Call {
             } catch (IOException ex){
                 continue;
             }
+
             if (data.validChecksum()) {
                 if (data.hasFlag(DataPacket.FLAG_IS_VIDEO) && data.getSequenceNumber() >= videoLastReceivedSequenceNumber) {
                     videoReceiverBuffer.push(data);

@@ -59,6 +59,19 @@ public class StartActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
+        /*ImageView view = (ImageView)findViewById(R.id.imageView);
+        Activity thiss = (Activity)this;
+        Call c = new Call("130.236.181.196", 1338, 0, 0, new AESCrypto(), new CallEvent() {
+            @Override
+            public void onTimeout(int currentSequenceNumber, int destinationNumber) {
+
+            }
+        }, view, thiss);
+
+        c.initialize();
+        c.start();*/
+
+
     }
 
     private void requestRecordAudioPermission(){
