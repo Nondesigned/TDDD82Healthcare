@@ -72,7 +72,7 @@ public class DeleteMarkerTask extends AsyncTask<String,Void,String> {
         }
 
         RequestQueue mRequestQueue;
- 
+
         mRequestQueue = Volley.newRequestQueue(context, new OkHttpStack(context));
 
         Log.d("PIN", pin.toString());
