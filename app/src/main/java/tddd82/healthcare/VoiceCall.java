@@ -6,22 +6,12 @@ import android.media.AudioRecord;
 import android.media.AudioTrack;
 import android.media.MediaRecorder;
 
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.SocketException;
-import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
-
 public class VoiceCall {
 
     private final int DEFAULT_MINIMUM_BUFFER_SIZE = 300;
-    private final int UDP_SOCKET_TIMEOUT = 10000;
 
     private int minimumBuffer;
 
-    private DatagramSocket socket;
     private AudioRecord recorder;
     private AudioTrack track;
     private int recorderBufferSize;
@@ -29,31 +19,20 @@ public class VoiceCall {
     private int playbackSampleRate;
     private int playbackBufferSize;
 
-    private InetAddress address;
-    private String host;
-    private int port;
     private boolean alive;
     private boolean initialized;
-    private int sendSequenceNumber;
-    private int lastReceivedSequenceNumber;
-
-    private int senderNumber;
-    private int receiverNumber;
 
     private VoiceBuffer receiverBuffer;
     private VoiceBuffer recordBuffer;
 
     private CallEvent eventHandler;
 
-    public VoiceCall(String host, int port, int senderPhoneNumber, int receiverPhoneNumber, CallEvent eventHandler){
-        this.host = host;
-        this.port = port;
+    public VoiceCall(VoiceBuffer receiverBuffer, VoiceBuffer recordBuffer, CallEvent eventHandler){
+        this.receiverBuffer = receiverBuffer;
+        this.recordBuffer = recordBuffer;
         this.eventHandler = eventHandler;
         this.minimumBuffer = DEFAULT_MINIMUM_BUFFER_SIZE;
-        this.senderNumber = senderPhoneNumber;
-        this.receiverNumber = receiverPhoneNumber;
-        this.sendSequenceNumber = 0;
-        this.lastReceivedSequenceNumber = 0;
+
         this.playbackSampleRate = -1;
         this.playbackBufferSize = -1;
         this.alive = false;
@@ -65,21 +44,6 @@ public class VoiceCall {
 
         if (this.recorder == null || this.recorder.getState() != AudioRecord.STATE_INITIALIZED){
             return CallError.MIC_ERROR;
-        }
-
-        try{
-            this.address = InetAddress.getByName(host);
-        } catch (UnknownHostException ex){
-            System.out.println(ex.getMessage());
-            return CallError.SERVER_NOT_REACHABLE;
-        }
-
-        try {
-            socket = new DatagramSocket(this.port);
-            socket.setSoTimeout(UDP_SOCKET_TIMEOUT);
-        } catch (SocketException ex){
-            System.out.println(ex.getMessage());
-            return CallError.SOCKET_ERROR;
         }
 
         this.track = null;
@@ -100,8 +64,6 @@ public class VoiceCall {
         if (!initialized)
             return false;
 
-        this.receiverBuffer = new VoiceBuffer();
-        this.recordBuffer = new VoiceBuffer();
         this.recorder.startRecording();
 
         this.alive = true;
@@ -109,21 +71,7 @@ public class VoiceCall {
         new Thread(new Runnable(){
             @Override
             public void run(){
-                receiverWorker();
-            }
-        }).start();
-
-        new Thread(new Runnable(){
-            @Override
-            public void run(){
                 recorderWorker();
-            }
-        }).start();
-
-        new Thread(new Runnable(){
-            @Override
-            public void run(){
-                senderWorker();
             }
         }).start();
 
@@ -144,11 +92,6 @@ public class VoiceCall {
             recorder.stop();
             recorder.release();
         }
-        if(socket != null){
-            socket.disconnect();
-            socket.close();
-        }
-
     }
 
     private void playbackWorker(){
@@ -180,57 +123,16 @@ public class VoiceCall {
         }
     }
 
-    private void receiverWorker(){
-
-        while(alive){
-            DataPacket data = new DataPacket(DataPacket.MAX_SIZE);
-            DatagramPacket p = new DatagramPacket(data.getBuffer(), data.getLength());
-
-            try {
-                socket.receive(p);
-            } catch (SocketTimeoutException ex) {
-                eventHandler.onTimeout(this.sendSequenceNumber, this.receiverNumber);
-            } catch (IOException ex){
-
-            }
-
-            if (data.getSequenceNumber() >= lastReceivedSequenceNumber)
-                receiverBuffer.push(data);
-        }
-    }
-
     private void recorderWorker(){
         while(alive){
             DataPacket p = new DataPacket(recorderBufferSize);
-            //p.decryptPacket(key);
+
             recorder.read(p.getBuffer(), p.getPayloadIndex(), p.getPayloadLength());
-            p.setSource(senderNumber);
-            p.setDestination(receiverNumber);
             p.setSampleRate(recorder.getSampleRate());
             p.setBufferSize(recorderBufferSize);
-            p.setSequenceNumber(sendSequenceNumber++);
+            p.setFlag(DataPacket.FLAG_IS_VIDEO, false);
 
             recordBuffer.push(p);
-        }
-    }
-
-    private void senderWorker(){
-
-        while(alive){
-            if (!recordBuffer.empty()) {
-
-                DataPacket data = recordBuffer.poll();
-                //data.encryptPacket(key);
-                DatagramPacket p = new DatagramPacket(data.getBuffer(), 0, data.getLength(), this.address, this.port);
-
-                try {
-                    socket.send(p);
-                } catch (Exception ex) {
-
-                }
-            } else {
-                sleep(1);
-            }
         }
     }
 

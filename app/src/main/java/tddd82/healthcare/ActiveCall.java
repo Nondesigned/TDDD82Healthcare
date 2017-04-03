@@ -1,10 +1,12 @@
 package tddd82.healthcare;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class ActiveCall extends AppCompatActivity {
@@ -13,7 +15,9 @@ public class ActiveCall extends AppCompatActivity {
 
         @Override
         public void onCallEnded() {
-            callInstance.terminate();
+            if (callInstance != null)
+                callInstance.terminate();
+
             runOnUiThread(new Runnable(){
 
                 @Override
@@ -25,13 +29,13 @@ public class ActiveCall extends AppCompatActivity {
 
         @Override
         public void onCallStarted(String host, int port, int sender, int receiver, String key) {
-            //TODO pass key to VoiceCall
-            callInstance = new VoiceCall(host, 1338, sender, receiver, new CallEvent() {
+            //TODO pass key to Call
+            callInstance = new Call(host, 1338, sender, receiver,  new CallEvent() {
                 @Override
                 public void onTimeout(int currentSequenceNumber, int destinationNumber) {
 
                 }
-            });
+            }, (ImageView)findViewById(R.id.imageView2), thisIsIt);
 
             if (callInstance.initialize() != CallError.SUCCESS){
 
@@ -48,11 +52,13 @@ public class ActiveCall extends AppCompatActivity {
     int destNr;
     int initCall = 0;
     int stopCall = 1;
-    private VoiceCall callInstance;
+    private Call callInstance;
+    Activity thisIsIt;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_active_call);
+        thisIsIt = this;
         TextView status = (TextView) findViewById(R.id.callStatus);
         status.setText("Initializing call");
         final Button endCall = (Button) findViewById(R.id.endCall);
