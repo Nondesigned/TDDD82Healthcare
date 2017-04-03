@@ -133,6 +133,7 @@ public class Call {
         initialized = false;
 
         voiceCall.terminate();
+        videoCall.terminate();
 
         if(socket != null){
             socket.disconnect();
