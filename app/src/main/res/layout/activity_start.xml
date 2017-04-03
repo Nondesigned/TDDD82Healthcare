@@ -22,8 +22,9 @@
         android:maxWidth="220dp"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true" />
-
-    </RelativeLayout>
+        android:id="@+id/imageView" />
+    
+  </RelativeLayout>
 
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/bottom_navigation"

@@ -1,23 +1,25 @@
 package tddd82.healthcare;
 
-import android.*;
 import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
-import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
-import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -25,14 +27,12 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.lang.reflect.Array;
 import java.util.HashMap;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     private GoogleMap mMap;
-    private LatLng[] pinList;
-    private String[] damageList;
     private Context context;
     private HashMap<String, String> groupMap;
     private HashMap<Marker, String> markerMap;
@@ -41,14 +41,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private String[] groups;
     private SupportMapFragment mapFragment;
     private JSONArray markers;
+    private boolean onStart = true;
+
+    private GoogleApiClient mGoogleApiClient;
+    private Location mLastLocation;
+    private LocationRequest mLocationRequest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         context = this;
-        getGroupTask = new GetGroupTask(this, this);
-        getGroupTask.execute("https://itkand-3-1.tddd82-2017.ida.liu.se:8080/groups");
+        new GetGroupTask(this, this).execute("https://itkand-3-1.tddd82-2017.ida.liu.se:8080/groups");
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -79,25 +83,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         requestMapPermission();
+
         mMap.setOnMapLongClickListener(addPins);
         mMap.setOnMarkerClickListener(onMarkerClickListener);
 
-        getMapPinsTask = new GetMapPinsTask(this, mMap, this);
-        getMapPinsTask.execute("https://itkand-3-1.tddd82-2017.ida.liu.se:8080/pins");
+        buildGoogleApiClient();
 
-        Log.d("sydney", "sydney");
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        //LatLng myPosition = new LatLng(mMap.getMyLocation().getLatitude(),mMap.getMyLocation().getLongitude());
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        new GetMapPinsTask(this, mMap, this).execute("https://itkand-3-1.tddd82-2017.ida.liu.se:8080/pins");
+
     }
-
-    /*public void addPinsToMap(GoogleMap mMap){
-        for(int i=0; i < pinList.length; i++){
-            mMap.addMarker(new MarkerOptions().position(pinList[i]).title(damageList[i]));
-        }
-    }*/
 
     public void addPinsToMap(GoogleMap mMap){
         mMap.clear();
@@ -113,11 +107,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Log.d("AddPinsToMap", e.getMessage());
             }
         }
-    }
-
-    public void setMapPinsList(LatLng[] mapPinsList, String[] typeOfDamageList) {
-        pinList = mapPinsList;
-        damageList = typeOfDamageList;
     }
     public void setMarkerList(JSONArray markerList){
         this.markers = markerList;
@@ -160,10 +149,65 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void setGroupArray(String[] newgroups){
-        Log.d("GROUP ARRAY", newgroups[1].toString());
         groups = newgroups;
     }
-    public void deletePin(LatLng pin){
+
+    protected synchronized void buildGoogleApiClient() {
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    public void onConnected(Bundle connectionHint) {
+
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(1000);
+        mLocationRequest.setFastestInterval(100);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+        }
 
     }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        //stop location updates when Activity is no longer active
+        if (mGoogleApiClient != null) {
+            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+        }
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        mLastLocation = location;
+        if (mLastLocation != null) {
+            LatLng myPosition = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+            if(onStart){
+                Log.d("MACKAN", "move camera");
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(myPosition));
+                mMap.moveCamera(CameraUpdateFactory.zoomTo(5));
+            }
+            onStart = false;
+        }else {
+            Log.d("MACKAN", "rip");
+        }
+    }
+
 }

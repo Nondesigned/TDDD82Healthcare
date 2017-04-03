@@ -1,5 +1,6 @@
 package tddd82.healthcare;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -8,9 +9,11 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import com.auth0.android.jwt.JWT;
 
+//Mottagare
 public class callingActivity extends AppCompatActivity {
 
     private final Event CallState = new Event(){
@@ -37,7 +40,7 @@ public class callingActivity extends AppCompatActivity {
     int sourceNr;
     Context context = this;
     InitCall init = new InitCall();
-    VoiceCall callInstance;
+    Call callInstance;
     boolean activeCall = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,19 +62,21 @@ public class callingActivity extends AppCompatActivity {
         sourceNr = Integer.parseInt(jwt.getSubject());
         Log.d("bob",Integer.toString(sourceNr) + Integer.toString(caller));
         init.init(sourceNr,caller, CallState,this);
-
+        final Activity thisIsIt = this;
         //Sends accept message
         answer.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 //TODO generara key
                 init.send(2);
                 init.start();
-                callInstance = new VoiceCall("130.236.181.196", 1338, sourceNr, caller, new CallEvent() {
+                ImageView displayView = (ImageView)findViewById(R.id.imageView3);
+                callInstance = new Call("130.236.181.196", 1338, sourceNr, caller,  new CallEvent() {
                     @Override
                     public void onTimeout(int currentSequenceNumber, int destinationNumber) {
 
                     }
-                });
+                }, displayView, thisIsIt);
+
 
                 callInstance.initialize();
 

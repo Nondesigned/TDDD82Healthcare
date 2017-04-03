@@ -19,6 +19,7 @@ import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONArray;
@@ -53,8 +54,16 @@ public class AddPinsToMapTask extends AsyncTask<String,Void,String> {
     private JSONObject response;
     private MapsActivity mapsActivity;
     private String groupId;
+    private JSONObject pin;
 
     public AddPinsToMapTask(Context context, LatLng latLng, String groupId, MapsActivity mapsActivity){
+        this.context = context;
+        this.latLng = latLng;
+        this.mapsActivity = mapsActivity;
+        this.groupId = groupId;
+    }
+
+    public AddPinsToMapTask(Context context, MapsActivity mapsActivity){
         this.context = context;
         this.latLng = latLng;
         this.mapsActivity = mapsActivity;
@@ -64,57 +73,29 @@ public class AddPinsToMapTask extends AsyncTask<String,Void,String> {
     @Override
     protected String doInBackground(String... params) {
         String url = params[0];
-        JSONObject pin = new JSONObject();
-        try{
-            pin.put("groupid", groupId.split(":")[0]);
-            pin.put("long", String.valueOf(latLng.longitude));
-            pin.put("lat", String.valueOf(latLng.latitude));
-            pin.put("type", "wounded_guy");
 
-        }catch (Exception e){
-            Log.d("JsonFailure", e.getMessage());
-        }
+        pin = new JSONObject();
+        if(String.valueOf(params[1]) == "new pin"){
+            try{
+                pin.put("groupid", groupId.split(":")[0]);
+                pin.put("long", String.valueOf(latLng.longitude));
+                pin.put("lat", String.valueOf(latLng.latitude));
+                pin.put("type", "wounded_guy");
 
-
-        try {
-            KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
-            trustStore.load(null);
-            InputStream stream = context.getAssets().open("cert.pem");
-            BufferedInputStream bis = new BufferedInputStream(stream);
-            CertificateFactory cf = CertificateFactory.getInstance("X.509");
-            while (bis.available() > 0) {
-                Certificate cert = cf.generateCertificate(bis);
-                trustStore.setCertificateEntry("cert" + bis.available(), cert);
+            }catch (Exception e){
+                Log.d("JsonFailure", e.getMessage());
             }
-            KeyManagerFactory kmfactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-            kmfactory.init(trustStore, "1234".toCharArray());
-            TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-            tmf.init(trustStore);
-
-
-            SSLContext sc = SSLContext.getInstance("SSL");
-            sc.init(null, tmf.getTrustManagers(), new SecureRandom());
-            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-            HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
-                @Override
-                public boolean verify(String arg0, SSLSession arg1) {
-                    return true;
-                }
-            });
-        }catch (Exception e){
+        }else{
+            try {
+                pin = new JSONObject(params[1]);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
 
         RequestQueue mRequestQueue;
 
-        // Instantiate the cache
-        Cache cache = new DiskBasedCache(context.getCacheDir(), 1024 * 1024); // 1MB cap
-
-        // Set up the network to use HttpURLConnection as the HTTP client.
-        Network network = new BasicNetwork(new HurlStack());
-
-        // Instantiate the RequestQueue with the cache and network.
-        mRequestQueue = new RequestQueue(cache, network);
-
+        mRequestQueue = Volley.newRequestQueue(context, new OkHttpStack(context));
 
         final JsonObjectRequest jsonRequest = new JsonObjectRequest
                 (Request.Method.POST, url, pin, new Response.Listener<JSONObject>() {
@@ -140,7 +121,7 @@ public class AddPinsToMapTask extends AsyncTask<String,Void,String> {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Log.v("ERRRRROOOORRRRRRR", error.toString());
-
+                        cachePin();
                     }
                 }){
 
@@ -167,6 +148,12 @@ public class AddPinsToMapTask extends AsyncTask<String,Void,String> {
         mRequestQueue.start();
 
         return null;
+    }
+
+    private void cachePin() {
+        JSONArray localPins = CacheManager.getJSON("/localPins", context);
+        localPins.put(pin);
+        CacheManager.put(localPins.toString(), "/localPins", context);
     }
 
 }

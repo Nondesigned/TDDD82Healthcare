@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.zip.CRC32;
+import java.util.zip.Checksum;
 
 /**
  * ServerUtils
@@ -59,11 +61,20 @@ public class ServerUtils{
     }
 
     public static void sendBytes(byte[] bytesToSend, Socket clientSocket) throws IOException {
-        OutputStream out = clientSocket.getOutputStream();
+            OutputStream out = clientSocket.getOutputStream();
         DataOutputStream dos = new DataOutputStream(out);
 
         if (bytesToSend.length > 0)
             dos.write(bytesToSend, 0, bytesToSend.length);
         Log.d("bob","hejhejhej");
+    }
+
+    /**
+     * Gets CRC32 checksum of the given bytes
+     */
+    public static int getCRC32(byte[] bytes, int offset, int length){
+        Checksum crc = new CRC32();
+        crc.update(bytes, offset, length);
+        return (int)crc.getValue();
     }
 }

@@ -4,7 +4,9 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +16,9 @@ import android.widget.TextView;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
@@ -36,7 +41,6 @@ public class FireMissilesDialogFragment extends DialogFragment {
         final LatLng latLng = new LatLng(getArguments().getDouble("latitude"), getArguments().getDouble("longitude"));
         ArrayList<String> arrayList = new ArrayList<String>(Arrays.asList(groupArray));
 
-        Log.d("STRINGARRAY",groupArray[1].toString());
         final Spinner groupSpin = (Spinner)view.findViewById(R.id.groups);
         spinAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, arrayList);
         spinAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -46,10 +50,24 @@ public class FireMissilesDialogFragment extends DialogFragment {
 
         builder.setMessage(R.string.dialog_fire_missiles)
                 .setPositiveButton(R.string.fire, new DialogInterface.OnClickListener() {
+                    @RequiresApi(api = Build.VERSION_CODES.M)
                     public void onClick(DialogInterface dialog, int id) {
                         // FIRE ZE MISSILES!
                         AddPinsToMapTask addPinsToMapTask = new AddPinsToMapTask(view.getContext(), latLng, String.valueOf(groupSpin.getSelectedItem()) , (MapsActivity) getActivity());
-                        addPinsToMapTask.execute("https://itkand-3-1.tddd82-2017.ida.liu.se:8080/pins");
+                        addPinsToMapTask.execute("https://itkand-3-1.tddd82-2017.ida.liu.se:8080/pins", "new pin");
+
+                        JSONArray unLoadedPins = CacheManager.getJSON("/localPins", getContext());
+                        for (int i = 0; i<unLoadedPins.length(); i++){
+                            try {
+                                JSONObject p = unLoadedPins.getJSONObject(i);
+                                AddPinsToMapTask addPinsToMapTaskLoop = new AddPinsToMapTask(view.getContext(), (MapsActivity) getActivity());
+                                addPinsToMapTaskLoop.execute("https://itkand-3-1.tddd82-2017.ida.liu.se:8080/pins", p.toString());
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
                     }
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {

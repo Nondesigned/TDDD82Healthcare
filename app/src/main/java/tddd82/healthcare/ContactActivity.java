@@ -13,6 +13,10 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class ContactActivity extends AppCompatActivity {
 
     private static Contact[] contactList;
@@ -21,6 +25,23 @@ public class ContactActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact);
+
+        JSONArray contactsJSON = CacheManager.getJSON("/contacts", this);
+
+        contactList = new Contact[contactsJSON.length()];
+
+        for (int i = 0; i < contactsJSON.length(); i++) {
+
+            try {
+                JSONObject row = contactsJSON.getJSONObject(i);
+                contactList[i] = new Contact(row.getString("name"), row.getInt("phonenumber"));
+
+            } catch (JSONException e) {
+
+            }
+
+        }
+        ContactActivity.setContactList(contactList);
 
         ListView contactListView = (ListView) findViewById(R.id.list_view);
         ListAdapter customAdapter = new CustomAdapter(this, contactList);
