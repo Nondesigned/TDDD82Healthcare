@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.AssetManager;
+import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.os.StrictMode;
 import android.support.v4.app.ActivityCompat;
@@ -26,7 +28,12 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
+import javax.security.cert.CertificateException;
+import javax.security.cert.X509Certificate;
 
 public class StartActivity extends AppCompatActivity {
     Context context = this;
@@ -44,7 +51,7 @@ public class StartActivity extends AppCompatActivity {
         preferences = context.getSharedPreferences("tddd82.healthcare", context.MODE_PRIVATE);
         editor = preferences.edit();
 
-        trustCertificate();
+        //trustCertificate();
 
         //Returns true if "TOKEN" exists
         if (!(preferences.contains("TOKEN"))) {
@@ -100,21 +107,22 @@ public class StartActivity extends AppCompatActivity {
         finish();
         startActivity(intent);
     }
+
     public void getContacts(View view){
         Intent callIntent = new Intent(context,ContactActivity.class);
         startActivity(callIntent);
-
     }
+
     public void getContactsFromServer(View v){
         GetContactsTask task = new GetContactsTask(this);
         task.execute("https://itkand-3-1.tddd82-2017.ida.liu.se:8080/contacts");
-
     }
+
     public void showMap(View view){
         Intent showMap = new Intent(context,MapsActivity.class);
         startActivity(showMap);
     }
-
+/*
     public void trustCertificate(){
         try {
             KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
@@ -131,19 +139,19 @@ public class StartActivity extends AppCompatActivity {
             TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
             tmf.init(trustStore);
 
-
             SSLContext sc = SSLContext.getInstance("SSL");
             sc.init(null, tmf.getTrustManagers(), new SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
             HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
                 @Override
                 public boolean verify(String arg0, SSLSession arg1) {
+
                     return true;
                 }
             });
         }catch (Exception e){
             Log.v("MAP ERROR:", e.getMessage());
         }
-    }
+    }*/
 }
 

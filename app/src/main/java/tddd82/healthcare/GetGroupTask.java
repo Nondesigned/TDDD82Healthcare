@@ -17,6 +17,7 @@ import com.android.volley.toolbox.DiskBasedCache;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 
@@ -65,14 +66,7 @@ public class GetGroupTask extends AsyncTask<String,Void,String> {
 
         RequestQueue mRequestQueue;
 
-        // Instantiate the cache
-        Cache cache = new DiskBasedCache(context.getCacheDir(), 1024 * 1024); // 1MB cap
-
-        // Set up the network to use HttpURLConnection as the HTTP client.
-        Network network = new BasicNetwork(new HurlStack());
-
-        // Instantiate the RequestQueue with the cache and network.
-        mRequestQueue = new RequestQueue(cache, network);
+        mRequestQueue = Volley.newRequestQueue(context, new OkHttpStack(context));
 
         JsonArrayRequest jsonRequest = new JsonArrayRequest(url, new Response.Listener<JSONArray>() {
 

@@ -46,5 +46,6 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.google.android.gms:play-services-maps:10.0.1'
     compile 'com.google.android.gms:play-services-location:10.0.1'
+    compile 'com.squareup.okhttp:okhttp-urlconnection:1.6.+'
 }
 apply plugin: 'com.google.gms.google-services'

@@ -33,8 +33,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     private GoogleMap mMap;
-    private LatLng[] pinList;
-    private String[] damageList;
     private Context context;
     private HashMap<String, String> groupMap;
     private HashMap<Marker, String> markerMap;
@@ -54,8 +52,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         context = this;
-        getGroupTask = new GetGroupTask(this, this);
-        getGroupTask.execute("https://itkand-3-1.tddd82-2017.ida.liu.se:8080/groups");
+        new GetGroupTask(this, this).execute("https://itkand-3-1.tddd82-2017.ida.liu.se:8080/groups");
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -86,19 +83,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         requestMapPermission();
+
         mMap.setOnMapLongClickListener(addPins);
         mMap.setOnMarkerClickListener(onMarkerClickListener);
 
         buildGoogleApiClient();
 
-        getMapPinsTask = new GetMapPinsTask(this, mMap, this);
-        getMapPinsTask.execute("https://itkand-3-1.tddd82-2017.ida.liu.se:8080/pins");
+        new GetMapPinsTask(this, mMap, this).execute("https://itkand-3-1.tddd82-2017.ida.liu.se:8080/pins");
 
-        Log.d("sydney", "sydney");
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
 
     public void addPinsToMap(GoogleMap mMap){
@@ -115,11 +107,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Log.d("AddPinsToMap", e.getMessage());
             }
         }
-    }
-
-    public void setMapPinsList(LatLng[] mapPinsList, String[] typeOfDamageList) {
-        pinList = mapPinsList;
-        damageList = typeOfDamageList;
     }
     public void setMarkerList(JSONArray markerList){
         this.markers = markerList;
@@ -163,9 +150,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void setGroupArray(String[] newgroups){
         groups = newgroups;
     }
-    public void deletePin(LatLng pin){
-
-    }
 
     protected synchronized void buildGoogleApiClient() {
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -203,7 +187,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onPause() {
         super.onPause();
-
         //stop location updates when Activity is no longer active
         if (mGoogleApiClient != null) {
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
