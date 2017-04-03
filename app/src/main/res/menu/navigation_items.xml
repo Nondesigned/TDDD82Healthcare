@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/action_login"
+        android:enabled="true"
+        android:title="@string/menu_login"
+        android:icon="@drawable/ic_vpn_key_white_24dp"
+        app:showAsAction="ifRoom"/>
+    <item android:id="@+id/action_contacts"
+        android:enabled="true"
+        android:title="@string/menu_contacts"
+        android:icon="@drawable/ic_contact_phone_white_24dp"
+        app:showAsAction="ifRoom"/>
+    <item android:id="@+id/action_map"
+        android:enabled="true"
+        android:title="@string/menu_navigation"
+        android:icon="@drawable/ic_map_white_24dp"
+        app:showAsAction="ifRoom"/>
+</menu>

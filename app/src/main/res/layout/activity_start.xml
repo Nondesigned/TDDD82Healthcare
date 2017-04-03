@@ -1,73 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/activity_start"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="tddd82.healthcare.StartActivity"
     android:background="@color/colorBackgroundBlue">
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="64dp">
+
     <ImageView
+        android:id="@+id/backgroundPicture"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/staroflife"
         android:adjustViewBounds="true"
         android:maxWidth="220dp"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="50dp"/>
+        android:layout_centerVertical="true" />
 
+    </RelativeLayout>
 
-    <Button
-        android:text="Contact List"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/button2"
-        android:id="@+id/contactButton"
-        android:onClick="getContacts"
-        android:fontFamily="sans-serif-condensed"
-        android:textSize="20dp"
-        android:backgroundTint="@color/colorWhite"
-        android:textColor="@color/colorBackgroundBlue"/>
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
-        android:id="@+id/logoutButton"
-        android:text="Log out"
-        android:onClick="logout"
-        android:fontFamily="sans-serif-condensed"
-        android:textSize="20dp"
-        android:backgroundTint="@color/colorWhite"
-        android:textColor="@color/colorBackgroundBlue"/>
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="wrap_content"
+    <android.support.design.widget.BottomNavigationView
+        android:id="@+id/bottom_navigation"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:onClick="getContactsFromServer"
-        android:text="Get Contacts"
-        android:fontFamily="sans-serif-condensed"
-        android:textSize="20dp"
-        android:backgroundTint="@color/colorWhite"
-        android:textColor="@color/colorBackgroundBlue"/>
-    <Button
-        android:id="@+id/showMap"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:onClick="showMap"
-        android:text="Show map"
-        android:fontFamily="sans-serif-condensed"
-        android:textSize="20dp"
-        android:backgroundTint="@color/colorWhite"
-        android:textColor="@color/colorBackgroundBlue"/>/>
-
+        app:itemBackground="@color/colorWhite"
+        app:itemIconTint="@drawable/selector"
+        app:itemTextColor="@drawable/selector"
+        app:menu="@menu/navigation_items" />
 
 </RelativeLayout>

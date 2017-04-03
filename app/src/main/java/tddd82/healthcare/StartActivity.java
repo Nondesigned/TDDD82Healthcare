@@ -6,10 +6,13 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.os.StrictMode;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
@@ -25,17 +28,40 @@ public class StartActivity extends AppCompatActivity {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
+        GetContactsTask task = new GetContactsTask(this);
+        task.execute("https://itkand-3-1.tddd82-2017.ida.liu.se:8080/contacts");
+
+
         requestRecordAudioPermission();
         preferences = context.getSharedPreferences("tddd82.healthcare", context.MODE_PRIVATE);
         editor = preferences.edit();
 
+        BottomNavigationView bottomNavigation = (BottomNavigationView)findViewById(R.id.bottom_navigation);
+        bottomNavigation.setOnNavigationItemSelectedListener(
+                new BottomNavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.action_login:
+                                logout();
+                                break;
+                            case R.id.action_contacts:
+                                getContacts();
+                                break;
+                            case R.id.action_map:
+                                showMap();
+                                break;
+                        }
+                        return true;
+                    }
+                });
         //Returns true if "TOKEN" exists
         if (!(preferences.contains("TOKEN"))) {
             Intent loginScreen = new Intent(this, LoginActivity.class);
             startActivity(loginScreen);
         }
         if (preferences.contains("TOKEN")) {
-
+            bottomNavigation.getMenu().findItem(R.id.action_login).setTitle("Log out");
             try {
                 Intent intent = getIntent();
                 //TODO add field with key.
@@ -74,7 +100,7 @@ public class StartActivity extends AppCompatActivity {
                 }
             }
         }
-    public void logout(View view){
+    public void logout(){
         preferences = context.getSharedPreferences("tddd82.healthcare", context.MODE_PRIVATE);
         editor = preferences.edit();
         editor.remove("TOKEN");
@@ -83,19 +109,20 @@ public class StartActivity extends AppCompatActivity {
         finish();
         startActivity(intent);
     }
-    public void getContacts(View view){
+    public void getContacts(){
         Intent callIntent = new Intent(context,ContactActivity.class);
         startActivity(callIntent);
 
     }
-    public void getContactsFromServer(View v){
+    public void getContactsFromServer(){
         GetContactsTask task = new GetContactsTask(this);
         task.execute("https://itkand-3-1.tddd82-2017.ida.liu.se:8080/contacts");
 
     }
-    public void showMap(View view){
+    public void showMap(){
         Intent showMap = new Intent(context,MapsActivity.class);
         startActivity(showMap);
     }
+
 }
 

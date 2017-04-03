@@ -143,6 +143,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         @Override
         public boolean onMarkerClick(Marker marker) {
             Bundle bundle = new Bundle();
+            bundle.putString("type", marker.getTitle());
             bundle.putString("id", markerMap.get(marker));
             bundle.putDouble("longitude", marker.getPosition().longitude);
             bundle.putDouble("latitude", marker.getPosition().latitude);
