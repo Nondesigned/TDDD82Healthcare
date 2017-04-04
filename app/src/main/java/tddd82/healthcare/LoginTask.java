@@ -20,6 +20,7 @@ import com.android.volley.toolbox.BasicNetwork;
 import com.android.volley.toolbox.DiskBasedCache;
 import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import org.json.JSONException;
@@ -100,15 +101,7 @@ class LoginTask extends AsyncTask<String, Void, String> {
 
             RequestQueue mRequestQueue;
 
-            // Instantiate the cache
-            Cache cache = new DiskBasedCache(context.getCacheDir(), 1024 * 1024); // 1MB cap
-
-            // Set up the network to use HttpURLConnection as the HTTP client.
-            Network network = new BasicNetwork(new HurlStack());
-
-            // Instantiate the RequestQueue with the cache and network.
-            mRequestQueue = new RequestQueue(cache, network);
-
+            mRequestQueue = Volley.newRequestQueue(context, new OkHttpStack(context));
 
             final JsonObjectRequest jsonRequest = new JsonObjectRequest
                     (Request.Method.POST, url, credentials, new Response.Listener<JSONObject>() {

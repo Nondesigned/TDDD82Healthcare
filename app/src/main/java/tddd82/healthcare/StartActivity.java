@@ -5,12 +5,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.AssetManager;
+import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.os.StrictMode;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -29,7 +34,12 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
+import javax.security.cert.CertificateException;
+import javax.security.cert.X509Certificate;
 
 public class StartActivity extends AppCompatActivity {
     Context context = this;
@@ -44,12 +54,35 @@ public class StartActivity extends AppCompatActivity {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
+        GetContactsTask task = new GetContactsTask(this);
+        task.execute("https://itkand-3-1.tddd82-2017.ida.liu.se:8080/contacts");
+
+
         requestRecordAudioPermission();
         requestCameraPermission();
         preferences = context.getSharedPreferences("tddd82.healthcare", context.MODE_PRIVATE);
         editor = preferences.edit();
 
-        trustCertificate();
+
+        BottomNavigationView bottomNavigation = (BottomNavigationView)findViewById(R.id.bottom_navigation);
+        bottomNavigation.setOnNavigationItemSelectedListener(
+                new BottomNavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.action_login:
+                                logout();
+                                break;
+                            case R.id.action_contacts:
+                                getContacts();
+                                break;
+                            case R.id.action_map:
+                                showMap();
+                                break;
+                        }
+                        return true;
+                    }
+                });
 
         //Returns true if "TOKEN" exists
         if (!(preferences.contains("TOKEN"))) {
@@ -57,7 +90,7 @@ public class StartActivity extends AppCompatActivity {
             startActivity(loginScreen);
         }
         if (preferences.contains("TOKEN")) {
-
+            bottomNavigation.getMenu().findItem(R.id.action_login).setTitle("Log out");
             try {
                 Intent intent = getIntent();
                 //TODO add field with key.
@@ -117,7 +150,7 @@ public class StartActivity extends AppCompatActivity {
             }
         }
     }
-    public void logout(View view){
+    public void logout(){
         preferences = context.getSharedPreferences("tddd82.healthcare", context.MODE_PRIVATE);
         editor = preferences.edit();
         editor.remove("TOKEN");
@@ -126,50 +159,22 @@ public class StartActivity extends AppCompatActivity {
         finish();
         startActivity(intent);
     }
-    public void getContacts(View view){
+
+    public void getContacts(){
         Intent callIntent = new Intent(context,ContactActivity.class);
         startActivity(callIntent);
-
     }
-    public void getContactsFromServer(View v){
+
+    public void getContactsFromServer(){
+
         GetContactsTask task = new GetContactsTask(this);
         task.execute("https://itkand-3-1.tddd82-2017.ida.liu.se:8080/contacts");
-
     }
-    public void showMap(View view){
+
+    public void showMap(){
         Intent showMap = new Intent(context,MapsActivity.class);
         startActivity(showMap);
     }
 
-    public void trustCertificate(){
-        try {
-            KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
-            trustStore.load(null);
-            InputStream stream = context.getAssets().open("cert.pem");
-            BufferedInputStream bis = new BufferedInputStream(stream);
-            CertificateFactory cf = CertificateFactory.getInstance("X.509");
-            while (bis.available() > 0) {
-                Certificate cert = cf.generateCertificate(bis);
-                trustStore.setCertificateEntry("cert" + bis.available(), cert);
-            }
-            KeyManagerFactory kmfactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-            kmfactory.init(trustStore, "1234".toCharArray());
-            TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-            tmf.init(trustStore);
-
-
-            SSLContext sc = SSLContext.getInstance("SSL");
-            sc.init(null, tmf.getTrustManagers(), new SecureRandom());
-            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-            HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
-                @Override
-                public boolean verify(String arg0, SSLSession arg1) {
-                    return true;
-                }
-            });
-        }catch (Exception e){
-            Log.v("MAP ERROR:", e.getMessage());
-        }
-    }
 }
 

@@ -34,8 +34,11 @@ public class DeleteMarkerDialog extends DialogFragment {
 
 
         final String pinId = new String(getArguments().getString("id"));
+        final String pinType = new String(getArguments().getString("type"));
         final LatLng latLng = new LatLng(getArguments().getDouble("latitude"), getArguments().getDouble("longitude"));
         TextView latlngTextView = (TextView)view.findViewById(R.id.LatlngDelete);
+        TextView typeTextview = (TextView)view.findViewById(R.id.idView);
+        typeTextview.setText("Accident: " + pinType);
         latlngTextView.setText("Latitude: " + String.valueOf(latLng.latitude) +"\n"+ "Longitude: " + String.valueOf(latLng.longitude));
 
         builder.setMessage(R.string.dialog_delete_pin)
