@@ -31,7 +31,7 @@ public class callingActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onCallStarted(String host, int port, int sender, int receiver, String key) {
+        public void onCallStarted(String host, int port, int sender, int receiver, byte[] IV, byte[] key) {
 
         }
     };
@@ -41,7 +41,11 @@ public class callingActivity extends AppCompatActivity {
     Context context = this;
     InitCall init = new InitCall();
     Call callInstance;
+    CallCrypto callCrypto;
     boolean activeCall = false;
+    final Activity displayActivity = this;
+    ImageView displayView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,25 +66,26 @@ public class callingActivity extends AppCompatActivity {
         sourceNr = Integer.parseInt(jwt.getSubject());
         Log.d("bob",Integer.toString(sourceNr) + Integer.toString(caller));
         init.init(sourceNr,caller, CallState,this);
-        final Activity thisIsIt = this;
         //Sends accept message
         answer.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                //TODO generara key
-                init.send(2);
-                init.start();
-                ImageView displayView = (ImageView)findViewById(R.id.imageView3);
+
+                callCrypto = new CallCrypto();
+                displayView = (ImageView)findViewById(R.id.imageView3);
                 callInstance = new Call("130.236.181.196", 1338, sourceNr, caller,  new CallEvent() {
                     @Override
                     public void onTimeout(int currentSequenceNumber, int destinationNumber) {
 
                     }
-                }, displayView, thisIsIt);
+                }, callCrypto, displayView, displayActivity);
+
+                init.send(2, callCrypto);
+                init.start();
 
 
                 callInstance.initialize();
-
                 callInstance.start();
+
                 answer.setVisibility(View.GONE);
                 activeCall = true;
                 decline.setText("Hang Up");
@@ -90,12 +95,12 @@ public class callingActivity extends AppCompatActivity {
         decline.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if(activeCall){
-                    init.send(1);
+                    init.send(1, null);
                     CallState.onCallEnded();
 
                 }
                 else {
-                    init.send(3);
+                    init.send(3, null);
                 }
                 finish();
             }

@@ -7,9 +7,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
 import java.net.Socket;
+import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import static tddd82.healthcare.ControlFlag.ACCEPTCALL;
 import static tddd82.healthcare.ControlFlag.DECLINECALL;
@@ -21,6 +29,7 @@ import static tddd82.healthcare.ControlFlag.INITCALL;
  */
 
 public class InitCall extends Thread implements Runnable{
+    SSLSocketFactory socketFactory;
     Socket tcpSocket;
     ControlPacket ctrl;
     //private String key;
@@ -38,12 +47,43 @@ public class InitCall extends Thread implements Runnable{
     // Remove key part until sprint 3
 
     public void init(int sourceNr,int destNr, Event callEvent,Context context){
+
+        SSLContext SSLcontext = null;
+        try {
+           SSLcontext =  SSLContext.getInstance("TLS");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
+            public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                return new java.security.cert.X509Certificate[] {};
+            }
+
+            public void checkClientTrusted(X509Certificate[] chain,
+                                           String authType) throws CertificateException {
+            }
+
+            public void checkServerTrusted(X509Certificate[] chain,
+                                           String authType) throws CertificateException {
+            }
+        } };
+
+        try {
+            SSLcontext.init(null, trustAllCerts, null);
+        } catch (KeyManagementException e) {
+            e.printStackTrace();
+        }
+
+        SSLSocketFactory sslFactory = SSLcontext.getSocketFactory();
+
+
+
         this.context = context;
         this.callEvent = callEvent;
         this.sourceNr = sourceNr;
         this.destNr = destNr;
         try {
-            tcpSocket = new Socket(ip,port);
+            tcpSocket = sslFactory.createSocket(ip,port);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -61,7 +101,7 @@ public class InitCall extends Thread implements Runnable{
 
 
 
-    public void send(int typeOfFlag){
+    public void send(int typeOfFlag, CallCrypto crypto){
         ControlFlags flags = new ControlFlags();
         switch (typeOfFlag) {
             case 0:
@@ -72,8 +112,8 @@ public class InitCall extends Thread implements Runnable{
                 break;
             case 2:
                 flags.setFlag(ACCEPTCALL,true);
-                String key = getKey();
-                ctrl.setKey(key);
+                ctrl.setKey(crypto.getKey());
+                ctrl.setIV(crypto.getIV());
                 break;
             case 3:
                 flags.setFlag(DECLINECALL,true);
@@ -104,7 +144,7 @@ public class InitCall extends Thread implements Runnable{
                     callEvent.onCallEnded();
                 }
                 if(flag2 == true){
-                    callEvent.onCallStarted(this.ip, this.port, this.sourceNr, this.destNr,receivedPacket.getKey());
+                    callEvent.onCallStarted(this.ip, this.port, this.sourceNr, this.destNr, receivedPacket.getIV(), receivedPacket.getKey());
                 }
 
             } catch (Exception e) {

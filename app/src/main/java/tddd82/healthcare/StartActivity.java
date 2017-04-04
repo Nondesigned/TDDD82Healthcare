@@ -41,6 +41,23 @@ public class StartActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
 
+       /* byte[] IV = {3,3,3,3,3,3,3,3,3,3,4,5,6,7,8,9};
+        byte[] key = {4,4,4,4,4,4,4,4,5,5,5,5,5,5,5,5,5,5,5,6,7,8,9,0,9,8,7,6,5,4,3,4};
+
+        CallCrypto ccc = new CallCrypto();
+        CallCrypto cc = new CallCrypto(ccc.getIV(), ccc.getKey());
+
+        DataPacket p = new DataPacket(0);
+        p.setSource(3);
+        p.setDestination(4);
+        p.setLength(DataPacket.HEADER_SIZE);
+        p.setBufferSize(5);
+        p.setSampleRate(6);
+        p.addChecksum();
+        p.encrypt(ccc);
+
+        p.decrypt(cc);*/
+
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
@@ -75,7 +92,6 @@ public class StartActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
-
     }
 
     private void requestRecordAudioPermission(){

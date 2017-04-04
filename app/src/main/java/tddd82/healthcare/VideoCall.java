@@ -8,6 +8,7 @@ import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
 import android.graphics.YuvImage;
 import android.hardware.Camera;
+import android.provider.ContactsContract;
 import android.widget.ImageView;
 
 import java.io.ByteArrayOutputStream;
@@ -31,7 +32,7 @@ public class VideoCall{
     private int imageWidth = 1280;
     private int imageHeight = 720;
 
-    private int imageQuality = 20;
+    private int imageQuality = 10;
 
     private final Camera.PreviewCallback onFrame = new Camera.PreviewCallback(){
 
@@ -129,7 +130,7 @@ public class VideoCall{
 
                 DataPacket p = playbackBuffer.poll();
 
-                final Bitmap bm = BitmapFactory.decodeByteArray(p.getBuffer(), 25, p.getBufferSize());
+                final Bitmap bm = BitmapFactory.decodeByteArray(p.getBuffer(), DataPacket.HEADER_SIZE, p.getBufferSize());
                 if (bm != null){
                     activity.runOnUiThread(new Runnable() {
                         @Override

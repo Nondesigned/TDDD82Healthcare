@@ -46,9 +46,9 @@ public class ControlPacket {
     /**
      * Returns key for symmetric encryption
      */
-    public String getKey() {
+    public byte[] getKey() {
         //Replace removes empty characters
-        return new String(Arrays.copyOfRange(data, 12, 44)).replaceAll("\u0000.*", "");
+        return Arrays.copyOfRange(data, 12, 44);
     }
 
     /**
@@ -98,8 +98,8 @@ public class ControlPacket {
     /**
      * Sets key for symmetric encryption
      */
-    public void setKey(String key) {
-        data = ServerUtils.setRange(key.getBytes(), data ,12);
+    public void setKey(byte[] key) {
+        ServerUtils.setRange(key, data ,12);
     }
 
     /**

@@ -38,6 +38,7 @@ public class Call {
     private VideoBuffer videoRecordBuffer;
 
     private CallEvent eventHandler;
+    private CallCrypto crypto;
 
     private VoiceCall voiceCall;
     private VideoCall videoCall;
@@ -45,12 +46,13 @@ public class Call {
     private Activity activity;
 
 
-    public Call(String host, int port, int senderPhoneNumber, int receiverPhoneNumber, CallEvent eventHandler, ImageView displayView, Activity activity){
+    public Call(String host, int port, int senderPhoneNumber, int receiverPhoneNumber, CallEvent eventHandler, CallCrypto crypto, ImageView displayView, Activity activity){
         this.host = host;
         this.port = port;
         this.eventHandler = eventHandler;
         this.senderNumber = senderPhoneNumber;
         this.receiverNumber = receiverPhoneNumber;
+        this.crypto = crypto;
 
         this.voiceReceiverBuffer = new VoiceBuffer();
         this.voiceRecordBuffer = new VoiceBuffer();
@@ -132,6 +134,8 @@ public class Call {
         alive = false;
         initialized = false;
 
+
+
         voiceCall.terminate();
         videoCall.terminate();
 
@@ -157,14 +161,17 @@ public class Call {
                 continue;
             }
 
+            data.decrypt(crypto);
             if (data.validChecksum()) {
                 if (data.hasFlag(DataPacket.FLAG_IS_VIDEO) && data.getSequenceNumber() >= videoLastReceivedSequenceNumber) {
                     videoReceiverBuffer.push(data);
-                    videoLastReceivedSequenceNumber++;
+                    videoLastReceivedSequenceNumber = data.getSequenceNumber();
                 } else if (!data.hasFlag(DataPacket.FLAG_IS_VIDEO) && data.getSequenceNumber() >= voiceLastReceivedSequenceNumber) {
                     voiceReceiverBuffer.push(data);
-                    voiceLastReceivedSequenceNumber++;
+                    voiceLastReceivedSequenceNumber = data.getSequenceNumber();
                 }
+            } else{
+                System.out.println("Invalid checksum..");
             }
         }
     }
@@ -192,7 +199,7 @@ public class Call {
                 data.setDestination(this.receiverNumber);
                 data.setSequenceNumber(data.hasFlag(DataPacket.FLAG_IS_VIDEO) ? videoSendSequenceNumber++ : voiceSendSequenceNumber++);
                 data.addChecksum();
-
+                data.encrypt(crypto);
                 DatagramPacket p = new DatagramPacket(data.getBuffer(), 0, data.getLength(), this.address, this.port);
 
                 try {
