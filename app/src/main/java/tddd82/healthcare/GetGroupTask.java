@@ -31,7 +31,6 @@ public class GetGroupTask extends AsyncTask<String,Void,String> {
 
     private Context context;
     private JSONArray response;
-    private GoogleMap mMap;
     private MapsActivity mapsActivity;
 
 
@@ -41,13 +40,10 @@ public class GetGroupTask extends AsyncTask<String,Void,String> {
     }
 
     protected String doInBackground(String... params) {
-
         String url = params[0];
 
         RequestQueue mRequestQueue;
-
         mRequestQueue = Volley.newRequestQueue(context, new OkHttpStack(context));
-
         JsonArrayRequest jsonRequest = new JsonArrayRequest(url, new Response.Listener<JSONArray>() {
 
             @Override
@@ -108,10 +104,6 @@ public class GetGroupTask extends AsyncTask<String,Void,String> {
         mRequestQueue.start();
 
         return "Fetching groups";
-    }
-
-    protected void onPostExecute(String result) {
-        return;
     }
 
 }

@@ -43,12 +43,8 @@ class LoginTask extends AsyncTask<String, Void, String> {
     private static final String JSON_FCMTOKEN = "fcmtoken";
     private static final String JSON_ACCEPTED = "accepted";
     private static final String JSON_STATUS = "status";
-    private static final String JSON_DECLINED = "failed";
     private static final String JSON_TOKEN = "token";
     private static final String JSON_MESSAGE = "message";
-    private static final String TEST_TOKEN = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6I" +
-            "kpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.EkN-DOsnsuRjRO6BxXemmJDm3HbxrbRzXglbN2S4sOkopdU4IsDxTI8jO19W_A4K8ZPJijNLis4EZ" +
-            "sHeY559a4DFOd50_OqgHGuERTqYZyuhtF39yxJPAjUESwxk2J5k_4zM3O-vtd1Ghyo4IbqKKSy6J9mTniYJPenn5-HIirE";
 
     public LoginTask(Context context, TaskCallback callback) {
         this.context = context;
@@ -66,11 +62,10 @@ class LoginTask extends AsyncTask<String, Void, String> {
 
         String fcmtoken = FirebaseInstanceId.getInstance().getToken();
 
-        Check();
+        if(!Check()){
+            cancel(true);
+        }
 
-        final boolean connectedToServer = true;
-
-        if (connectedToServer) {
             JSONObject credentials = new JSONObject();
             try {
                 credentials.put(JSON_CARD, Long.parseLong(card));
@@ -81,7 +76,6 @@ class LoginTask extends AsyncTask<String, Void, String> {
             }
 
             RequestQueue mRequestQueue;
-
             mRequestQueue = Volley.newRequestQueue(context, new OkHttpStack(context));
 
             final JsonObjectRequest jsonRequest = new JsonObjectRequest
@@ -93,7 +87,6 @@ class LoginTask extends AsyncTask<String, Void, String> {
                             response = m_response;
 
                             try {
-
                                 preferences = context.getSharedPreferences("tddd82.healthcare", context.MODE_PRIVATE);
                                 editor = preferences.edit();
                                 editor.putString(SHARED_PREDS_TOKEN, response.getString(JSON_TOKEN));
@@ -106,13 +99,8 @@ class LoginTask extends AsyncTask<String, Void, String> {
 
                                 if (response.getString(JSON_STATUS).equals(JSON_ACCEPTED)) {
                                     callback.done();
-                                    //return response.getString(JSON_TOKEN);
-                                } else if (response.getString(JSON_STATUS).equals(JSON_DECLINED)) {
-
-
-                                } else {
-                                    //return response.getString(JSON_MESSAGE);
                                 }
+
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             } catch (NullPointerException e) {
@@ -135,21 +123,8 @@ class LoginTask extends AsyncTask<String, Void, String> {
                     }
                     );
             mRequestQueue.add(jsonRequest);
-            //RQ.start();
             // Start the queue
             mRequestQueue.start();
-        } else {
-
-            try {
-                response = new JSONObject();
-                response.put(JSON_STATUS, JSON_ACCEPTED);
-                response.put(JSON_MESSAGE, "TESTMEDDELANDE");
-                response.put(JSON_TOKEN, TEST_TOKEN);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-
         return "Initialized login";
     }
 

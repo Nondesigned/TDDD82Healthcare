@@ -46,9 +46,7 @@ public class AddPinsToMapTask extends AsyncTask<String,Void,String> {
 
     public AddPinsToMapTask(Context context, MapsActivity mapsActivity){
         this.context = context;
-        this.latLng = latLng;
         this.mapsActivity = mapsActivity;
-        this.groupId = groupId;
     }
 
     @Override
@@ -75,7 +73,6 @@ public class AddPinsToMapTask extends AsyncTask<String,Void,String> {
         }
 
         RequestQueue mRequestQueue;
-
         mRequestQueue = Volley.newRequestQueue(context, new OkHttpStack(context));
 
         final JsonObjectRequest jsonRequest = new JsonObjectRequest

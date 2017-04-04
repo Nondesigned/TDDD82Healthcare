@@ -22,13 +22,14 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class FireMissilesDialogFragment extends DialogFragment {
+public class AddPinDialogFragment extends DialogFragment {
 
     private ArrayAdapter<String> spinAdapter;
 
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+
         // Use the Builder class for convenient dialog construction
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
@@ -40,7 +41,7 @@ public class FireMissilesDialogFragment extends DialogFragment {
         ArrayList<String> arrayList = new ArrayList<String>(Arrays.asList(groupArray));
 
         final Spinner groupSpin = (Spinner)view.findViewById(R.id.groups);
-        spinAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, arrayList);
+        spinAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, arrayList);
         spinAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         groupSpin.setAdapter(spinAdapter);
         TextView latlngTextView = (TextView)view.findViewById(R.id.Latlng);
@@ -50,7 +51,7 @@ public class FireMissilesDialogFragment extends DialogFragment {
                 .setPositiveButton(R.string.fire, new DialogInterface.OnClickListener() {
                     @RequiresApi(api = Build.VERSION_CODES.M)
                     public void onClick(DialogInterface dialog, int id) {
-                        // FIRE ZE MISSILES!
+                        // FIRE ZE MISSILES! (Adding pins to map)
                         AddPinsToMapTask addPinsToMapTask = new AddPinsToMapTask(view.getContext(), latLng, String.valueOf(groupSpin.getSelectedItem()) , (MapsActivity) getActivity());
                         addPinsToMapTask.execute("https://itkand-3-1.tddd82-2017.ida.liu.se:8080/pins", "new pin");
 
