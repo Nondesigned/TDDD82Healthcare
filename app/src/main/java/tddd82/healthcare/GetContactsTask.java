@@ -146,8 +146,8 @@ class GetContactsTask extends AsyncTask<String,Void,String> {
         if (nf != null && nf.isConnected() == true) {
             return true;
         } else {
-            Toast.makeText(context, "No internet connection.!",
-                    Toast.LENGTH_LONG).show();
+//            Toast.makeText(context, "No internet connection.!",
+//                    Toast.LENGTH_LONG).show();
             return false;
         }
     }

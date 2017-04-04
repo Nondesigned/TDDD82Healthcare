@@ -18,6 +18,10 @@ import java.io.OutputStream;
 
 public class CacheManager {
 
+    public static void clear(String dir, Context context){
+        put("", dir,context);
+    }
+
     public static String get(String dir, Context context){
         InputStream inputStream = null;
         try {
