@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.os.StrictMode;
+import android.provider.ContactsContract;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -23,6 +24,7 @@ import java.security.KeyStore;
 import java.security.SecureRandom;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
+import java.util.Random;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -40,23 +42,6 @@ public class StartActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
-
-       /* byte[] IV = {3,3,3,3,3,3,3,3,3,3,4,5,6,7,8,9};
-        byte[] key = {4,4,4,4,4,4,4,4,5,5,5,5,5,5,5,5,5,5,5,6,7,8,9,0,9,8,7,6,5,4,3,4};
-
-        CallCrypto ccc = new CallCrypto();
-        CallCrypto cc = new CallCrypto(ccc.getIV(), ccc.getKey());
-
-        DataPacket p = new DataPacket(0);
-        p.setSource(3);
-        p.setDestination(4);
-        p.setLength(DataPacket.HEADER_SIZE);
-        p.setBufferSize(5);
-        p.setSampleRate(6);
-        p.addChecksum();
-        p.encrypt(ccc);
-
-        p.decrypt(cc);*/
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);

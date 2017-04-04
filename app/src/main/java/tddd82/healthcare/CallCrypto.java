@@ -1,12 +1,10 @@
 package tddd82.healthcare;
 
-import android.provider.Settings;
-
-import java.security.AlgorithmParameters;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Random;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -21,7 +19,6 @@ public class CallCrypto {
 
     private byte[] IV;
     private SecretKey key;
-    private Cipher cipher;
     private IvParameterSpec params;
 
     public CallCrypto(){
@@ -31,14 +28,8 @@ public class CallCrypto {
     public CallCrypto(byte[] IV, byte[] keyRaw){
         this.IV = IV;
         this.key = new SecretKeySpec(keyRaw, "AES");
-        try {
-            this.cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-            this.params = new IvParameterSpec(IV);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (NoSuchPaddingException e) {
-            e.printStackTrace();
-        }
+        this.params = new IvParameterSpec(IV);
+
     }
 
     private void generateKey(){
@@ -48,12 +39,18 @@ public class CallCrypto {
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
-        keyGen.init(256);
+        SecureRandom prng = new SecureRandom();
+
+        Random rng = new Random((((System.currentTimeMillis() << 4) | 57) >> 5 & 0x8e));
+
+        prng.setSeed(rng.nextLong());
+
+        keyGen.init(256, prng);
         this.key = keyGen.generateKey();
         try {
-            this.cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-            this.cipher.init(Cipher.ENCRYPT_MODE, this.key);
-            this.IV = this.cipher.getIV();
+            Cipher c = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            c.init(c.ENCRYPT_MODE, key);
+            this.IV = c.getIV();
             this.params = new IvParameterSpec(IV);
         } catch (Exception ex){
             ex.printStackTrace();
@@ -61,9 +58,12 @@ public class CallCrypto {
     }
 
     public byte[] encrypt(byte[] bytes, int offset, int length){
+        byte[] ret = null;
         try {
-            this.cipher.init(Cipher.ENCRYPT_MODE, key, params);
-            return this.cipher.doFinal(bytes, offset, length);
+            Cipher c = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            c.init(Cipher.ENCRYPT_MODE, key, params);
+            ret = c.doFinal(bytes, offset, length);
+            return ret;
         } catch (InvalidKeyException e) {
             e.printStackTrace();
         } catch (BadPaddingException e) {
@@ -71,6 +71,10 @@ public class CallCrypto {
         } catch (IllegalBlockSizeException e) {
             e.printStackTrace();
         } catch (InvalidAlgorithmParameterException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (NoSuchPaddingException e) {
             e.printStackTrace();
         }
 
@@ -78,9 +82,12 @@ public class CallCrypto {
     }
 
     public byte[] decrypt(byte[] bytes, int offset, int length){
+        byte[] ret = null;
         try {
-            this.cipher.init(Cipher.DECRYPT_MODE, key, params);
-            return this.cipher.doFinal(bytes, offset, length);
+            Cipher c = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            c.init(Cipher.DECRYPT_MODE, key, params);
+            ret = c.doFinal(bytes, offset, length);
+            return ret;
         } catch (InvalidKeyException e) {
             e.printStackTrace();
         } catch (BadPaddingException e) {
@@ -88,6 +95,10 @@ public class CallCrypto {
         } catch (IllegalBlockSizeException e) {
             e.printStackTrace();
         } catch (InvalidAlgorithmParameterException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (NoSuchPaddingException e) {
             e.printStackTrace();
         }
 
