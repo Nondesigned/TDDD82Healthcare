@@ -2,12 +2,14 @@ package tddd82.healthcare;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
 import java.net.Socket;
 import java.security.NoSuchAlgorithmException;
+
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 

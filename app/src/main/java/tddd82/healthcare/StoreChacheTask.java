@@ -2,9 +2,7 @@ package tddd82.healthcare;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;

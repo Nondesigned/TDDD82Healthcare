@@ -2,8 +2,8 @@ package tddd82.healthcare;
 
 import android.content.Intent;
 
-import com.google.firebase.messaging.RemoteMessage;
 import com.google.firebase.messaging.FirebaseMessagingService;
+import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.Map;
 

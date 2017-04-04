@@ -20,6 +20,7 @@ import com.google.android.gms.maps.model.LatLng;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +29,7 @@ import java.util.Map;
  * Created by pergu on 2017-03-10.
  */
 
-public class GetMapPinsTask extends AsyncTask<String,Void,String> {
+public class GetMapPinsTask extends AsyncTask<String, Void, String> {
 
     private Context context;
     private JSONArray response;
@@ -43,43 +44,6 @@ public class GetMapPinsTask extends AsyncTask<String,Void,String> {
         this.mapsActivity = mapsActivity;
     }
 
-    private void saveInCache(JSONArray pins) {
-        CacheManager.put(pins.toString(), "/pins", context);
-    }
-
-    private void saveInCache(LatLng[] pins) {
-        JSONArray JSONpins = new JSONArray();
-        for (LatLng pinLatLng : pins) {
-            JSONObject pin = new JSONObject();
-            try {
-                pin.put("Latitude", pinLatLng.latitude);
-                pin.put("Longitude", pinLatLng.longitude);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            JSONpins.put(pin);
-        }
-        CacheManager.put(JSONpins.toString(), "/pins", context);
-    }
-
-    private LatLng[] retrieveFromCache() {
-
-        try {
-            JSONArray pinArrayJSON = new JSONArray(CacheManager.get("/pins", context));
-            LatLng[] pinsToReturn = new LatLng[pinArrayJSON.length()];
-            for (int i = 0; i < pinArrayJSON.length(); i++) {
-                JSONObject pinJSON = (JSONObject) pinArrayJSON.get(i);
-                LatLng pin = new LatLng(pinJSON.getDouble("Longitude"), pinJSON.getDouble("Latitude"));
-                pinsToReturn[i] = pin;
-            }
-            return pinsToReturn;
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
     protected String doInBackground(String... params) {
 
         url = params[0];
@@ -92,14 +56,14 @@ public class GetMapPinsTask extends AsyncTask<String,Void,String> {
 
             @Override
             public void onResponse(JSONArray m_response) {
-                Log.e("RESPONSE", m_response.toString());
+                Log.d("GETMAPPINSRESPONSE", m_response.toString());
                 CacheManager.put(m_response.toString(), "/pins", context);
                 addPinsToMap(m_response);
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.e("ERRRRROOOORRRRRRR", error.toString());
+                Log.e("GETMAPPINSERROR", error.toString());
                 Log.e("In ERROR", CacheManager.getJSON("/pins", context).toString());
                 addPinsToMap(CacheManager.getJSON("/pins", context));
             }
@@ -126,7 +90,6 @@ public class GetMapPinsTask extends AsyncTask<String,Void,String> {
         };
 
         mRequestQueue.add(jsonRequest);
-        mRequestQueue.start();
 
         return "Fetching markers";
     }
@@ -140,7 +103,6 @@ public class GetMapPinsTask extends AsyncTask<String,Void,String> {
 
     private void addPinsToMap(JSONArray response) {
         JSONArray markerArray = new JSONArray();
-
         for (int i = 0; i < response.length(); i++) {
             try {
                 JSONObject marker = new JSONObject();
@@ -155,6 +117,7 @@ public class GetMapPinsTask extends AsyncTask<String,Void,String> {
 
             }
         }
+
         Log.d("PINS", "Sätter ut pins");
         mapsActivity.setMarkerList(markerArray);
         Log.d("MARKERARRAY", markerArray.toString());

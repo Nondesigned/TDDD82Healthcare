@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -19,7 +18,6 @@ import com.google.android.gms.maps.model.LatLng;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -56,6 +54,7 @@ public class FireMissilesDialogFragment extends DialogFragment {
                         AddPinsToMapTask addPinsToMapTask = new AddPinsToMapTask(view.getContext(), latLng, String.valueOf(groupSpin.getSelectedItem()) , (MapsActivity) getActivity());
                         addPinsToMapTask.execute("https://itkand-3-1.tddd82-2017.ida.liu.se:8080/pins", "new pin");
 
+                        /*
                         JSONArray unLoadedPins = CacheManager.getJSON("/localPins", getContext());
                         for (int i = 0; i<unLoadedPins.length(); i++){
                             try {
@@ -66,7 +65,7 @@ public class FireMissilesDialogFragment extends DialogFragment {
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
-                        }
+                        }*/
 
                     }
                 })

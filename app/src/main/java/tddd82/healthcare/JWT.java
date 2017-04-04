@@ -2,26 +2,16 @@ package tddd82.healthcare;
 
 import android.util.Base64;
 
-import java.io.BufferedInputStream;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.security.Key;
 import java.security.MessageDigest;
 import java.security.PublicKey;
-import java.security.Security;
 import java.security.Signature;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
-import java.security.interfaces.RSAPublicKey;
-import java.util.Arrays;
 import java.util.Iterator;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import javax.crypto.Cipher;
 
 /**
  * JWT

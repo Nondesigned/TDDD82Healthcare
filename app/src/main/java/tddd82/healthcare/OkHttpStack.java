@@ -9,8 +9,6 @@ import android.content.Context;
 import android.util.Log;
 
 import com.android.volley.toolbox.HurlStack;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.OkUrlFactory;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -41,9 +39,9 @@ public class OkHttpStack extends HurlStack {
         this.context = context;
     }
 
+    //Trust our self signed certificate when performing Volley requests by overriding Volleys own httpconnection with our own
     @Override protected HttpURLConnection createConnection(URL url) throws IOException {
         try {
-            Log.d("MACKAN", "createConnection");
             KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
             trustStore.load(null);
             InputStream stream = context.getAssets().open("cert.pem");
@@ -70,7 +68,6 @@ public class OkHttpStack extends HurlStack {
                     return true;
                 }
             });
-            Log.d("MACKAN", "finished");
             return urlConnection;
         } catch (Exception e) {
             Log.v("MAP ERROR:", e.getMessage());

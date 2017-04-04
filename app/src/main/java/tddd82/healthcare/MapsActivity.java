@@ -11,9 +11,9 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
-import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -36,6 +36,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Context context;
     private HashMap<String, String> groupMap;
     private HashMap<Marker, String> markerMap;
+    private HashMap<String, Marker> removeMarkerMap;
     private GetGroupTask getGroupTask;
     private GetMapPinsTask getMapPinsTask;
     private String[] groups;
@@ -59,7 +60,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
 
     }
-
+    //Requests permission from the user to gather data on the users position
     private void requestMapPermission(){
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
             mMap.setMyLocationEnabled(true);
@@ -93,21 +94,35 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    public void addPinsToMap(GoogleMap mMap){
+    public void clearMap(GoogleMap mMap){
         mMap.clear();
-        markerMap = new HashMap<>();
+    }
 
-        for(int i=0; i < markers.length(); i++) {
-            try {
-                Marker marker;
-                JSONObject row = markers.getJSONObject(i);
-                marker = mMap.addMarker(new MarkerOptions().position((LatLng)row.get("latlng")).title(row.getString("type")));
-                markerMap.put(marker, row.getString("id"));
-            }catch (Exception e){
-                Log.d("AddPinsToMap", e.getMessage());
+    public void removePins(String pinId){
+        Marker removeMark = removeMarkerMap.get(pinId);
+        removeMark.remove();
+        markerMap.remove(removeMark);
+    }
+
+    public void addPinsToMap(GoogleMap mMap){
+        clearMap(mMap);
+        markerMap = new HashMap<>();
+        removeMarkerMap = new HashMap<>();
+        if(markers != null ) {
+            for (int i = 0; i < markers.length(); i++) {
+                try {
+                    Marker marker;
+                    JSONObject row = markers.getJSONObject(i);
+                    marker = mMap.addMarker(new MarkerOptions().position((LatLng) row.get("latlng")).title(row.getString("type")));
+                    removeMarkerMap.put(row.getString("id"), marker);
+                    markerMap.put(marker, row.getString("id"));
+                } catch (Exception e) {
+                    Log.d("AddPinsToMap", e.getMessage());
+                }
             }
         }
     }
+
     public void setMarkerList(JSONArray markerList){
         this.markers = markerList;
     }
@@ -161,6 +176,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mGoogleApiClient.connect();
     }
 
+    //Sets parameters on current location update
     @Override
     public void onConnected(Bundle connectionHint) {
 
@@ -174,12 +190,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
     }
-
+    //Required method for LocationListener
     @Override
     public void onConnectionSuspended(int i) {
 
     }
-
+    //Required method for LocationLitsener
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
@@ -193,7 +209,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
         }
     }
-
+    //Zooms to current location on start, currently uses boolean to only do once
     @Override
     public void onLocationChanged(Location location) {
         mLastLocation = location;
