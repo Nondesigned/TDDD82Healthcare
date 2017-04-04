@@ -12,7 +12,7 @@ public class PushNotice extends FirebaseMessagingService {
     }
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage){
-        Intent callingintent = new Intent(this,callingActivity.class);
+        Intent callingintent = new Intent(this,CallingActivity.class);
         callingintent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         Map<String,String> payload = remoteMessage.getData();
         if(payload.containsKey("CALLER")){

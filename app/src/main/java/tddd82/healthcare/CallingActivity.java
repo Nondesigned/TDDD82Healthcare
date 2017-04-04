@@ -15,7 +15,7 @@ import android.widget.TextView;
 import com.auth0.android.jwt.JWT;
 
 //Mottagare
-public class callingActivity extends AppCompatActivity {
+public class CallingActivity extends AppCompatActivity {
 
     private final Event CallState = new Event(){
         @Override

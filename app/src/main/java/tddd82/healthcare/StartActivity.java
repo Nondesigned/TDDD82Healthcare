@@ -1,17 +1,48 @@
 package tddd82.healthcare;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.os.Bundle;
+import android.content.res.AssetManager;
+import android.graphics.Bitmap;
+import android.graphics.Typeface;
+import android.os.BatteryManager;
 import android.os.StrictMode;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.view.MenuItem;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.Toast;
+
+import java.io.BufferedInputStream;
+import java.io.InputStream;
+import java.security.KeyStore;
+import java.security.SecureRandom;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateFactory;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
+import javax.security.cert.CertificateException;
+import javax.security.cert.X509Certificate;
 
 public class StartActivity extends AppCompatActivity {
     Context context = this;
@@ -22,6 +53,9 @@ public class StartActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
+
+        BatteryMng.setContext(this);
+        Toast.makeText(context, String.valueOf(BatteryMng.getPercentage()), Toast.LENGTH_SHORT).show();
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
@@ -70,7 +104,7 @@ public class StartActivity extends AppCompatActivity {
                 if (intent.hasExtra("TYPE")) {
                     String type = intent.getStringExtra("TYPE");
                     if (type.equals("call")) {
-                        Intent callingIntent = new Intent(this, callingActivity.class);
+                        Intent callingIntent = new Intent(this, CallingActivity.class);
                         String callerid = intent.getStringExtra("CALLER");
                         callingIntent.putExtra("CALLER", callerid);
                         startActivity(callingIntent);
