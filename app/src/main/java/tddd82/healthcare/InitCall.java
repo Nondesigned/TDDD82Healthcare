@@ -68,7 +68,7 @@ public class InitCall extends Thread implements Runnable{
     public void send(int typeOfFlag){
         ControlFlags flags = new ControlFlags();
 
-        if(BatteryMng.doVideo(context)) {
+        if(BatteryMng.doVideo()) {
             flags.setFlag(ControlFlag.ENDVID, true);
         }
         switch (typeOfFlag) {
