@@ -3,11 +3,13 @@ package tddd82.healthcare;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
+import android.os.BatteryManager;
 import android.os.StrictMode;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -21,6 +23,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import java.io.BufferedInputStream;
 import java.io.InputStream;
@@ -50,6 +53,15 @@ public class StartActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
+
+        IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+        Intent batteryStatus = context.registerReceiver(null, ifilter);
+
+        int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+        int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+
+        float batteryPct = level / (float)scale;
+        Toast.makeText(context, String.valueOf(batteryPct), Toast.LENGTH_SHORT).show();
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
@@ -98,7 +110,7 @@ public class StartActivity extends AppCompatActivity {
                 if (intent.hasExtra("TYPE")) {
                     String type = intent.getStringExtra("TYPE");
                     if (type.equals("call")) {
-                        Intent callingIntent = new Intent(this, callingActivity.class);
+                        Intent callingIntent = new Intent(this, CallingActivity.class);
                         String callerid = intent.getStringExtra("CALLER");
                         callingIntent.putExtra("CALLER", callerid);
                         startActivity(callingIntent);
