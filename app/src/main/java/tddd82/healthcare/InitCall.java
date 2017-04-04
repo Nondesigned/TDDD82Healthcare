@@ -1,7 +1,11 @@
 package tddd82.healthcare;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.os.BatteryManager;
+
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -63,6 +67,10 @@ public class InitCall extends Thread implements Runnable{
 
     public void send(int typeOfFlag){
         ControlFlags flags = new ControlFlags();
+
+        if(BatteryMng.doVideo(context)) {
+            flags.setFlag(ControlFlag.ENDVID, true);
+        }
         switch (typeOfFlag) {
             case 0:
                 flags.setFlag(INITCALL, true);

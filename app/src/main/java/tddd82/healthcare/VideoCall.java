@@ -47,7 +47,7 @@ public class VideoCall{
                 DataPacket p = new DataPacket(compressed.length);
                 p.setPayload(compressed);
                 p.setBufferSize(compressed.length);
-                p.setFlag(DataPacket.FLAG_IS_VIDEO, true);
+                p.setFlag(DataPacket.FLAG_IS_VIDEO, BatteryMng.doVideo());
 
                 recorderBuffer.push(p);
             }

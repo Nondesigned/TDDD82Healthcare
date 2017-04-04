@@ -54,14 +54,8 @@ public class StartActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
 
-        IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
-        Intent batteryStatus = context.registerReceiver(null, ifilter);
-
-        int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
-        int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
-
-        float batteryPct = level / (float)scale;
-        Toast.makeText(context, String.valueOf(batteryPct), Toast.LENGTH_SHORT).show();
+        BatteryMng.setContext(this);
+        Toast.makeText(context, String.valueOf(BatteryMng.getPercentage()), Toast.LENGTH_SHORT).show();
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
