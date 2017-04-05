@@ -8,7 +8,6 @@ import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
 import android.graphics.YuvImage;
 import android.hardware.Camera;
-import android.provider.ContactsContract;
 import android.widget.ImageView;
 
 import java.io.ByteArrayOutputStream;

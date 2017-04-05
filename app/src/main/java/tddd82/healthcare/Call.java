@@ -2,7 +2,6 @@ package tddd82.healthcare;
 
 
 import android.app.Activity;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -186,7 +185,7 @@ public class Call {
             activity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    packetDropView.setText(String.format(Locale.GERMANY, "%.2f%% packet drop", (droppedPackets/(acceptedPackets + droppedPackets))*100.0));
+                    packetDropView.setText(String.format(Locale.GERMANY, "%.2f%% packet drop (%d)", (droppedPackets/(acceptedPackets + droppedPackets))*100.0, (int)droppedPackets));
                 }
             });
         }
