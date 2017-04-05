@@ -77,7 +77,7 @@ public class callingActivity extends AppCompatActivity {
                     public void onTimeout(int currentSequenceNumber, int destinationNumber) {
 
                     }
-                }, callCrypto, displayView, displayActivity);
+                }, callCrypto, displayView, displayActivity, (TextView)findViewById(R.id.textView2));
 
                 init.send(2, callCrypto);
                 init.start();

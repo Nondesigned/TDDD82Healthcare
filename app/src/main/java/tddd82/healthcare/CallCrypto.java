@@ -41,7 +41,7 @@ public class CallCrypto {
         }
         SecureRandom prng = new SecureRandom();
 
-        Random rng = new Random((((System.currentTimeMillis() << 4) | 57) >> 5 & 0x8e));
+        Random rng = new Random((((System.currentTimeMillis() << 4) | 57) & 0x8e));
 
         prng.setSeed(rng.nextLong());
 
