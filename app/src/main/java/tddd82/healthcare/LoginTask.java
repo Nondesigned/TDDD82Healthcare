@@ -63,6 +63,7 @@ class LoginTask extends AsyncTask<String, Void, String> {
         String card = params[0];
         String password = params[1];
         String url = params[2];
+        String fafa = "fafa";
 
         String fcmtoken = FirebaseInstanceId.getInstance().getToken();
 
