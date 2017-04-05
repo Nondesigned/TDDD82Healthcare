@@ -105,6 +105,9 @@ public class VoiceCall {
 
             DataPacket data = receiverBuffer.poll();
 
+            if(data == null)
+                continue;
+
             int sampleRate = data.getSampleRate();
             int bufferSize = data.getBufferSize();
 

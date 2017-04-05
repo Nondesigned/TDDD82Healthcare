@@ -68,4 +68,15 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true" />
 
+    <TextView
+        android:text="TextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView2"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_toRightOf="@+id/decline"
+        android:layout_toEndOf="@+id/decline" />
+
 </RelativeLayout>

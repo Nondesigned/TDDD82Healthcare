@@ -6,21 +6,18 @@ import java.util.Arrays;
 public class DataPacket {
 
 
-    private final static int HEADER_SIZE = 25;
+    public final static int HEADER_SIZE = 57;
     public final static int MAX_SIZE = 65507 - HEADER_SIZE;
 
     public final static int FLAG_IS_VIDEO = 1;
     public final static int FLAG_ENCODING = 2;
 
     private byte[] buffer;
-    private int dataSize;
-    private int length;
     private long creationTime;
 
     public DataPacket(int dataSize){
-        this.dataSize = dataSize;
-        this.length = dataSize + HEADER_SIZE;
         this.buffer = new byte[HEADER_SIZE + dataSize];
+        setLength(dataSize + HEADER_SIZE);
         this.creationTime = System.currentTimeMillis();
     }
 
@@ -33,7 +30,8 @@ public class DataPacket {
     }
 
     public int getLength(){
-        return length;
+        byte[] tmp = Arrays.copyOfRange(this.buffer, 8, 12);
+        return ByteBuffer.wrap(tmp).getInt();
     }
 
     public int getPayloadIndex(){
@@ -41,7 +39,7 @@ public class DataPacket {
     }
 
     public int getPayloadLength(){
-        return dataSize;
+        return getLength() - HEADER_SIZE;
     }
 
     public int getSource(){
@@ -55,7 +53,7 @@ public class DataPacket {
     }
 
     public int getSampleRate(){
-        byte[] tmp = Arrays.copyOfRange(this.buffer, 8, 12);
+        byte[] tmp = Arrays.copyOfRange(this.buffer, 16, 20);
         return ByteBuffer.wrap(tmp).getInt();
     }
 
@@ -65,19 +63,20 @@ public class DataPacket {
     }
 
     public byte getFlags(){
-        return buffer[16];
+        return buffer[20];
     }
 
     public boolean hasFlag(int flag){
         return ServerUtils.getBit(getFlags(), flag) > 0;
     }
 
-    public int getChecksum(){
-        byte[] tmp = Arrays.copyOfRange(this.buffer, 17, 21);
-        return ByteBuffer.wrap(tmp).getInt();
+    public byte[] getChecksum(){
+        byte[] tmp = Arrays.copyOfRange(this.buffer, 25, 57);
+        return tmp;
     }
 
     public int getSequenceNumber(){
+
         byte[] tmp = Arrays.copyOfRange(this.buffer, 21, 25);
         return ByteBuffer.wrap(tmp).getInt();
     }
@@ -100,9 +99,14 @@ public class DataPacket {
         setRange(tmp, this.buffer, 4);
     }
 
+    public void setLength(int length){
+        byte[] tmp = ByteBuffer.allocate(4).putInt(length).array();
+        setRange(tmp, this.buffer, 8);
+    }
+
     public void setSampleRate(int sampleRate){
         byte[] tmp = ByteBuffer.allocate(4).putInt(sampleRate).array();
-        setRange(tmp, this.buffer, 8);
+        setRange(tmp, this.buffer, 16);
     }
 
     public void setBufferSize(int bufferSize){
@@ -111,7 +115,7 @@ public class DataPacket {
     }
 
     public void setFlags(byte flags){
-        this.buffer[16] = flags;
+        this.buffer[20] = flags;
     }
 
     public void setFlag(int flag, boolean value){
@@ -120,9 +124,8 @@ public class DataPacket {
         setFlags(mod);
     }
 
-    public void setChecksum(int checksum){
-        byte[] tmp = ByteBuffer.allocate(4).putInt(checksum).array();
-        setRange(tmp, this.buffer, 17);
+    public void setChecksum(byte[] checksum){
+        setRange(checksum, this.buffer, 25);
     }
 
     public void setSequenceNumber(int sequenceNumber){
@@ -130,12 +133,19 @@ public class DataPacket {
         setRange(tmp, this.buffer, 21);
     }
 
+
     public boolean validChecksum(){
-        return getChecksum() == ServerUtils.getCRC32(buffer, 0, 17);
+        byte[] sha = ServerUtils.getSHA256(buffer, 0, 25);
+        for (int i = 25; i < 57; i++){
+            if (sha[i - 25] != buffer[i])
+                return false;
+        }
+
+        return true;
     }
 
     public void addChecksum(){
-        setChecksum(ServerUtils.getCRC32(buffer, 0, 17));
+        setChecksum(ServerUtils.getSHA256(buffer, 0, 25));
     }
 
     public static byte[] setRange(byte[] source, byte[] destination, int start){
@@ -145,15 +155,37 @@ public class DataPacket {
         return destination;
     }
 
-    public static byte[] setRange(byte[] source, byte[] destination, int start, int end ){
-        for(int i=start; i <= end; i++)
-            destination[i]=source[i-start];
-        return destination;
-    }
-    public static void encryptPacket(String key){
+    public void encrypt(CallCrypto cc){
+        int src = getSource();
+        int dst = getDestination();
+        int len = getLength();
+        byte[] encrypted = cc.encrypt(this.buffer, 12, len - 12);
+        if (encrypted == null){
+            System.out.println(src);
+        }
+        this.buffer = new byte[encrypted.length + 12];
+        setSource(src);
+        setDestination(dst);
+        setLength(encrypted.length + 12);
+        for (int i = 0; i < encrypted.length; i++)
+            buffer[i + 12] = encrypted[i];
+        //setRange(encrypted, buffer, 12);
 
     }
-    public static void decryptPacket(String key){
 
+    public void decrypt(CallCrypto cc){
+        int totalLength = getLength();
+        int src = getSource();
+        int dst = getDestination();
+        byte[] decrypted = cc.decrypt(this.buffer, 12, totalLength - 12);
+        if (decrypted == null) {
+            System.out.println(dst);
+        }
+        this.buffer = new byte[decrypted.length + 12];
+        for (int i = 0; i < decrypted.length; i++)
+            buffer[i + 12] = decrypted[i];
+        setSource(src);
+        setDestination(dst);
+        setLength(decrypted.length + 12);
     }
 }
