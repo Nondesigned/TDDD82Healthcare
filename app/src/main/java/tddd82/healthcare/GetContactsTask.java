@@ -5,6 +5,7 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.os.Looper;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -39,9 +40,6 @@ class GetContactsTask extends AsyncTask<String,Void,String> {
 
     public GetContactsTask(Context context){
         this.context = context;
-        alertDialog = new AlertDialog.Builder(context).create();
-        alertDialog.setTitle("test");
-
     }
 
     protected String doInBackground(String... params) {
@@ -130,8 +128,6 @@ class GetContactsTask extends AsyncTask<String,Void,String> {
 
     @Override
     protected void onPreExecute() {
-
-        alertDialog.setTitle("Retriving ID");
     }
 
     @Override
