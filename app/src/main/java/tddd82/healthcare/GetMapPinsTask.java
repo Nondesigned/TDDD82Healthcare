@@ -32,10 +32,8 @@ import java.util.Map;
 public class GetMapPinsTask extends AsyncTask<String, Void, String> {
 
     private Context context;
-    private JSONArray response;
     private GoogleMap mMap;
     private MapsActivity mapsActivity;
-    private LatLng[] testPins;
     private String url;
 
     public GetMapPinsTask(Context context, GoogleMap mMap, MapsActivity mapsActivity) {
@@ -90,7 +88,7 @@ public class GetMapPinsTask extends AsyncTask<String, Void, String> {
         };
 
         mRequestQueue.add(jsonRequest);
-
+        mRequestQueue.start();
         return "Fetching markers";
     }
 

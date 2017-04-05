@@ -137,9 +137,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             bundle.putDouble("longitude", latLng.longitude);
             bundle.putDouble("latitude", latLng.latitude);
 
-            FireMissilesDialogFragment fire= new FireMissilesDialogFragment();
-            fire.setArguments(bundle);
-            fire.show(getFragmentManager(),"AddPin");
+            AddPinDialogFragment addPin= new AddPinDialogFragment();
+            addPin.setArguments(bundle);
+            addPin.show(getFragmentManager(),"AddPin");
         }
     };
 

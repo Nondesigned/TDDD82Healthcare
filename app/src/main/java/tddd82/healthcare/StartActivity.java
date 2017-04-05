@@ -171,11 +171,6 @@ public class StartActivity extends AppCompatActivity {
         startActivity(callIntent);
     }
 
-    public void getContactsFromServer(){
-
-        GetContactsTask task = new GetContactsTask(this);
-        task.execute("https://itkand-3-1.tddd82-2017.ida.liu.se:8080/contacts");
-    }
 
     public void showMap(){
         Intent showMap = new Intent(context,MapsActivity.class);
