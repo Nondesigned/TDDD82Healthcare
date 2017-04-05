@@ -13,7 +13,7 @@ import android.widget.ImageView;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-public class VideoCall{
+public class    VideoCall{
 
     private Camera cameraInstance;
     private Camera.Parameters cameraParameters;
