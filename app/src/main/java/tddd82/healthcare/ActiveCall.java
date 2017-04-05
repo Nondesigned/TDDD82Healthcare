@@ -35,7 +35,7 @@ public class ActiveCall extends AppCompatActivity {
                 public void onTimeout(int currentSequenceNumber, int destinationNumber) {
 
                 }
-            }, new CallCrypto(IV, key), (ImageView)findViewById(R.id.imageView2), thisIsIt);
+            }, new CallCrypto(IV, key), (ImageView)findViewById(R.id.imageView2), thisIsIt, (TextView)findViewById(R.id.textView));
 
             if (callInstance.initialize() != CallError.SUCCESS){
 

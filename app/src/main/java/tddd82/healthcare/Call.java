@@ -3,6 +3,7 @@ package tddd82.healthcare;
 
 import android.app.Activity;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -11,6 +12,7 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.util.Locale;
 
 public class Call {
 
@@ -44,9 +46,11 @@ public class Call {
     private VideoCall videoCall;
 
     private Activity activity;
+    private TextView packetDropView;
+    private float droppedPackets = 0, acceptedPackets = 0;
 
 
-    public Call(String host, int port, int senderPhoneNumber, int receiverPhoneNumber, CallEvent eventHandler, CallCrypto crypto, ImageView displayView, Activity activity){
+    public Call(String host, int port, int senderPhoneNumber, int receiverPhoneNumber, CallEvent eventHandler, CallCrypto crypto, ImageView displayView, Activity activity, TextView packetDropView){
         this.host = host;
         this.port = port;
         this.eventHandler = eventHandler;
@@ -66,6 +70,8 @@ public class Call {
 
         this.voiceCall = new VoiceCall(voiceReceiverBuffer, voiceRecordBuffer, eventHandler);
         this.videoCall = new VideoCall(videoRecordBuffer, videoReceiverBuffer, displayView, activity);
+        this.packetDropView = packetDropView;
+        this.activity = activity;
 
         this.alive = false;
         this.initialized = false;
@@ -163,6 +169,7 @@ public class Call {
 
             data.decrypt(crypto);
             if (data.validChecksum()) {
+                acceptedPackets+= 1.0;
                 if (data.hasFlag(DataPacket.FLAG_IS_VIDEO) && data.getSequenceNumber() >= videoLastReceivedSequenceNumber) {
                     videoReceiverBuffer.push(data);
                     videoLastReceivedSequenceNumber = data.getSequenceNumber();
@@ -171,8 +178,16 @@ public class Call {
                     voiceLastReceivedSequenceNumber = data.getSequenceNumber();
                 }
             } else{
+                droppedPackets += 1.0;
                 System.out.println("Invalid checksum..");
             }
+
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    packetDropView.setText(String.format(Locale.GERMANY, "%.2f%% packet drop (%d)", (droppedPackets/(acceptedPackets + droppedPackets))*100.0, (int)droppedPackets));
+                }
+            });
         }
     }
 

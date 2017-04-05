@@ -8,13 +8,12 @@ import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
 import android.graphics.YuvImage;
 import android.hardware.Camera;
-import android.provider.ContactsContract;
 import android.widget.ImageView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-public class VideoCall{
+public class    VideoCall{
 
     private Camera cameraInstance;
     private Camera.Parameters cameraParameters;
@@ -34,10 +33,21 @@ public class VideoCall{
 
     private int imageQuality = 10;
 
+    private long fpsTimestamp = 0;
+    private int currentFps = 0;
+    private int framesRecorded = 0;
+
     private final Camera.PreviewCallback onFrame = new Camera.PreviewCallback(){
 
         @Override
         public void onPreviewFrame(byte[] data, Camera camera) {
+
+            if (fpsTimestamp + 1000 < System.currentTimeMillis()){
+                fpsTimestamp = System.currentTimeMillis();
+                currentFps = framesRecorded;
+                framesRecorded = 0;
+            }
+            framesRecorded++;
 
             YuvImage yuv = new YuvImage(data, cameraParameters.getPreviewFormat(), imageWidth, imageHeight, null);
 
@@ -49,6 +59,7 @@ public class VideoCall{
                 p.setPayload(compressed);
                 p.setBufferSize(compressed.length);
                 p.setFlag(DataPacket.FLAG_IS_VIDEO, true);
+                p.setSampleRate(imageQuality);
 
                 recorderBuffer.push(p);
             }
@@ -106,7 +117,7 @@ public class VideoCall{
         cameraParameters = cameraInstance.getParameters();
         cameraParameters.setJpegQuality(imageQuality);
         cameraParameters.setPreviewFormat(ImageFormat.NV21);
-
+        cameraParameters.setRotation(90);
 
         try {
             cameraInstance.setPreviewTexture(displayTexture);
@@ -125,21 +136,35 @@ public class VideoCall{
     }
 
     private void playbackWorker(){
+
+        long lastPlayback = System.currentTimeMillis();
+
         while(alive){
             if (!playbackBuffer.empty()){
+                lastPlayback = System.currentTimeMillis();
+                if (imageQuality < 30)
+                    imageQuality++;
 
                 DataPacket p = playbackBuffer.poll();
 
-                final Bitmap bm = BitmapFactory.decodeByteArray(p.getBuffer(), DataPacket.HEADER_SIZE, p.getBufferSize());
-                if (bm != null){
-                    activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            displayView.setImageBitmap(bm);
-                        }
-                    });
+                if (p.getBufferSize() < DataPacket.MAX_SIZE){
+                    final Bitmap bm = BitmapFactory.decodeByteArray(p.getBuffer(), DataPacket.HEADER_SIZE, p.getBufferSize());
+                    if (bm != null) {
+                        activity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                displayView.setImageBitmap(bm);
+                            }
+                        });
+                    }
                 }
-            } else{
+            } else {
+                if (lastPlayback + 250 < System.currentTimeMillis()) {
+                    lastPlayback = System.currentTimeMillis();
+                    if (imageQuality > 1) {
+                        imageQuality--;
+                    }
+                }
                 try{
                     Thread.sleep(1);
                 } catch (Exception ex){
