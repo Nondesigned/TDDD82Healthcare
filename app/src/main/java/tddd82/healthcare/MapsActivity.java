@@ -25,6 +25,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
@@ -43,6 +44,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private SupportMapFragment mapFragment;
     private JSONArray markers;
     private boolean onStart = true;
+    private MapsActivity thisActivity;
+
 
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
@@ -52,12 +55,39 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        thisActivity = this;
         context = this;
+        groups = new String[0];
         new GetGroupTask(this, this).execute("https://itkand-3-1.tddd82-2017.ida.liu.se:8080/groups");
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        new Thread(new Runnable(){
+            @Override
+            public void run(){
+                while(true) {
+                    JSONArray unLoadedPins = CacheManager.getJSON("/localPins", context);
+                    CacheManager.clear("/localPins", context);
+                    for (int i = 0; i < unLoadedPins.length(); i++) {
+                        try {
+                            JSONObject p = unLoadedPins.getJSONObject(i);
+                            AddPinsToMapTask addPinsToMapTaskLoop = new AddPinsToMapTask(context, thisActivity);
+                            addPinsToMapTaskLoop.execute("https://itkand-3-1.tddd82-2017.ida.liu.se:8080/pins", p.toString());
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    try {
+                        Thread.sleep(7000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
 
     }
     //Requests permission from the user to gather data on the users position

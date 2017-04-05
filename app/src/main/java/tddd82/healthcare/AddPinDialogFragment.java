@@ -56,7 +56,7 @@ public class AddPinDialogFragment extends DialogFragment {
                         addPinsToMapTask.execute("https://itkand-3-1.tddd82-2017.ida.liu.se:8080/pins", "new pin");
 
 
-                        JSONArray unLoadedPins = CacheManager.getJSON("/localPins", getContext());
+                        /*JSONArray unLoadedPins = CacheManager.getJSON("/localPins", getContext());
                         CacheManager.clear("/localPins", getContext());
                         for (int i = 0; i<unLoadedPins.length(); i++){
                             try {
@@ -67,7 +67,7 @@ public class AddPinDialogFragment extends DialogFragment {
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
-                        }
+                        }*/
 
                     }
                 })

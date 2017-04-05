@@ -11,6 +11,7 @@ import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.os.BatteryManager;
 import android.os.StrictMode;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
