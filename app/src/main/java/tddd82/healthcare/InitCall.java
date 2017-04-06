@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.BatteryManager;
+import android.provider.Settings;
 
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -37,8 +38,9 @@ public class InitCall extends Thread implements Runnable{
     Socket tcpSocket;
     ControlPacket ctrl;
     //private String key;
-    String ip = "130.236.181.196";
-    private int port = 1337;
+    //String ip = "130.236.181.196";
+    String ip = GlobalVariables.getCallServerIp();
+    private int port = GlobalVariables.getCallServerTCPPort();
     int sourceNr;
     int destNr;
     private Context context;
@@ -150,7 +152,7 @@ public class InitCall extends Thread implements Runnable{
                     callEvent.onCallEnded();
                 }
                 if(flag2 == true){
-                    callEvent.onCallStarted(this.ip, this.port, this.sourceNr, this.destNr, receivedPacket.getIV(), receivedPacket.getKey());
+                    callEvent.onCallStarted(this.ip, GlobalVariables.getCallServerUDPPort(), this.sourceNr, this.destNr, receivedPacket.getIV(), receivedPacket.getKey());
                 }
 
             } catch (Exception e) {

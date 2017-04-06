@@ -140,13 +140,10 @@ public class Call {
         alive = false;
         initialized = false;
 
-
-
         voiceCall.terminate();
         videoCall.terminate();
 
         if(socket != null){
-            socket.disconnect();
             socket.close();
         }
 
@@ -168,7 +165,7 @@ public class Call {
             }
 
             data.decrypt(crypto);
-            if (data.validChecksum()) {
+            if (data.validChecksum() && data.getSource() == this.receiverNumber) {
                 acceptedPackets+= 1.0;
                 if (data.hasFlag(DataPacket.FLAG_IS_VIDEO) && data.getSequenceNumber() >= videoLastReceivedSequenceNumber) {
                     videoReceiverBuffer.push(data);
@@ -177,6 +174,7 @@ public class Call {
                     voiceReceiverBuffer.push(data);
                     voiceLastReceivedSequenceNumber = data.getSequenceNumber();
                 }
+
             } else{
                 droppedPackets += 1.0;
                 System.out.println("Invalid checksum..");

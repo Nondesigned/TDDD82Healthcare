@@ -37,6 +37,8 @@ public class    VideoCall{
     private int currentFps = 0;
     private int framesRecorded = 0;
 
+    private boolean canIncreaseQuality;
+
     private final Camera.PreviewCallback onFrame = new Camera.PreviewCallback(){
 
         @Override
@@ -49,24 +51,27 @@ public class    VideoCall{
             }
             framesRecorded++;*/
 
-            Camera.Size previewSize = camera.getParameters().getPreviewSize();
-            YuvImage yuv = new YuvImage(data, ImageFormat.NV21, previewSize.width, previewSize.height, null);
+            if (alive){
+                Camera.Size previewSize = cameraParameters.getPreviewSize();
+                YuvImage yuv = new YuvImage(data, ImageFormat.NV21, previewSize.width, previewSize.height, null);
 
-            //YuvImage yuv = new YuvImage(data, cameraParameters.getPreviewFormat(), imageWidth, imageHeight, null);
+                //YuvImage yuv = new YuvImage(data, cameraParameters.getPreviewFormat(), imageWidth, imageHeight, null);
 
-            ByteArrayOutputStream os = new ByteArrayOutputStream();
-            boolean ret = yuv.compressToJpeg(new Rect(0, 0, previewSize.width, previewSize.height), imageQuality, os);
-            if (ret) {
-                byte[] compressed = os.toByteArray();
-                DataPacket p = new DataPacket(compressed.length);
-                p.setPayload(compressed);
-                p.setBufferSize(compressed.length);
-                p.setFlag(DataPacket.FLAG_IS_VIDEO, true);
-                p.setSampleRate(imageQuality);
+                ByteArrayOutputStream os = new ByteArrayOutputStream();
+                boolean ret = yuv.compressToJpeg(new Rect(0, 0, previewSize.width, previewSize.height), imageQuality, os);
 
-                recorderBuffer.push(p);
-            } else{
-                System.out.println("Failed to compress");
+                if (ret) {
+                    byte[] compressed = os.toByteArray();
+                    DataPacket p = new DataPacket(compressed.length);
+                    p.setPayload(compressed);
+                    p.setBufferSize(compressed.length);
+                    p.setFlag(DataPacket.FLAG_IS_VIDEO, true);
+                    p.setSampleRate(canIncreaseQuality ? 1 : 0);
+
+                    recorderBuffer.push(p);
+                } else {
+                    System.out.println("Failed to compress");
+                }
             }
         }
     };
@@ -78,6 +83,7 @@ public class    VideoCall{
         displayView = view;
         this.recorderBuffer = recorderBuffer;
         this.playbackBuffer = playbackBuffer;
+        this.canIncreaseQuality = false;
 
     }
 
@@ -107,7 +113,9 @@ public class    VideoCall{
         this.alive = false;
         if (cameraInstance != null){
             cameraInstance.stopPreview();
+            cameraInstance.setPreviewCallback(null);
             cameraInstance.release();
+            cameraInstance = null;
             displayTexture.release();
         }
     }
@@ -120,7 +128,6 @@ public class    VideoCall{
         }
 
         cameraParameters = cameraInstance.getParameters();
-        cameraParameters.setJpegQuality(imageQuality);
         cameraParameters.setPreviewFormat(ImageFormat.NV21);
 
         try {
@@ -145,13 +152,22 @@ public class    VideoCall{
 
         while(alive){
             if (!playbackBuffer.empty()){
-                lastPlayback = System.currentTimeMillis();
-                /*if (imageQuality < 30) {
-                    imageQuality++;
-                    System.out.println("Increasing quality: " + ((Integer)imageQuality).toString());
-                }*/
+
 
                 DataPacket p = playbackBuffer.poll();
+
+                canIncreaseQuality = p.getSampleRate() == 1;
+
+                lastPlayback = System.currentTimeMillis();
+                if (imageQuality < 30 && canIncreaseQuality) {
+                    imageQuality++;
+                    System.out.println("Increasing quality: " + ((Integer)imageQuality).toString());
+                } else if (!canIncreaseQuality){
+                    if (imageQuality > 1) {
+                        imageQuality--;
+                        System.out.println("Decreasing quality: " + ((Integer) imageQuality).toString());
+                    }
+                }
 
                 if (p.getBufferSize() < DataPacket.MAX_SIZE){
 
@@ -166,20 +182,17 @@ public class    VideoCall{
                     }
                 }
             } else {
-                /*if (lastPlayback + 250 < System.currentTimeMillis()) {
+                if (lastPlayback + 250 < System.currentTimeMillis()) {
                     lastPlayback = System.currentTimeMillis();
-                    if (imageQuality > 5) {
+                    if (imageQuality > 1) {
                         imageQuality--;
+                        canIncreaseQuality = false;
                         System.out.println("Decreasing quality: " + ((Integer)imageQuality).toString());
-                        cameraParameters.setJpegQuality(imageQuality);
-                        cameraInstance.setParameters(cameraParameters);
                     }
-                }*/
-                try{
-                    Thread.sleep(1);
-                } catch (Exception ex){
-
+                } else{
+                    canIncreaseQuality = true;
                 }
+                sleep(1);
             }
         }
     }
@@ -201,6 +214,22 @@ public class    VideoCall{
         }
 
         return camera;
+    }
+
+    private void sleep(int ms){
+        try{
+            Thread.sleep(ms);
+        } catch (Exception ex){
+
+        }
+    }
+
+    public boolean getCanIncreaseQuality(){
+        return canIncreaseQuality;
+    }
+
+    public void setCanIncreaseQuality(boolean b){
+        this.canIncreaseQuality = b;
     }
 
 };

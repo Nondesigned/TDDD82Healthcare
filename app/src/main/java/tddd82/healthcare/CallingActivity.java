@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -59,6 +60,7 @@ public class CallingActivity extends AppCompatActivity {
         tokenText.setText(Integer.toString(caller));
         final Button decline = (Button) findViewById(R.id.decline);
         final Button answer = (Button) findViewById(R.id.answer);
+        final Button hangup = (Button) findViewById(R.id.hangup);
 
 
         SharedPreferences sharedPreferences = context.getSharedPreferences("tddd82.healthcare", context.MODE_PRIVATE);
@@ -73,7 +75,7 @@ public class CallingActivity extends AppCompatActivity {
 
                 callCrypto = new CallCrypto();
                 displayView = (ImageView)findViewById(R.id.imageView3);
-                callInstance = new Call("130.236.181.196", 1338, sourceNr, caller,  new CallEvent() {
+                callInstance = new Call(GlobalVariables.getCallServerIp(), GlobalVariables.getCallServerUDPPort(), sourceNr, caller,  new CallEvent() {
                     @Override
                     public void onTimeout(int currentSequenceNumber, int destinationNumber) {
 
@@ -88,24 +90,30 @@ public class CallingActivity extends AppCompatActivity {
                 callInstance.start();
 
                 answer.setVisibility(View.GONE);
+                answer.setClickable(false);
                 activeCall = true;
-                decline.setText("Hang Up");
+                decline.setVisibility(View.GONE);
+                decline.setClickable(false);
+                hangup.setClickable(true);
+                hangup.setVisibility(View.VISIBLE);
             }
         });
         //Sends reject message
         decline.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                init.send(3, null);
+                finish();
+            }
+        });
+        hangup.setOnClickListener(new View.OnClickListener() {
+            @Override
             public void onClick(View v) {
                 if(activeCall){
                     init.send(1, null);
                     CallState.onCallEnded();
 
                 }
-                else {
-                    init.send(3, null);
-                }
-                finish();
             }
         });
-
 }
 }

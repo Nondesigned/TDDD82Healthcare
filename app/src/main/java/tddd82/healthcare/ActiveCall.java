@@ -18,11 +18,11 @@ public class ActiveCall extends AppCompatActivity {
         public void onCallEnded() {
             if (callInstance != null)
                 callInstance.terminate();
-
             runOnUiThread(new Runnable(){
 
                 @Override
                 public void run() {
+
                     finish();
                 }
             });
@@ -31,7 +31,7 @@ public class ActiveCall extends AppCompatActivity {
         @Override
         public void onCallStarted(String host, int port, int sender, int receiver, byte[] IV, byte[] key) {
             //TODO pass key to Call
-            callInstance = new Call(host, 1338, sender, receiver,  new CallEvent() {
+            callInstance = new Call(host, port, sender, receiver,  new CallEvent() {
                 @Override
                 public void onTimeout(int currentSequenceNumber, int destinationNumber) {
 
@@ -79,7 +79,6 @@ public class ActiveCall extends AppCompatActivity {
             public void onClick(View v) {
                 init.send(stopCall, null);
                 CallState.onCallEnded();
-                finish();
             }
         });
     }
