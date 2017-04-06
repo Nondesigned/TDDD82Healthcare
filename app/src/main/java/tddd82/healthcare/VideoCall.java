@@ -87,6 +87,10 @@ public class    VideoCall{
 
     }
 
+    public int getImageQuality(){
+        return imageQuality;
+    }
+
     public void start(){
         cameraInstance.startPreview();
 

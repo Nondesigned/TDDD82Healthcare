@@ -183,7 +183,7 @@ public class Call {
             activity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    packetDropView.setText(String.format(Locale.GERMANY, "%.2f%% packet drop (%d)", (droppedPackets/(acceptedPackets + droppedPackets))*100.0, (int)droppedPackets));
+                    packetDropView.setText(String.format(Locale.GERMANY, "%.2f%% packet drop (%d)\nQuality: %d", (droppedPackets/(acceptedPackets + droppedPackets))*100.0, (int)droppedPackets, videoCall.getImageQuality()));
                 }
             });
         }

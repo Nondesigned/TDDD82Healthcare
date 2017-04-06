@@ -11,6 +11,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -89,7 +90,8 @@ public class InitCall extends Thread implements Runnable{
         this.sourceNr = sourceNr;
         this.destNr = destNr;
         try {
-            tcpSocket = sslFactory.createSocket(ip,port);
+            InetAddress addr = InetAddress.getByName(ip);
+            tcpSocket = sslFactory.createSocket(addr,port);
         } catch (IOException e) {
             e.printStackTrace();
         }
