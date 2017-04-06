@@ -60,8 +60,6 @@ public class ActiveCall extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_active_call);
         thisIsIt = this;
-        TextView status = (TextView) findViewById(R.id.callStatus);
-        status.setText("Initializing call");
         final Button endCall = (Button) findViewById(R.id.endCall);
 
         //Get token from SharedPref

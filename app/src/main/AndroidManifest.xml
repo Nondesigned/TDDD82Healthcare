@@ -25,14 +25,14 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+        android:theme="@style/AppTheme.NoActionBar">
         <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.nfc.action.TAG_DISCOVERED" />
                 <action android:name="android.nfc.action.TECH_DISCOVERED" />
             </intent-filter>
         </activity>
-        <activity android:name=".callingActivity" />
+        <activity android:name=".CallingActivity" />
 
         <service android:name=".PushNotice">
             <intent-filter>
