@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.os.Looper;
 import android.util.Log;
 import android.view.Gravity;
 import android.widget.Toast;
@@ -32,7 +33,6 @@ class LoginTask extends AsyncTask<String, Void, String> {
     private Context context;
     private TaskCallback callback;
     private AlertDialog alertDialog;
-    private JSONObject response;
 
     SharedPreferences preferences;
     SharedPreferences.Editor editor;
@@ -63,93 +63,69 @@ class LoginTask extends AsyncTask<String, Void, String> {
         String card = params[0];
         String password = params[1];
         String url = params[2];
+        String fafa = "fafa";
 
         String fcmtoken = FirebaseInstanceId.getInstance().getToken();
 
         Check();
 
-        final boolean connectedToServer = true;
 
-        if (connectedToServer) {
-            JSONObject credentials = new JSONObject();
-            try {
-                credentials.put(JSON_CARD, Long.parseLong(card));
-                credentials.put(JSON_PASSWORD, password);
-                credentials.put(JSON_FCMTOKEN, fcmtoken);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            RequestQueue mRequestQueue;
-
-            mRequestQueue = Volley.newRequestQueue(context, new OkHttpStack(context));
-
-            final JsonObjectRequest jsonRequest = new JsonObjectRequest
-                    (Request.Method.POST, url, credentials, new Response.Listener<JSONObject>() {
-
-
-                        @Override
-                        public void onResponse(JSONObject m_response) {
-                            response = m_response;
-
-                            try {
-
-                                preferences = context.getSharedPreferences("tddd82.healthcare", context.MODE_PRIVATE);
-                                editor = preferences.edit();
-                                editor.putString(SHARED_PREDS_TOKEN, response.getString(JSON_TOKEN));
-                                editor.apply();
-
-                                String token = preferences.getString("TOKEN", null);
-                                if (token != null) {
-                                    Log.v("TOKENEN", token);
-                                }
-
-                                if (response.getString(JSON_STATUS).equals(JSON_ACCEPTED)) {
-                                    callback.done();
-                                    //return response.getString(JSON_TOKEN);
-                                } else if (response.getString(JSON_STATUS).equals(JSON_DECLINED)) {
-
-
-                                } else {
-                                    //return response.getString(JSON_MESSAGE);
-                                }
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            } catch (NullPointerException e) {
-                            }
-                        }
-                    }, new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            ((LoginActivity) context).runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toast wrong = Toast.makeText(context, "Wrong credentials", Toast.LENGTH_LONG);
-                                    wrong.setGravity(Gravity.TOP | Gravity.CENTER, 0, 20);
-                                    wrong.show();
-                                }
-                            });
-
-
-                        }
-                    }
-                    );
-            mRequestQueue.add(jsonRequest);
-            //RQ.start();
-            // Start the queue
-            mRequestQueue.start();
-        } else {
-
-            try {
-                response = new JSONObject();
-                response.put(JSON_STATUS, JSON_ACCEPTED);
-                response.put(JSON_MESSAGE, "TESTMEDDELANDE");
-                response.put(JSON_TOKEN, TEST_TOKEN);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+        JSONObject credentials = new JSONObject();
+        try {
+            credentials.put(JSON_CARD, Long.parseLong(card));
+            credentials.put(JSON_PASSWORD, password);
+            credentials.put(JSON_FCMTOKEN, fcmtoken);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
+        RequestQueue mRequestQueue;
+
+        mRequestQueue = Volley.newRequestQueue(context, new OkHttpStack(context));
+
+        final JsonObjectRequest jsonRequest = new JsonObjectRequest
+            (Request.Method.POST, url, credentials, new Response.Listener<JSONObject>() {
+
+                @Override
+                public void onResponse(JSONObject response) {
+                    try {
+
+                        preferences = context.getSharedPreferences("tddd82.healthcare", context.MODE_PRIVATE);
+                        editor = preferences.edit();
+                        editor.putString(SHARED_PREDS_TOKEN, response.getString(JSON_TOKEN));
+                        editor.apply();
+
+                        String token = preferences.getString("TOKEN", null);
+                        if (token != null) {
+                            Log.v("TOKENEN", token);
+                        }
+
+                        if (response.getString(JSON_STATUS).equals(JSON_ACCEPTED)) {
+                            callback.done();
+                            //return response.getString(JSON_TOKEN);
+                        } else if (response.getString(JSON_STATUS).equals(JSON_DECLINED)) {
+
+
+                        } else {
+                            //return response.getString(JSON_MESSAGE);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    } catch (NullPointerException e) {
+                    }
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    makeToast("Wrong credentials");
+
+                }
+            }
+            );
+        mRequestQueue.add(jsonRequest);
+        //RQ.start();
+        // Start the queue
+        mRequestQueue.start();
         return "Initialized login";
     }
 
@@ -171,9 +147,19 @@ class LoginTask extends AsyncTask<String, Void, String> {
         if (nf != null && nf.isConnected() == true) {
             return true;
         } else {
-            Toast.makeText(context, "No internet connection.!", Toast.LENGTH_LONG).show();
+            makeToast("No internet connection.!");
             return false;
         }
+    }
+    private void makeToast(final String s){
+        ((LoginActivity) context).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast wrong = Toast.makeText(context, s, Toast.LENGTH_LONG);
+                wrong.setGravity(Gravity.TOP | Gravity.CENTER, 0, 20);
+                wrong.show();
+            }
+        });
     }
 
 }

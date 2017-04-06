@@ -29,14 +29,14 @@ public class ActiveCall extends AppCompatActivity {
         }
 
         @Override
-        public void onCallStarted(String host, int port, int sender, int receiver, String key) {
+        public void onCallStarted(String host, int port, int sender, int receiver, byte[] IV, byte[] key) {
             //TODO pass key to Call
             callInstance = new Call(host, 1338, sender, receiver,  new CallEvent() {
                 @Override
                 public void onTimeout(int currentSequenceNumber, int destinationNumber) {
 
                 }
-            }, (ImageView)findViewById(R.id.imageView2), thisIsIt);
+            }, new CallCrypto(IV, key), (ImageView)findViewById(R.id.imageView2), thisIsIt, (TextView)findViewById(R.id.textView));
 
             if (callInstance.initialize() != CallError.SUCCESS){
 
@@ -75,11 +75,11 @@ public class ActiveCall extends AppCompatActivity {
 
         init = new InitCall();
         init.init(sourceNr,destNr, CallState,this);
-        init.send(initCall);
+        init.send(initCall, null);
         init.start();
         endCall.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                init.send(stopCall);
+                init.send(stopCall, null);
                 CallState.onCallEnded();
                 finish();
             }

@@ -11,6 +11,7 @@ import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.os.BatteryManager;
 import android.os.StrictMode;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
@@ -171,11 +172,6 @@ public class StartActivity extends AppCompatActivity {
         startActivity(callIntent);
     }
 
-    public void getContactsFromServer(){
-
-        GetContactsTask task = new GetContactsTask(this);
-        task.execute("https://itkand-3-1.tddd82-2017.ida.liu.se:8080/contacts");
-    }
 
     public void showMap(){
         Intent showMap = new Intent(context,MapsActivity.class);

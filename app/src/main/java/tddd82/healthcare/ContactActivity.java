@@ -1,5 +1,6 @@
 package tddd82.healthcare;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ListAdapter;
@@ -12,11 +13,14 @@ import org.json.JSONObject;
 public class ContactActivity extends AppCompatActivity {
 
     private static Contact[] contactList;
+    private Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact);
+
+        context = this;
 
         JSONArray contactsJSON = CacheManager.getJSON("/contacts", this);
 
@@ -38,6 +42,21 @@ public class ContactActivity extends AppCompatActivity {
         ListView contactListView = (ListView) findViewById(R.id.list_view);
         ListAdapter customAdapter = new CustomAdapter(this, contactList);
         contactListView.setAdapter(customAdapter);
+
+        new Thread(new Runnable(){
+            @Override
+            public void run(){
+                while(true) {
+                    GetContactsTask task = new GetContactsTask(context);
+                    task.execute("https://itkand-3-1.tddd82-2017.ida.liu.se:8080/contacts");
+                    try {
+                        Thread.sleep(7000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
     }
 
     public static void setContactList(Contact[] list){

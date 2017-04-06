@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.zip.CRC32;
 import java.util.zip.Checksum;
 
@@ -70,11 +72,17 @@ public class ServerUtils{
     }
 
     /**
-     * Gets CRC32 checksum of the given bytes
+     * Gets SHA-256 checksum of the given bytes
      */
-    public static int getCRC32(byte[] bytes, int offset, int length){
-        Checksum crc = new CRC32();
-        crc.update(bytes, offset, length);
-        return (int)crc.getValue();
+    public static byte[] getSHA256(byte[] bytes, int offset, int length){
+        MessageDigest digest = null;
+        try {
+            digest = MessageDigest.getInstance("SHA-256");
+            digest.update(bytes, offset, length);
+            return digest.digest();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return new byte[]{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
     }
 }
