@@ -117,6 +117,7 @@ class GetContactsTask extends AsyncTask<String,Void,String> {
             ca[0] = new Contact("Inga vänner", 112);
             ContactActivity.setContactList(ca);
             return;
+            //banan
         }
         Contact[] contactList = new Contact[response.length()];
 
