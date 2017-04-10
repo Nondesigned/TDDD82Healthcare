@@ -19,6 +19,10 @@ public class GlobalVariables {
             "sHeY559a4DFOd50_OqgHGuERTqYZyuhtF39yxJPAjUESwxk2J5k_4zM3O-vtd1Ghyo4IbqKKSy6J9mTniYJPenn5-HIirE";
     private static final String INTENT_CALL_NUMBER = "DEST";
     private static final String JSON_CONTACT_LIST = "contact list";
+    private static final String CALL_SERVER_IP = "itkand-3-1.tddd82-2017.ida.liu.se";
+    private static final int CALL_SERVER_UDP_PORT = 1338;
+    private static final int CALL_SERVER_TCP_PORT = 1337;
+
 
     public static String getJsonContactList() {
         return JSON_CONTACT_LIST;
@@ -54,4 +58,7 @@ public class GlobalVariables {
     public static String getJsonMessageTag() {
         return JSON_MESSAGE;
     }
+    public static String getCallServerIp() { return CALL_SERVER_IP; }
+    public static int getCallServerUDPPort() { return CALL_SERVER_UDP_PORT; }
+    public static int getCallServerTCPPort() { return CALL_SERVER_TCP_PORT; }
 }

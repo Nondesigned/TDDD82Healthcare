@@ -9,36 +9,30 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="tddd82.healthcare.ActiveCall">
+    tools:context="tddd82.healthcare.ActiveCall"
+    android:background="@color/colorBackgroundBlue">
 
-    <TextView
-        android:text="TextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="113dp"
-        android:id="@+id/callStatus" />
 
     <Button
-        android:text="End call"
+        android:text="Hang up"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_toEndOf="@+id/callStatus"
-        android:layout_marginStart="18dp"
-        android:layout_marginBottom="140dp"
-        android:id="@+id/endCall" />
+        android:layout_centerHorizontal="true"
+        android:id="@+id/endCall"
+        android:fontFamily="sans-serif-condensed"
+        android:textSize="20dp"
+        android:backgroundTint="@color/colorWhite"
+        android:textColor="@color/colorRed"/>
 
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:srcCompat="@mipmap/ic_launcher"
         android:layout_alignParentTop="true"
-        android:layout_toStartOf="@+id/callStatus"
         android:id="@+id/imageView2"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:rotation="-90"/>
 
     <TextView
         android:text="TextView"

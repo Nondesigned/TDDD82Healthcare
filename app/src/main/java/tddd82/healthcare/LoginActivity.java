@@ -60,6 +60,7 @@ public class LoginActivity extends AppCompatActivity implements TaskCallback{
     public void login(View view){
         LoginTask loginTask = new LoginTask(this, this);
         loginTask.execute(UsernameInfo.getText().toString(), passwordInput.getText().toString(), "https://itkand-3-1.tddd82-2017.ida.liu.se:8080/login");
+        //loginTask.execute(UsernameInfo.getText().toString(), passwordInput.getText().toString(), "https://139.59.162.250:80/login");
     }
     //Activated when NFC device is found
     @Override

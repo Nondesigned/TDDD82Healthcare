@@ -49,6 +49,7 @@ public class StartActivity extends AppCompatActivity {
     Context context = this;
     SharedPreferences preferences;
     SharedPreferences.Editor editor;
+    BottomNavigationView bottomNavigation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +69,7 @@ public class StartActivity extends AppCompatActivity {
         editor = preferences.edit();
 
 
-        BottomNavigationView bottomNavigation = (BottomNavigationView)findViewById(R.id.bottom_navigation);
+        bottomNavigation = (BottomNavigationView)findViewById(R.id.bottom_navigation);
         bottomNavigation.setOnNavigationItemSelectedListener(
                 new BottomNavigationView.OnNavigationItemSelectedListener() {
                     @Override
@@ -94,6 +95,7 @@ public class StartActivity extends AppCompatActivity {
             startActivity(loginScreen);
         }
         if (preferences.contains("TOKEN")) {
+            System.out.println("Går in i satsen");
             bottomNavigation.getMenu().findItem(R.id.action_login).setTitle("Log out");
             try {
                 Intent intent = getIntent();
@@ -115,6 +117,31 @@ public class StartActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (preferences.contains("TOKEN")) {
+            System.out.println("Går in i satsen");
+            bottomNavigation.getMenu().findItem(R.id.action_login).setTitle("Log out");
+            try {
+                Intent intent = getIntent();
+                //TODO add field with key.
+
+                if (intent.hasExtra("TYPE")) {
+                    String type = intent.getStringExtra("TYPE");
+                    if (type.equals("call")) {
+                        Intent callingIntent = new Intent(this, CallingActivity.class);
+                        String callerid = intent.getStringExtra("CALLER");
+                        callingIntent.putExtra("CALLER", callerid);
+                        startActivity(callingIntent);
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
     private void requestRecordAudioPermission(){
         //check API version, do nothing if API version < 23
             if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
