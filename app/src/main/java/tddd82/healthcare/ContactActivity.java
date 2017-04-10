@@ -10,21 +10,26 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.List;
+
 public class ContactActivity extends AppCompatActivity {
 
     private static Contact[] contactList;
-    private Context context;
-
+    private static Context context;
+    static ListView contactListView;
+    static ListAdapter customAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact);
 
-        context = this;
+        ContactActivity.context = this;
+        ContactActivity.contactListView = (ListView) findViewById(R.id.list_view);
+
 
         JSONArray contactsJSON = CacheManager.getJSON("/contacts", this);
 
-        contactList = new Contact[contactsJSON.length()];
+        ContactActivity.contactList = new Contact[contactsJSON.length()];
 
         for (int i = 0; i < contactsJSON.length(); i++) {
 
@@ -39,9 +44,7 @@ public class ContactActivity extends AppCompatActivity {
         }
         ContactActivity.setContactList(contactList);
 
-        ListView contactListView = (ListView) findViewById(R.id.list_view);
-        ListAdapter customAdapter = new CustomAdapter(this, contactList);
-        contactListView.setAdapter(customAdapter);
+        updateTheView();
 
         new Thread(new Runnable(){
             @Override
@@ -62,4 +65,10 @@ public class ContactActivity extends AppCompatActivity {
     public static void setContactList(Contact[] list){
         contactList = list;
     }
+
+    public static void updateTheView(){
+        ContactActivity.customAdapter = new CustomAdapter(ContactActivity.context, contactList);
+        ContactActivity.contactListView.setAdapter(customAdapter);
+    }
+
 }

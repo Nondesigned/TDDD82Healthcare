@@ -61,9 +61,6 @@ public class StartActivity extends AppCompatActivity {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
-        GetContactsTask task = new GetContactsTask(this);
-        task.execute("https://itkand-3-1.tddd82-2017.ida.liu.se:8080/contacts");
-
 
         requestRecordAudioPermission();
         requestCameraPermission();
