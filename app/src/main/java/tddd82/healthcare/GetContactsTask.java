@@ -73,7 +73,13 @@ class GetContactsTask extends AsyncTask<String,Void,String> {
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    addContacts(CacheManager.getJSON("/contacts", context));
+                    if(error.getMessage().equals("org.json.JSONException: Value null of type org.json.JSONObject$1" +
+                                    " cannot be converted to JSONArray")){
+                        addContacts(null);
+                    }else{
+                        addContacts(CacheManager.getJSON("/contacts", context));
+
+                    }
                 }
             }){
 
@@ -101,12 +107,16 @@ class GetContactsTask extends AsyncTask<String,Void,String> {
             mRequestQueue.add(jsonRequest);
 
         }
+        // JAg kan INTE FUCKING PUSHA
 
         return "Initialized login";
     }
 
     private void addContacts(JSONArray response) {
-        if(response.length() < 1){
+        if(response == null){
+            Contact[] ca = new Contact[1];
+            ca[0] = new Contact("Inga vänner", 112);
+            ContactActivity.setContactList(ca);
             return;
         }
         Contact[] contactList = new Contact[response.length()];
@@ -132,6 +142,7 @@ class GetContactsTask extends AsyncTask<String,Void,String> {
 
     @Override
     protected void onPostExecute(String result) {
+        ContactActivity.updateTheView();
         Toast.makeText(context, result, Toast.LENGTH_SHORT);
     }
 

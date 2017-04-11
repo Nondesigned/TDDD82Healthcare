@@ -20,6 +20,9 @@ class CustomAdapter extends ArrayAdapter<Contact> {
         super(context, R.layout.contact, contacts);
         this.contacts = contacts;
     }
+    public void setContacts(Contact[] c){
+        contacts = c;
+    }
     @Override
     public View getView(final int position, View convertView, ViewGroup parent){
 

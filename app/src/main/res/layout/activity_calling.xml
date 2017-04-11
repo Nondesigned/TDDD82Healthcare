@@ -9,7 +9,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="tddd82.healthcare.callingActivity"
+    tools:context="tddd82.healthcare.CallingActivity"
     android:background="@color/colorBackgroundBlue">
 
     <Button
@@ -42,7 +42,21 @@
         android:backgroundTint="@color/colorWhite"
         android:textColor="@color/colorRed"
         android:layout_toRightOf="@+id/answer"
-        android:layout_marginLeft="39dp" />
+        android:layout_marginLeft="39dp"/>
+
+    <Button
+        android:text="Hang up"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/hangup"
+        android:fontFamily="sans-serif-condensed"
+        android:textSize="20dp"
+        android:backgroundTint="@color/colorWhite"
+        android:textColor="@color/colorRed"
+        android:visibility="gone"
+        android:clickable="false"/>
 
     <TextView
         android:text="TextView"
@@ -59,14 +73,15 @@
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:srcCompat="@mipmap/ic_launcher"
+        android:src="@drawable/staroflife"
         android:id="@+id/imageView3"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true" />
+        android:layout_alignParentBottom="true"
+        android:rotation="-90"/>
 
     <TextView
         android:text="TextView"
