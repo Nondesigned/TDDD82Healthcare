@@ -25,6 +25,10 @@ public class BatteryMng {
     }
 
     public static boolean doVideo(){
+        Intent batteryStatus = getStatus();
+/*        if(batteryStatus.getBooleanExtra(BatteryManager.ACTION_CHARGING, false)){
+            return true;
+        }*/
         final float PERCENT_LIMIT = 0.15f;
         return (getPercentage()) > PERCENT_LIMIT;
     }

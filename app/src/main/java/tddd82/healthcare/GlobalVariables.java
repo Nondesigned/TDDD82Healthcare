@@ -22,8 +22,12 @@ public class GlobalVariables {
     private static final String CALL_SERVER_IP = "139.59.162.250";
     private static final int CALL_SERVER_UDP_PORT = 1338;
     private static final int CALL_SERVER_TCP_PORT = 1337;
+    private static final String[] cacheFiles = {"/pins", "/contacts", "localPins"};
 
 
+    public static String[] getCacheFiles(){
+        return cacheFiles;
+    }
     public static String getJsonContactList() {
         return JSON_CONTACT_LIST;
     }
