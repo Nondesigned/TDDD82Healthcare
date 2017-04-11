@@ -107,6 +107,7 @@ class GetContactsTask extends AsyncTask<String,Void,String> {
             mRequestQueue.add(jsonRequest);
 
         }
+        // JAg kan INTE FUCKING PUSHA
 
         return "Initialized login";
     }
