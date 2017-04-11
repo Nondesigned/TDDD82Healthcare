@@ -186,8 +186,8 @@ public class    VideoCall{
                     }
                 }
             } else {
-                if (lastPlayback + 250 < System.currentTimeMillis()) {
-                    lastPlayback = System.currentTimeMillis();
+                if (lastPlayback + 125 < System.currentTimeMillis()) {
+                    lastPlayback = System.currentTimeMillis() - 70;
                     if (imageQuality > 1) {
                         imageQuality--;
                         canIncreaseQuality = false;
