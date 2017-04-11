@@ -109,6 +109,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     try {
                         Thread.sleep(sleepDuration);
+                        thisActivity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                clearMap();
+                            }
+                        });
                         new GetMapPinsTask(context, mMap, thisActivity).execute("https://itkand-3-1.tddd82-2017.ida.liu.se:8080/pins");
                     } catch (InterruptedException e) {
                         e.printStackTrace();
@@ -152,7 +158,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    public void clearMap(GoogleMap mMap){
+    public void clearMap(){
         mMap.clear();
     }
 
@@ -163,7 +169,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void addPinsToMap(GoogleMap mMap){
-        clearMap(mMap);
+        clearMap();
         markerMap = new HashMap<>();
         removeMarkerMap = new HashMap<>();
         if(markers != null ) {
