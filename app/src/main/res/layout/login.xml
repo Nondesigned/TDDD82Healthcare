@@ -8,7 +8,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="tddd82.healthcare.MainActivity">
+    tools:context="tddd82.healthcare.LoginActivity">
     android:background="#be9967" >
 
     <Button
