@@ -58,7 +58,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         thisActivity = this;
         context = this;
         groups = new String[0];
-        new GetGroupTask(this, this).execute("https://itkand-3-1.tddd82-2017.ida.liu.se:8080/groups");
+        new GetGroupTask(this, this).execute("https://139.59.162.250:8080/groups");
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
