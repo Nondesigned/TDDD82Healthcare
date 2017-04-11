@@ -121,7 +121,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         buildGoogleApiClient();
 
         new GetMapPinsTask(this, mMap, this).execute("https://itkand-3-1.tddd82-2017.ida.liu.se:8080/pins");
-
     }
 
     public void clearMap(GoogleMap mMap){
