@@ -25,16 +25,19 @@ public class BatteryMng {
     }
 
     public static boolean doVideo(){
-        Intent batteryStatus = getStatus();
-/*        if(batteryStatus.getBooleanExtra(BatteryManager.ACTION_CHARGING, false)){
-            return true;
-        }*/
         final float PERCENT_LIMIT = 0.15f;
-        return (getPercentage()) > PERCENT_LIMIT;
+        return ((getPercentage()) > PERCENT_LIMIT) || isCharging();
     }
     private static Intent getStatus(){
         IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
         Intent i = context.registerReceiver(null, ifilter);
         return i;
+    }
+    public static boolean isCharging(){
+        Intent batteryStatus = getStatus();
+        int status = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
+        boolean isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING ||
+                status == BatteryManager.BATTERY_STATUS_FULL;
+        return isCharging;
     }
 }

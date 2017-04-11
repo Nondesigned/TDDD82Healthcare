@@ -62,7 +62,6 @@ public class ContactActivity extends AppCompatActivity {
 
         updateTheView();
 
-
         new Thread(new Runnable(){
             @Override
             public void run(){
