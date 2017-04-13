@@ -48,7 +48,7 @@ public class CallCrypto {
         keyGen.init(256, prng);
         this.key = keyGen.generateKey();
         try {
-            Cipher c = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            Cipher c = Cipher.getInstance("AES/CBC/PKCS7Padding");
             c.init(c.ENCRYPT_MODE, key);
             this.IV = c.getIV();
             this.params = new IvParameterSpec(IV);
@@ -58,11 +58,11 @@ public class CallCrypto {
     }
 
     public byte[] encrypt(byte[] bytes, int offset, int length){
-        byte[] ret = null;
+
         try {
-            Cipher c = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            Cipher c = Cipher.getInstance("AES/CBC/PKCS7Padding");
             c.init(Cipher.ENCRYPT_MODE, key, params);
-            ret = c.doFinal(bytes, offset, length);
+            byte[] ret = c.doFinal(bytes, offset, length);
             return ret;
         } catch (InvalidKeyException e) {
             e.printStackTrace();
@@ -82,11 +82,11 @@ public class CallCrypto {
     }
 
     public byte[] decrypt(byte[] bytes, int offset, int length){
-        byte[] ret = null;
+
         try {
-            Cipher c = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            Cipher c = Cipher.getInstance("AES/CBC/PKCS7Padding");
             c.init(Cipher.DECRYPT_MODE, key, params);
-            ret = c.doFinal(bytes, offset, length);
+            byte[] ret = c.doFinal(bytes, offset, length);
             return ret;
         } catch (InvalidKeyException e) {
             e.printStackTrace();

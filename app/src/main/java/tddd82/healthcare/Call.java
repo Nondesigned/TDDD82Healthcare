@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.SocketAddress;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
@@ -96,7 +97,7 @@ public class Call {
         }
 
         try {
-            socket = new DatagramSocket(this.port);
+            socket = new DatagramSocket(port);
             socket.setSoTimeout(UDP_SOCKET_TIMEOUT);
         } catch (SocketException ex){
             System.out.println(ex.getMessage());

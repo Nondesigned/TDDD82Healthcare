@@ -10,7 +10,8 @@ public class DataPacket {
     public final static int MAX_SIZE = 65507 - HEADER_SIZE;
 
     public final static int FLAG_IS_VIDEO = 1;
-    public final static int FLAG_ENCODING = 2;
+    public final static int FLAG_INCREASE_QUALITY = 2;
+    public final static int FLAG_DECREASE_QUALITY = 3;
 
     private byte[] buffer;
     private long creationTime;
@@ -187,5 +188,15 @@ public class DataPacket {
         setSource(src);
         setDestination(dst);
         setLength(decrypted.length + 12);
+    }
+
+    public float getFrameRate(){
+        byte[] tmp = Arrays.copyOfRange(this.buffer, 16, 20);
+        return ByteBuffer.wrap(tmp).getFloat();
+    }
+
+    public void setFrameRate(float frameRate){
+        byte[] tmp = ByteBuffer.allocate(4).putFloat(frameRate).array();
+        setRange(tmp, buffer, 16);
     }
 }

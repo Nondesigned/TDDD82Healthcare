@@ -8,6 +8,10 @@ public class VideoBuffer {
     private final int MAX_SIZE = 300;
     private final int PACKET_LIFETIME = 500;
 
+    private long receiveTimestamp = 0;
+    private float receiveRate = 10;
+    private float receiveSample = 0;
+
     public VideoBuffer(){
         sendQueue = new ConcurrentLinkedQueue<>();
     }
@@ -33,5 +37,16 @@ public class VideoBuffer {
         if (sendQueue.size() >= MAX_SIZE)
             sendQueue.remove();
         sendQueue.add(data);
+
+        if (receiveTimestamp + 500 < System.currentTimeMillis()){
+            receiveTimestamp = System.currentTimeMillis();
+            receiveRate = 2*receiveSample;
+            receiveSample = 0;
+        }
+        receiveSample++;
+    }
+
+    public float getReceiveRate(){
+        return receiveRate;
     }
 }
