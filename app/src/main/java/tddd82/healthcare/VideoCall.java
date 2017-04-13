@@ -66,7 +66,7 @@ public class    VideoCall{
                     p.setPayload(compressed);
                     p.setBufferSize(compressed.length);
                     p.setFlag(DataPacket.FLAG_IS_VIDEO, true);
-                    if (playbackBuffer.getReceiveRate() > 10){
+                    if (playbackBuffer.getReceiveRate() > 8){
                         p.setFlag(DataPacket.FLAG_INCREASE_QUALITY, true);
                     } else{
                         p.setFlag(DataPacket.FLAG_DECREASE_QUALITY, true);
