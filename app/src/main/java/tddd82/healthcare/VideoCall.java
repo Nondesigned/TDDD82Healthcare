@@ -34,8 +34,8 @@ public class    VideoCall{
     private int imageQuality = 10;
 
     private long fpsTimestamp = 0;
-    private int currentFps = 10;
-    private int framesRecorded = 0;
+    private float currentFps = 10;
+    private float framesRecorded = 0;
 
     private long lastQualityChange = 0;
 
@@ -65,7 +65,7 @@ public class    VideoCall{
                     p.setPayload(compressed);
                     p.setBufferSize(compressed.length);
                     p.setFlag(DataPacket.FLAG_IS_VIDEO, true);
-                    p.setSampleRate(currentFps);
+                    p.setFrameRate(currentFps);
 
                     recorderBuffer.push(p);
                 } else {

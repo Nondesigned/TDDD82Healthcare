@@ -188,4 +188,14 @@ public class DataPacket {
         setDestination(dst);
         setLength(decrypted.length + 12);
     }
+
+    public float getFrameRate(){
+        byte[] tmp = Arrays.copyOfRange(this.buffer, 16, 20);
+        return ByteBuffer.wrap(tmp).getFloat();
+    }
+
+    public void setFrameRate(float frameRate){
+        byte[] tmp = ByteBuffer.allocate(4).putFloat(frameRate).array();
+        setRange(tmp, buffer, 16);
+    }
 }

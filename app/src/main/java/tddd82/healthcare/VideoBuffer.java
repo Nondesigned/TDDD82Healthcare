@@ -9,8 +9,8 @@ public class VideoBuffer {
     private final int PACKET_LIFETIME = 500;
 
     private long receiveTimestamp = 0;
-    private int receiveRate = 10;
-    private int receiveSample = 0;
+    private float receiveRate = 10;
+    private float receiveSample = 0;
 
     public VideoBuffer(){
         sendQueue = new ConcurrentLinkedQueue<>();
@@ -46,7 +46,7 @@ public class VideoBuffer {
         receiveSample++;
     }
 
-    public int getReceiveRate(){
+    public float getReceiveRate(){
         return receiveRate;
     }
 }
