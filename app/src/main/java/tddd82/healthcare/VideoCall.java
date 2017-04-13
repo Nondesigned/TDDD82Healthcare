@@ -65,7 +65,7 @@ public class    VideoCall{
                     p.setPayload(compressed);
                     p.setBufferSize(compressed.length);
                     p.setFlag(DataPacket.FLAG_IS_VIDEO, true);
-                    p.setFrameRate(currentFps);
+                    p.setFrameRate(playbackBuffer.getReceiveRate());
 
                     recorderBuffer.push(p);
                 } else {
@@ -159,7 +159,7 @@ public class    VideoCall{
             if (!playbackBuffer.empty()){
                 DataPacket p = playbackBuffer.poll();
 
-                if (playbackBuffer.getReceiveRate() < p.getFrameRate()) {
+                if (Math.abs(playbackBuffer.getReceiveRate() - p.getFrameRate()) > currentFps/5) {
                     decreaseQuality();
                 }
                 else {
