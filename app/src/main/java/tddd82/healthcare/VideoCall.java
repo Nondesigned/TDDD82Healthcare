@@ -12,6 +12,7 @@ import android.widget.ImageView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Locale;
 
 public class    VideoCall{
 
@@ -65,7 +66,11 @@ public class    VideoCall{
                     p.setPayload(compressed);
                     p.setBufferSize(compressed.length);
                     p.setFlag(DataPacket.FLAG_IS_VIDEO, true);
-                    p.setFrameRate(playbackBuffer.getReceiveRate());
+                    if (playbackBuffer.getReceiveRate() > 10){
+                        p.setFlag(DataPacket.FLAG_INCREASE_QUALITY, true);
+                    } else{
+                        p.setFlag(DataPacket.FLAG_DECREASE_QUALITY, true);
+                    }
 
                     recorderBuffer.push(p);
                 } else {
@@ -159,12 +164,13 @@ public class    VideoCall{
             if (!playbackBuffer.empty()){
                 DataPacket p = playbackBuffer.poll();
 
-                if (Math.abs(playbackBuffer.getReceiveRate() - p.getFrameRate()) > currentFps/5) {
+
+                if (p.hasFlag(DataPacket.FLAG_INCREASE_QUALITY)){
+                    increaseQuality();
+                } else {
                     decreaseQuality();
                 }
-                else {
-                    increaseQuality();
-                }
+
 
                 if (p.getBufferSize() < DataPacket.MAX_SIZE){
 

@@ -10,7 +10,8 @@ public class DataPacket {
     public final static int MAX_SIZE = 65507 - HEADER_SIZE;
 
     public final static int FLAG_IS_VIDEO = 1;
-    public final static int FLAG_ENCODING = 2;
+    public final static int FLAG_INCREASE_QUALITY = 2;
+    public final static int FLAG_DECREASE_QUALITY = 3;
 
     private byte[] buffer;
     private long creationTime;
