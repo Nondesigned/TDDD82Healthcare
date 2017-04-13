@@ -10,6 +10,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.facebook.stetho.Stetho;
 import com.facebook.stetho.okhttp3.StethoInterceptor;
@@ -70,7 +71,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         active = true;
         context = this;
         groups = new String[0];
-        new GetGroupTask(this, this).execute("https://139.59.162.250:8080/groups");
+        new GetGroupTask(this, this).execute(GlobalVariables.getDataServerAddress()+"/groups");
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -80,13 +81,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void run(){
                 while(active) {
-                    JSONArray unLoadedPins = CacheManager.getJSON("/localPins", context);
+                    final JSONArray unLoadedPins = CacheManager.getJSON("/localPins", context);
                     CacheManager.clear("/localPins", context);
                     for (int i = 0; i < unLoadedPins.length(); i++) {
+                        final int j = i;
                         try {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(context,"Retries to send "+(j+1)+"/"+unLoadedPins.length()+" pins", Toast.LENGTH_SHORT).show();
+                                }
+                            });
                             JSONObject p = unLoadedPins.getJSONObject(i);
                             AddPinsToMapTask addPinsToMapTaskLoop = new AddPinsToMapTask(context, thisActivity);
-                            addPinsToMapTaskLoop.execute("https://itkand-3-1.tddd82-2017.ida.liu.se:8080/pins", p.toString());
+                            addPinsToMapTaskLoop.execute(GlobalVariables.getDataServerAddress()+"/pins", p.toString());
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -119,7 +127,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 clearMap();
                             }
                         });
-                        new GetMapPinsTask(context, mMap, thisActivity).execute("https://itkand-3-1.tddd82-2017.ida.liu.se:8080/pins");
+                        new GetMapPinsTask(context, mMap, thisActivity).execute(GlobalVariables.getDataServerAddress()+"/pins");
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
