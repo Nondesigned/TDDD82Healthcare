@@ -3,6 +3,7 @@ package tddd82.healthcare;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.Image;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -61,6 +62,7 @@ public class ActiveCall extends AppCompatActivity {
         setContentView(R.layout.activity_active_call);
         thisIsIt = this;
         final Button endCall = (Button) findViewById(R.id.endCall);
+        ImageView paparazzi = (ImageView)findViewById(R.id.imageView2);
 
         //Get token from SharedPref
         SharedPreferences sharedPreferences = this.getSharedPreferences("tddd82.healthcare", this.MODE_PRIVATE);

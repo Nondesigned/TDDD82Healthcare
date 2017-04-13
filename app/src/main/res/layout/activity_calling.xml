@@ -59,7 +59,7 @@
         android:clickable="false"/>
 
     <TextView
-        android:text="TextView"
+        android:text="Pick up the phone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="135dp"
@@ -67,12 +67,12 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:fontFamily="sans-serif-condensed"
-        android:textSize="20dp"
+        android:textSize="20sp"
         android:textColor="@color/colorWhite"/>
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:src="@drawable/staroflife"
         android:id="@+id/imageView3"
         android:layout_alignParentTop="true"
@@ -81,10 +81,10 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:rotation="-90"/>
+        />
 
     <TextView
-        android:text="TextView"
+        android:text=" "
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/textView2"
@@ -94,7 +94,7 @@
         android:layout_toRightOf="@+id/decline"
         android:layout_toEndOf="@+id/decline"
         android:fontFamily="sans-serif-condensed"
-        android:textSize="50dp"
+        android:textSize="20dp"
         android:textColor="@color/colorWhite"/>
 
 </RelativeLayout>
