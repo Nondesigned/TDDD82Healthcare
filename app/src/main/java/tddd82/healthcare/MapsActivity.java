@@ -49,6 +49,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private JSONArray markers;
     private boolean onStart = true;
     private MapsActivity thisActivity;
+    private boolean active;
 
 
     private GoogleApiClient mGoogleApiClient;
@@ -56,10 +57,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private LocationRequest mLocationRequest;
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        active = true;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         thisActivity = this;
+        active = true;
         context = this;
         groups = new String[0];
         new GetGroupTask(this, this).execute("https://139.59.162.250:8080/groups");
@@ -71,7 +79,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         new Thread(new Runnable(){
             @Override
             public void run(){
-                while(true) {
+                while(active) {
                     JSONArray unLoadedPins = CacheManager.getJSON("/localPins", context);
                     CacheManager.clear("/localPins", context);
                     for (int i = 0; i < unLoadedPins.length(); i++) {
@@ -86,6 +94,32 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                     try {
                         Thread.sleep(7000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
+
+        new Thread(new Runnable(){
+            @Override
+            public void run(){
+                long sleepDuration;
+                while(active) {
+                    sleepDuration = 10000;
+                    if(BatteryMng.getPercentage() < 0.15){
+                        sleepDuration = 30000;
+                    }
+
+                    try {
+                        Thread.sleep(sleepDuration);
+                        thisActivity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                clearMap();
+                            }
+                        });
+                        new GetMapPinsTask(context, mMap, thisActivity).execute("https://itkand-3-1.tddd82-2017.ida.liu.se:8080/pins");
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -127,7 +161,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         new GetMapPinsTask(this, mMap, this).execute("https://itkand-3-1.tddd82-2017.ida.liu.se:8080/pins");
     }
 
-    public void clearMap(GoogleMap mMap){
+    public void clearMap(){
         mMap.clear();
     }
 
@@ -138,7 +172,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void addPinsToMap(GoogleMap mMap){
-        clearMap(mMap);
+        clearMap();
         markerMap = new HashMap<>();
         removeMarkerMap = new HashMap<>();
         if(markers != null ) {
@@ -237,6 +271,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onPause() {
         super.onPause();
+        active = false;
         //stop location updates when Activity is no longer active
         if (mGoogleApiClient != null) {
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
