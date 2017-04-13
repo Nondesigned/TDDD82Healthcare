@@ -159,7 +159,7 @@ public class    VideoCall{
             if (!playbackBuffer.empty()){
                 DataPacket p = playbackBuffer.poll();
 
-                if (playbackBuffer.getReceiveRate() < p.getSampleRate()) {
+                if (playbackBuffer.getReceiveRate() < p.getFrameRate()) {
                     decreaseQuality();
                 }
                 else {
