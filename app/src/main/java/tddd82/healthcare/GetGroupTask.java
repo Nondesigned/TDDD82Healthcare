@@ -32,6 +32,7 @@ public class GetGroupTask extends AsyncTask<String,Void,String> {
     private Context context;
     private JSONArray response;
     private MapsActivity mapsActivity;
+    private JSONObject group;
 
 
     public GetGroupTask(Context context, MapsActivity mapsActivity){

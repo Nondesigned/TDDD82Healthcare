@@ -194,7 +194,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         this.markers = markerList;
     }
 
-
     GoogleMap.OnMapLongClickListener addPins = new GoogleMap.OnMapLongClickListener() {
         @Override
         public void onMapLongClick(LatLng latLng) {
