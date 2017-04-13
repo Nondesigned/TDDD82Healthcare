@@ -80,7 +80,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         new Thread(new Runnable(){
             @Override
             public void run(){
+                long sleepDuration;
                 while(active) {
+                    sleepDuration = 10000;
+                    if(BatteryMng.getPercentage() < 0.15){
+                        sleepDuration = 30000;
+                    }
+
+                    try {
+                        Thread.sleep(sleepDuration);
+                        thisActivity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                //
+                                clearMap();
+                            }
+                        });
+                        new GetMapPinsTask(context, mMap, thisActivity).execute(GlobalVariables.getDataServerAddress()+"/pins");
+                        new GetGroupTask(context, thisActivity).execute(GlobalVariables.getDataServerAddress()+"/groups");
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
                     final JSONArray unLoadedPins = CacheManager.getJSON("/localPins", context);
                     CacheManager.clear("/localPins", context);
                     for (int i = 0; i < unLoadedPins.length(); i++) {
@@ -100,38 +121,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             e.printStackTrace();
                         }
                     }
-                    try {
-                        Thread.sleep(7000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
                 }
-            }
-        }).start();
 
-        new Thread(new Runnable(){
-            @Override
-            public void run(){
-                long sleepDuration;
-                while(active) {
-                    sleepDuration = 10000;
-                    if(BatteryMng.getPercentage() < 0.15){
-                        sleepDuration = 30000;
-                    }
 
-                    try {
-                        Thread.sleep(sleepDuration);
-                        thisActivity.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                clearMap();
-                            }
-                        });
-                        new GetMapPinsTask(context, mMap, thisActivity).execute(GlobalVariables.getDataServerAddress()+"/pins");
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
             }
         }).start();
 
@@ -166,7 +158,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         buildGoogleApiClient();
 
-        new GetMapPinsTask(this, mMap, this).execute("https://itkand-3-1.tddd82-2017.ida.liu.se:8080/pins");
+        new GetMapPinsTask(this, mMap, this).execute(GlobalVariables.getDataServerAddress()+"/pins");
     }
 
     public void clearMap(){
@@ -180,7 +172,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void addPinsToMap(GoogleMap mMap){
-        clearMap();
         markerMap = new HashMap<>();
         removeMarkerMap = new HashMap<>();
         if(markers != null ) {
@@ -195,6 +186,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     Log.d("AddPinsToMap", e.getMessage());
                 }
             }
+        }
+    }
+
+    public void offlineUpdatePinsOnMap(JSONObject pin) {
+        try {
+            JSONObject marker = new JSONObject();
+            marker.put("type", pin.getString("type"));
+            LatLng markerLatLng = new LatLng(Double.parseDouble(pin.getString("lat")), Double.parseDouble(pin.getString("long")));
+            marker.put("latlng", markerLatLng);
+            mMap.addMarker(new MarkerOptions().position((LatLng) marker.get("latlng")).title(marker.getString("type")));
+        } catch (Exception e){
+            Log.d("OFFLINEADDPIN", e.getMessage());
         }
     }
 
@@ -216,7 +219,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             addPin.show(getFragmentManager(),"AddPin");
         }
     };
-
+    //Implementera klick på offline placerade markers, krachar just nu då man inte har tillgång till ID
     GoogleMap.OnMarkerClickListener onMarkerClickListener = new GoogleMap.OnMarkerClickListener() {
         @Override
         public boolean onMarkerClick(Marker marker) {
@@ -234,7 +237,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     };
 
     public void updatePinsOnMap(){
-        new GetMapPinsTask(this, mMap, this).execute("https://itkand-3-1.tddd82-2017.ida.liu.se:8080/pins");
+        new GetMapPinsTask(this, mMap, this).execute(GlobalVariables.getDataServerAddress()+"/pins");
     }
 
     public void setGroupArray(String[] newgroups){

@@ -104,6 +104,9 @@ public class AddPinsToMapTask extends AsyncTask<String,Void,String> {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Log.v("ONADDPIN", error.toString());
+                        Log.v("JSONOBJ", pin.toString());
+
+                        mapsActivity.offlineUpdatePinsOnMap(pin);
                         cachePin();
                     }
                 }){
