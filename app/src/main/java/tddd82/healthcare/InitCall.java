@@ -29,6 +29,7 @@ import static tddd82.healthcare.ControlFlag.ACCEPTCALL;
 import static tddd82.healthcare.ControlFlag.DECLINECALL;
 import static tddd82.healthcare.ControlFlag.ENDCALL;
 import static tddd82.healthcare.ControlFlag.INITCALL;
+import static tddd82.healthcare.ControlFlag.INITVID;
 
 /**
  * Created by Oskar on 2017-03-07.
@@ -46,6 +47,7 @@ public class InitCall extends Thread implements Runnable{
     int destNr;
     private Context context;
     private Event callEvent;
+    CallVariables callVariables;
     // Defines header information and sends to server
     // tyeofFlag = 0 , initialize
     //  = 1 endCall
@@ -54,6 +56,7 @@ public class InitCall extends Thread implements Runnable{
     // Remove key part until sprint 3
 
     public void init(int sourceNr,int destNr, Event callEvent,Context context){
+
 
         SSLContext SSLcontext = null;
         try {
@@ -100,6 +103,9 @@ public class InitCall extends Thread implements Runnable{
         ctrl = new ControlPacket(bytes);
         ctrl.setSource(sourceNr);
         ctrl.setDestination(destNr);
+        callVariables.setSourceNr(sourceNr);
+        callVariables.setDestNr(destNr);
+
 
         SharedPreferences sharedPreferences = context.getSharedPreferences("tddd82.healthcare", context.MODE_PRIVATE);
         String token = sharedPreferences.getString("TOKEN","default");
@@ -128,6 +134,9 @@ public class InitCall extends Thread implements Runnable{
             case 3:
                 flags.setFlag(DECLINECALL,true);
                 break;
+            case 8:
+                flags.setFlag(INITVID,true);
+                break;
         }
         ctrl.setFlags(flags);
         try {
@@ -147,6 +156,9 @@ public class InitCall extends Thread implements Runnable{
                 boolean flag1 = receivedPacket.getFlag(1);
                 boolean flag2 = receivedPacket.getFlag(2);
                 boolean flag3 = receivedPacket.getFlag(3);
+                boolean flag8 = receivedPacket.getFlag(8);
+                callVariables.setIV(receivedPacket.getIV());
+                callVariables.setKey(receivedPacket.getKey());
 
                 if(flag1 == true|| flag3 == true){
                     tcpSocket.close();
@@ -154,7 +166,10 @@ public class InitCall extends Thread implements Runnable{
                     callEvent.onCallEnded();
                 }
                 if(flag2 == true){
-                    callEvent.onCallStarted(this.ip, GlobalVariables.getCallServerUDPPort(), this.sourceNr, this.destNr, receivedPacket.getIV(), receivedPacket.getKey());
+                    if(flag8==true){
+                        callEvent.onCallStarted(this.ip, GlobalVariables.getCallServerUDPPort(), this.sourceNr, this.destNr, receivedPacket.getIV(), receivedPacket.getKey());
+                    }
+
                 }
 
             } catch (Exception e) {

@@ -14,6 +14,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.facebook.stetho.Stetho;
+import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONArray;
@@ -23,6 +25,8 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
+
+import okhttp3.OkHttpClient;
 
 /**
  * Created by pergu on 21-Mar-17.
@@ -72,6 +76,7 @@ public class AddPinsToMapTask extends AsyncTask<String,Void,String> {
             }
         }
 
+
         RequestQueue mRequestQueue;
         mRequestQueue = Volley.newRequestQueue(context, new OkHttpStack(context));
 
@@ -99,6 +104,9 @@ public class AddPinsToMapTask extends AsyncTask<String,Void,String> {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Log.v("ONADDPIN", error.toString());
+                        Log.v("JSONOBJ", pin.toString());
+
+                        mapsActivity.offlineUpdatePinsOnMap(pin);
                         cachePin();
                     }
                 }){

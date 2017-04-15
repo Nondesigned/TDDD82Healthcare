@@ -30,7 +30,7 @@ public class ActiveCall extends AppCompatActivity {
 
         @Override
         public void onCallStarted(String host, int port, int sender, int receiver, byte[] IV, byte[] key) {
-            //TODO pass key to Call
+            
             callInstance = new Call(host, port, sender, receiver,  new CallEvent() {
                 @Override
                 public void onTimeout(int currentSequenceNumber, int destinationNumber) {
@@ -53,6 +53,7 @@ public class ActiveCall extends AppCompatActivity {
     int destNr;
     int initCall = 0;
     int stopCall = 1;
+    int INITVID = 8;
     private Call callInstance;
     Activity thisIsIt;
     @Override
@@ -74,6 +75,9 @@ public class ActiveCall extends AppCompatActivity {
         init = new InitCall();
         init.init(sourceNr,destNr, CallState,this);
         init.send(initCall, null);
+        if(BatteryMng.doVideo()){
+            init.send(INITVID, null);
+        }
         init.start();
         endCall.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {

@@ -15,6 +15,7 @@ import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -110,5 +111,12 @@ public class DeleteMarkerTask extends AsyncTask<String,Void,String> {
 
         return null;
     }
+
+    /* Cacha deletes
+    private void cachePin() {
+        JSONArray localPins = CacheManager.getJSON("/localPins", context);
+        localPins.put(pin);
+        CacheManager.put(localPins.toString(), "/localPins", context);
+    }*/
 
 }
