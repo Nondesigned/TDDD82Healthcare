@@ -25,7 +25,7 @@ public class BatteryMng {
     }
 
     public static boolean doVideo(){
-        final float PERCENT_LIMIT = 0.15f;
+        final float PERCENT_LIMIT = 0.90f;
         return (getPercentage()) > PERCENT_LIMIT;
     }
     private static Intent getStatus(){

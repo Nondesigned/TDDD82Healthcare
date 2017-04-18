@@ -29,6 +29,7 @@ import static tddd82.healthcare.ControlFlag.ACCEPTCALL;
 import static tddd82.healthcare.ControlFlag.DECLINECALL;
 import static tddd82.healthcare.ControlFlag.ENDCALL;
 import static tddd82.healthcare.ControlFlag.INITCALL;
+import static tddd82.healthcare.ControlFlag.INITVID;
 
 /**
  * Created by Oskar on 2017-03-07.
@@ -137,6 +138,56 @@ public class InitCall extends Thread implements Runnable{
         }
 
     }
+    public void send(int typeOfFlag1, int typeOfFlag2, CallCrypto crypto){
+        ControlFlags flags = new ControlFlags();
+
+        flags.setFlag(ControlFlag.ENDVID, BatteryMng.doVideo());
+        switch (typeOfFlag1) {
+            case 0:
+                flags.setFlag(INITCALL, true);
+                break;
+            case 1:
+                flags.setFlag(ENDCALL, true);
+                break;
+            case 2:
+                flags.setFlag(ACCEPTCALL,true);
+                ctrl.setKey(crypto.getKey());
+                ctrl.setIV(crypto.getIV());
+                break;
+            case 3:
+                flags.setFlag(DECLINECALL,true);
+                break;
+            case 8:
+                flags.setFlag(INITVID,true);
+                break;
+        }
+        switch (typeOfFlag2) {
+            case 0:
+                flags.setFlag(INITCALL, true);
+                break;
+            case 1:
+                flags.setFlag(ENDCALL, true);
+                break;
+            case 2:
+                flags.setFlag(ACCEPTCALL,true);
+                ctrl.setKey(crypto.getKey());
+                ctrl.setIV(crypto.getIV());
+                break;
+            case 3:
+                flags.setFlag(DECLINECALL,true);
+                break;
+            case 8:
+                flags.setFlag(INITVID,true);
+                break;
+        }
+        ctrl.setFlags(flags);
+        try {
+            ServerUtils.sendBytes(ctrl.getPacketBytes(),tcpSocket);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
     @Override
     public void run() {
         boolean connected = true;
@@ -147,6 +198,7 @@ public class InitCall extends Thread implements Runnable{
                 boolean flag1 = receivedPacket.getFlag(1);
                 boolean flag2 = receivedPacket.getFlag(2);
                 boolean flag3 = receivedPacket.getFlag(3);
+                boolean isVideo = receivedPacket.getFlag(8);
 
                 if(flag1 == true|| flag3 == true){
                     tcpSocket.close();
@@ -154,7 +206,7 @@ public class InitCall extends Thread implements Runnable{
                     callEvent.onCallEnded();
                 }
                 if(flag2 == true){
-                    callEvent.onCallStarted(this.ip, GlobalVariables.getCallServerUDPPort(), this.sourceNr, this.destNr, receivedPacket.getIV(), receivedPacket.getKey());
+                    callEvent.onCallStarted(this.ip, GlobalVariables.getCallServerUDPPort(), this.sourceNr, this.destNr, receivedPacket.getIV(), receivedPacket.getKey(),isVideo);
                 }
 
             } catch (Exception e) {

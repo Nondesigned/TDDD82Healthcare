@@ -8,5 +8,5 @@ public interface Event {
 
     void onCallEnded();
 
-    void onCallStarted(String host, int port, int sender, int receiver, byte[] IV, byte[] key);
+    void onCallStarted(String host, int port, int sender, int receiver, byte[] IV, byte[] key, boolean isVideo);
 }

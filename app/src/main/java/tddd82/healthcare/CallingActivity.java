@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -33,7 +32,7 @@ public class CallingActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onCallStarted(String host, int port, int sender, int receiver, byte[] IV, byte[] key) {
+        public void onCallStarted(String host, int port, int sender, int receiver, byte[] IV, byte[] key, boolean isVideo) {
 
         }
     };
@@ -47,6 +46,7 @@ public class CallingActivity extends AppCompatActivity {
     boolean activeCall = false;
     final Activity displayActivity = this;
     ImageView displayView;
+    boolean isVideo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +72,7 @@ public class CallingActivity extends AppCompatActivity {
         //Sends accept message
         answer.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-
+                isVideo = BatteryMng.doVideo();
                 callCrypto = new CallCrypto();
                 displayView = (ImageView)findViewById(R.id.imageView3);
                 callInstance = new Call(GlobalVariables.getCallServerIp(), GlobalVariables.getCallServerUDPPort(), sourceNr, caller,  new CallEvent() {
@@ -80,8 +80,10 @@ public class CallingActivity extends AppCompatActivity {
                     public void onTimeout(int currentSequenceNumber, int destinationNumber) {
 
                     }
-                }, callCrypto, displayView, displayActivity, (TextView)findViewById(R.id.textView2));
-
+                }, callCrypto, displayView, displayActivity, (TextView)findViewById(R.id.textView2),isVideo);
+                if(isVideo){
+                    init.send(2,8, callCrypto);
+                }
                 init.send(2, callCrypto);
                 init.start();
 
