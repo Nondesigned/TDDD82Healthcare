@@ -10,6 +10,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.widget.Chronometer;
+import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -45,6 +47,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private JSONArray markers;
     private boolean onStart = true;
     private MapsActivity thisActivity;
+    private TextView chronometer;
 
 
     private GoogleApiClient mGoogleApiClient;
@@ -57,6 +60,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_maps);
         thisActivity = this;
         context = this;
+        chronometer = (TextView) findViewById(R.id.chronometer);
         groups = new String[0];
         new GetGroupTask(this, this).execute("https://139.59.162.250:8080/groups");
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -134,7 +138,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         markerMap.remove(removeMark);
     }
 
-    public void addPinsToMap(GoogleMap mMap){
+    public void addPinsToMap(GoogleMap mMap, float time){
+        chronometer.setText(String.format("Time elapsed: %.2f", time) + " ms");
         clearMap(mMap);
         markerMap = new HashMap<>();
         removeMarkerMap = new HashMap<>();

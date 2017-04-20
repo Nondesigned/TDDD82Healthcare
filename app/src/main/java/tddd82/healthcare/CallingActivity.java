@@ -98,6 +98,7 @@ public class CallingActivity extends AppCompatActivity {
                 callInstance.initialize();
                 callInstance.start();
 
+                displayView.setRotation(-90);
                 answer.setVisibility(View.GONE);
                 answer.setClickable(false);
                 activeCall = true;

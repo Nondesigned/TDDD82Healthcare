@@ -1,6 +1,7 @@
 package tddd82.healthcare;
 
 import android.app.Activity;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
@@ -8,6 +9,7 @@ import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
 import android.graphics.YuvImage;
 import android.hardware.Camera;
+import android.view.Display;
 import android.widget.ImageView;
 
 import java.io.ByteArrayOutputStream;
@@ -178,6 +180,7 @@ public class VideoCall{
                         activity.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
+                                displayView.setRotation(-90);
                                 displayView.setImageBitmap(bm);
                             }
                         });
