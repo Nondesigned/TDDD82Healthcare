@@ -31,6 +31,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import okhttp3.OkHttpClient;
@@ -51,6 +52,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private boolean onStart = true;
     private MapsActivity thisActivity;
     private boolean active;
+    private int i=0;
 
 
     private GoogleApiClient mGoogleApiClient;
@@ -174,6 +176,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void addPinsToMap(GoogleMap mMap){
         markerMap = new HashMap<>();
         removeMarkerMap = new HashMap<>();
+        i=0;
         if(markers != null ) {
             for (int i = 0; i < markers.length(); i++) {
                 try {
@@ -191,17 +194,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void offlineUpdatePinsOnMap(JSONObject pin) {
         try {
+            i ++;
+            Marker offlineMarker;
             JSONObject marker = new JSONObject();
             marker.put("type", pin.getString("type"));
             LatLng markerLatLng = new LatLng(Double.parseDouble(pin.getString("lat")), Double.parseDouble(pin.getString("long")));
             marker.put("latlng", markerLatLng);
-            mMap.addMarker(new MarkerOptions().position((LatLng) marker.get("latlng")).title(marker.getString("type")));
+            Log.d("OFFLINEPIN", Integer.toString(i));
+            offlineMarker = mMap.addMarker(new MarkerOptions().position((LatLng) marker.get("latlng")).title(marker.getString("type")));
+            markerMap.put(offlineMarker, Integer.toString(i));
         } catch (Exception e){
             Log.d("OFFLINEADDPIN", e.getMessage());
         }
     }
 
     public void setMarkerList(JSONArray markerList){
+        this.markers = new JSONArray();
         this.markers = markerList;
     }
 

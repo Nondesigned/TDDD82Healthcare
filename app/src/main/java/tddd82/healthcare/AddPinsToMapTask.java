@@ -91,6 +91,7 @@ public class AddPinsToMapTask extends AsyncTask<String,Void,String> {
 
                             try {
                                 if(response.getString("status").equals("ok")) {
+
                                     mapsActivity.updatePinsOnMap();
 
                                 }else{
