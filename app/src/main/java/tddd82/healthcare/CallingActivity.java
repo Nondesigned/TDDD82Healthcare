@@ -47,6 +47,7 @@ public class CallingActivity extends AppCompatActivity {
     final Activity displayActivity = this;
     ImageView displayView;
     boolean isVideo;
+    boolean callerIsVideo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +57,13 @@ public class CallingActivity extends AppCompatActivity {
         final TextView tokenText = (TextView) findViewById(R.id.textviewtoken);
         Intent intent = getIntent();
 
-        caller = Integer.parseInt(intent.getStringExtra("CALLER"));
+        String[] extras = intent.getStringArrayExtra("extra");
+        caller = Integer.parseInt(extras[0]);
+        if("true".equals(extras[1])){
+            callerIsVideo = true;
+        }else
+            callerIsVideo = false;
+
         tokenText.setText(Integer.toString(caller));
         final Button decline = (Button) findViewById(R.id.decline);
         final Button answer = (Button) findViewById(R.id.answer);
@@ -81,10 +88,10 @@ public class CallingActivity extends AppCompatActivity {
 
                     }
                 }, callCrypto, displayView, displayActivity, (TextView)findViewById(R.id.textView2),isVideo);
-                if(isVideo){
+                if(isVideo && callerIsVideo){
                     init.send(2,8, callCrypto);
-                }
-                init.send(2, callCrypto);
+                }else
+                    init.send(2, callCrypto);
                 init.start();
 
 

@@ -73,8 +73,14 @@ public class ActiveCall extends AppCompatActivity {
 
         init = new InitCall();
         init.init(sourceNr,destNr, CallState,this);
-        init.send(initCall, null);
-        init.start();
+        if(BatteryMng.doVideo()) {
+            init.send(initCall,8, null);
+        }else{
+            init.send(initCall, null);
+        }
+
+            init.start();
+
         endCall.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 init.send(stopCall, null);
