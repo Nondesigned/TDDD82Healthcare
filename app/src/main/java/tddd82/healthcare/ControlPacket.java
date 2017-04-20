@@ -26,7 +26,7 @@ public class ControlPacket {
      * Returns the value of flag i
      */
     public boolean getFlag(int i) {
-        return ServerUtils.getBit(getFlagArray()[(int)(i/8)], i) != 0;
+        return ServerUtils.getBit(getFlagArray()[(int)(i/8)], i%8) != 0;
     }
 
     /**

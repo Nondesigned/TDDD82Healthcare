@@ -29,14 +29,14 @@ public class ActiveCall extends AppCompatActivity {
         }
 
         @Override
-        public void onCallStarted(String host, int port, int sender, int receiver, byte[] IV, byte[] key) {
+        public void onCallStarted(String host, int port, int sender, int receiver, byte[] IV, byte[] key, boolean isVideo) {
             //TODO pass key to Call
             callInstance = new Call(host, port, sender, receiver,  new CallEvent() {
                 @Override
                 public void onTimeout(int currentSequenceNumber, int destinationNumber) {
 
                 }
-            }, new CallCrypto(IV, key), (ImageView)findViewById(R.id.imageView2), thisIsIt, (TextView)findViewById(R.id.textView));
+            }, new CallCrypto(IV, key), (ImageView)findViewById(R.id.imageView2), thisIsIt, (TextView)findViewById(R.id.textView), isVideo);
 
             if (callInstance.initialize() != CallError.SUCCESS){
 
@@ -73,8 +73,14 @@ public class ActiveCall extends AppCompatActivity {
 
         init = new InitCall();
         init.init(sourceNr,destNr, CallState,this);
-        init.send(initCall, null);
-        init.start();
+        if(BatteryMng.doVideo()) {
+            init.send(initCall,8, null);
+        }else{
+            init.send(initCall, null);
+        }
+
+            init.start();
+
         endCall.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 init.send(stopCall, null);

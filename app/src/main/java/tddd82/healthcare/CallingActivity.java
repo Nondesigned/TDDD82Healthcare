@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -33,7 +32,7 @@ public class CallingActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onCallStarted(String host, int port, int sender, int receiver, byte[] IV, byte[] key) {
+        public void onCallStarted(String host, int port, int sender, int receiver, byte[] IV, byte[] key, boolean isVideo) {
 
         }
     };
@@ -47,6 +46,8 @@ public class CallingActivity extends AppCompatActivity {
     boolean activeCall = false;
     final Activity displayActivity = this;
     ImageView displayView;
+    boolean isVideo;
+    boolean callerIsVideo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +57,13 @@ public class CallingActivity extends AppCompatActivity {
         final TextView tokenText = (TextView) findViewById(R.id.textviewtoken);
         Intent intent = getIntent();
 
-        caller = Integer.parseInt(intent.getStringExtra("CALLER"));
+        String[] extras = intent.getStringArrayExtra("extra");
+        caller = Integer.parseInt(extras[0]);
+        if("true".equals(extras[1])){
+            callerIsVideo = true;
+        }else
+            callerIsVideo = false;
+
         tokenText.setText(Integer.toString(caller));
         final Button decline = (Button) findViewById(R.id.decline);
         final Button answer = (Button) findViewById(R.id.answer);
@@ -72,7 +79,7 @@ public class CallingActivity extends AppCompatActivity {
         //Sends accept message
         answer.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-
+                isVideo = BatteryMng.doVideo();
                 callCrypto = new CallCrypto();
                 displayView = (ImageView)findViewById(R.id.imageView3);
                 callInstance = new Call(GlobalVariables.getCallServerIp(), GlobalVariables.getCallServerUDPPort(), sourceNr, caller,  new CallEvent() {
@@ -80,9 +87,11 @@ public class CallingActivity extends AppCompatActivity {
                     public void onTimeout(int currentSequenceNumber, int destinationNumber) {
 
                     }
-                }, callCrypto, displayView, displayActivity, (TextView)findViewById(R.id.textView2));
-
-                init.send(2, callCrypto);
+                }, callCrypto, displayView, displayActivity, (TextView)findViewById(R.id.textView2),isVideo);
+                if(isVideo && callerIsVideo){
+                    init.send(2,8, callCrypto);
+                }else
+                    init.send(2, callCrypto);
                 init.start();
 
 

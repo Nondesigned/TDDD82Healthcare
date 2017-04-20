@@ -15,8 +15,9 @@ public class PushNotice extends FirebaseMessagingService {
         Intent callingintent = new Intent(this,CallingActivity.class);
         callingintent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         Map<String,String> payload = remoteMessage.getData();
-        if(payload.containsKey("CALLER")){
-            callingintent.putExtra("CALLER",payload.get("CALLER"));
+        if(payload.containsKey("CALLER") && payload.containsKey("isVideo")){
+            String[] extra = {payload.get("CALLER"), payload.get("isVideo")};
+            callingintent.putExtra("extra",extra);
         }
         startActivity(callingintent);
     }

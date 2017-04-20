@@ -11,6 +11,7 @@ import android.os.BatteryManager;
 
 public class BatteryMng {
     private static Context context;
+    private static float limit = 0.15f;
 
     public static void setContext(Context m_context){
         BatteryMng.context = m_context;
@@ -25,7 +26,7 @@ public class BatteryMng {
     }
 
     public static boolean doVideo(){
-        final float PERCENT_LIMIT = 0.15f;
+        final float PERCENT_LIMIT = limit;
         return (getPercentage()) > PERCENT_LIMIT;
     }
     private static Intent getStatus(){

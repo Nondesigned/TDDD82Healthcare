@@ -18,6 +18,7 @@ import java.util.Locale;
 public class Call {
 
     private final int UDP_SOCKET_TIMEOUT = 10000;
+    private boolean isVideo;
 
     private DatagramSocket socket;
 
@@ -51,13 +52,14 @@ public class Call {
     private float droppedPackets = 0, acceptedPackets = 0;
 
 
-    public Call(String host, int port, int senderPhoneNumber, int receiverPhoneNumber, CallEvent eventHandler, CallCrypto crypto, ImageView displayView, Activity activity, TextView packetDropView){
+    public Call(String host, int port, int senderPhoneNumber, int receiverPhoneNumber, CallEvent eventHandler, CallCrypto crypto, ImageView displayView, Activity activity, TextView packetDropView, boolean isVideo){
         this.host = host;
         this.port = port;
         this.eventHandler = eventHandler;
         this.senderNumber = senderPhoneNumber;
         this.receiverNumber = receiverPhoneNumber;
         this.crypto = crypto;
+        this.isVideo= isVideo;
 
         this.voiceReceiverBuffer = new VoiceBuffer();
         this.voiceRecordBuffer = new VoiceBuffer();
@@ -84,11 +86,11 @@ public class Call {
         if (voiceErr != CallError.SUCCESS)
             return voiceErr;
 
-        CallError videoErr = videoCall.initialize();
-
-        if (videoErr != CallError.SUCCESS)
-            return videoErr;
-
+        if(isVideo) {
+            CallError videoErr = videoCall.initialize();
+            if (videoErr != CallError.SUCCESS)
+                return videoErr;
+        }
         try{
             this.address = InetAddress.getByName(host);
         } catch (UnknownHostException ex){
@@ -114,7 +116,8 @@ public class Call {
             return false;
 
         voiceCall.start();
-        videoCall.start();
+        if(isVideo)
+            videoCall.start();
 
         this.alive = true;
 
@@ -142,7 +145,8 @@ public class Call {
         initialized = false;
 
         voiceCall.terminate();
-        videoCall.terminate();
+        if (isVideo)
+            videoCall.terminate();
 
         if(socket != null){
             socket.close();

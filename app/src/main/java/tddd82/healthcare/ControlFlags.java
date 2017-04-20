@@ -24,7 +24,7 @@ public class ControlFlags implements Flags{
      * Returns the flag at position i
      */
     public boolean getFlag(int i) {
-        return ServerUtils.getBit(bytes[(int)(i/8)], i) != 0;
+        return ServerUtils.getBit(bytes[(int)(i/8)], i%8) != 0;
     }
 
     /**
