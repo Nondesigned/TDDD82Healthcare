@@ -169,8 +169,7 @@ public class Call {
                 continue;
             }
 
-            data.decrypt(crypto);
-            if (data.validChecksum() && data.getSource() == this.receiverNumber) {
+            if (data.decrypt(crypto) && data.validChecksum() && data.getSource() == this.receiverNumber) {
                 acceptedPackets+= 1.0;
                 if (data.hasFlag(DataPacket.FLAG_IS_VIDEO) && data.getSequenceNumber() >= videoLastReceivedSequenceNumber) {
                     videoReceiverBuffer.push(data);
@@ -217,13 +216,15 @@ public class Call {
                 data.setDestination(this.receiverNumber);
                 data.setSequenceNumber(data.hasFlag(DataPacket.FLAG_IS_VIDEO) ? videoSendSequenceNumber++ : voiceSendSequenceNumber++);
                 data.addChecksum();
-                data.encrypt(crypto);
-                DatagramPacket p = new DatagramPacket(data.getBuffer(), 0, data.getLength(), this.address, this.port);
 
-                try {
-                    socket.send(p);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
+                if (data.encrypt(crypto)) {
+                    DatagramPacket p = new DatagramPacket(data.getBuffer(), 0, data.getLength(), this.address, this.port);
+
+                    try {
+                        socket.send(p);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
                 }
             } else {
                 sleep(1);

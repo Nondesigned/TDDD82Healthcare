@@ -12,9 +12,8 @@ import android.widget.ImageView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Locale;
 
-public class    VideoCall{
+public class VideoCall{
 
     private Camera cameraInstance;
     private Camera.Parameters cameraParameters;

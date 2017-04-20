@@ -141,7 +141,6 @@ public class InitCall extends Thread implements Runnable{
     public void send(int typeOfFlag1, int typeOfFlag2, CallCrypto crypto){
         ControlFlags flags = new ControlFlags();
 
-        flags.setFlag(ControlFlag.ENDVID, BatteryMng.doVideo());
         switch (typeOfFlag1) {
             case 0:
                 flags.setFlag(INITCALL, true);
