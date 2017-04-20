@@ -73,7 +73,7 @@ class GetContactsTask extends AsyncTask<String,Void,String> {
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    if(error.getMessage().equals("org.json.JSONException: Value null of type org.json.JSONObject$1" +
+                    if(error.getMessage() != null && error.getMessage().equals("org.json.JSONException: Value null of type org.json.JSONObject$1" +
                                     " cannot be converted to JSONArray")){
                         addContacts(null);
                     }else{

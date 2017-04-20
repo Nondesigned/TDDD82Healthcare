@@ -78,7 +78,7 @@ public class CallCrypto {
             e.printStackTrace();
         }
 
-        return bytes;
+        return null;
     }
 
     public byte[] decrypt(byte[] bytes, int offset, int length){
@@ -102,7 +102,7 @@ public class CallCrypto {
             e.printStackTrace();
         }
 
-        return bytes;
+        return null;
     }
 
     public byte[] getKey(){
