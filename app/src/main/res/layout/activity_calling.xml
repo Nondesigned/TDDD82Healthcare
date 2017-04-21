@@ -71,8 +71,9 @@
         android:textColor="@color/colorWhite"/>
 
     <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:scaleType="fitXY"
         android:src="@drawable/staroflife"
         android:id="@+id/imageView3"
         android:layout_alignParentTop="true"
