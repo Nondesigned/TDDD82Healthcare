@@ -125,6 +125,7 @@ public class CallingActivity extends AppCompatActivity {
         decline.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 init.send(3, null);
+                mediaPlayer.stop();
                 finish();
             }
         });
