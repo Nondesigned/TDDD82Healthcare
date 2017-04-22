@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -48,11 +49,15 @@ public class CallingActivity extends AppCompatActivity {
     ImageView displayView;
     boolean isVideo;
     boolean callerIsVideo;
+    MediaPlayer mediaPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calling);
+
+        mediaPlayer = MediaPlayer.create(this, R.raw.dangerzone);
+        mediaPlayer.start();
 
         final TextView tokenText = (TextView) findViewById(R.id.textviewtoken);
         Intent intent = getIntent();
@@ -79,6 +84,7 @@ public class CallingActivity extends AppCompatActivity {
         //Sends accept message
         answer.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                mediaPlayer.stop();
                 isVideo = BatteryMng.doVideo();
                 callCrypto = new CallCrypto();
                 displayView = (ImageView)findViewById(R.id.imageView3);
