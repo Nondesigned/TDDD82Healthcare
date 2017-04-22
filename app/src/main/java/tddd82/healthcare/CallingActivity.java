@@ -6,11 +6,15 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.auth0.android.jwt.JWT;
@@ -49,14 +53,14 @@ public class CallingActivity extends AppCompatActivity {
     ImageView displayView;
     boolean isVideo;
     boolean callerIsVideo;
-    MediaPlayer mediaPlayer;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calling);
 
-        mediaPlayer = MediaPlayer.create(this, R.raw.dangerzone);
+        final MediaPlayer mediaPlayer = MediaPlayer.create(this, R.raw.dangerzone);
         mediaPlayer.start();
 
         final TextView tokenText = (TextView) findViewById(R.id.textviewtoken);
@@ -105,6 +109,9 @@ public class CallingActivity extends AppCompatActivity {
                 callInstance.start();
 
                 displayView.setRotation(-90);
+                RelativeLayout.LayoutParams rlp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT, RelativeLayout.LayoutParams.FILL_PARENT);
+                displayView.setLayoutParams(rlp);
+                displayView.setScaleType(ImageView.ScaleType.FIT_XY);
                 answer.setVisibility(View.GONE);
                 answer.setClickable(false);
                 activeCall = true;
