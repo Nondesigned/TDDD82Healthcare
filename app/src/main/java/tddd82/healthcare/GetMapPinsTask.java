@@ -129,7 +129,7 @@ public class GetMapPinsTask extends AsyncTask<String, Void, String> {
         Log.d("PINS", "Sätter ut pins");
         mapsActivity.setMarkerList(markerArray);
         Log.d("MARKERARRAY", markerArray.toString());
-        mapsActivity.addPinsToMap(mMap, difference/1000000);
+        mapsActivity.addPinsToMap(mMap);
 
     }
 }
