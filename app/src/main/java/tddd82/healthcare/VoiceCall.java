@@ -131,6 +131,7 @@ public class VoiceCall {
             DataPacket p = new DataPacket(recorderBufferSize);
 
             recorder.read(p.getBuffer(), p.getPayloadIndex(), p.getPayloadLength());
+            
             p.setSampleRate(recorder.getSampleRate());
             p.setBufferSize(recorderBufferSize);
             p.setFlag(DataPacket.FLAG_IS_VIDEO, false);

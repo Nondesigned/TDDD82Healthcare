@@ -3,6 +3,7 @@ package tddd82.healthcare;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.Image;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -29,14 +30,15 @@ public class ActiveCall extends AppCompatActivity {
         }
 
         @Override
-        public void onCallStarted(String host, int port, int sender, int receiver, byte[] IV, byte[] key) {
-            
+        public void onCallStarted(String host, int port, int sender, int receiver, byte[] IV, byte[] key, boolean isVideo) {
+            //TODO pass key to Call
+
             callInstance = new Call(host, port, sender, receiver,  new CallEvent() {
                 @Override
                 public void onTimeout(int currentSequenceNumber, int destinationNumber) {
 
                 }
-            }, new CallCrypto(IV, key), (ImageView)findViewById(R.id.imageView2), thisIsIt, (TextView)findViewById(R.id.textView));
+            }, new CallCrypto(IV, key), (ImageView)findViewById(R.id.imageView2), thisIsIt, (TextView)findViewById(R.id.textView), isVideo);
 
             if (callInstance.initialize() != CallError.SUCCESS){
 
@@ -62,6 +64,7 @@ public class ActiveCall extends AppCompatActivity {
         setContentView(R.layout.activity_active_call);
         thisIsIt = this;
         final Button endCall = (Button) findViewById(R.id.endCall);
+        ImageView paparazzi = (ImageView)findViewById(R.id.imageView2);
 
         //Get token from SharedPref
         SharedPreferences sharedPreferences = this.getSharedPreferences("tddd82.healthcare", this.MODE_PRIVATE);
@@ -74,11 +77,15 @@ public class ActiveCall extends AppCompatActivity {
 
         init = new InitCall();
         init.init(sourceNr,destNr, CallState,this);
-        init.send(initCall, null);
-        if(BatteryMng.doVideo()){
-            init.send(INITVID, null);
+
+        if(BatteryMng.doVideo()) {
+            init.send(initCall,8, null);
+        }else{
+            init.send(initCall, null);
         }
-        init.start();
+
+            init.start();
+
         endCall.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 init.send(stopCall, null);

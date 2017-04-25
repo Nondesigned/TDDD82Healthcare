@@ -11,6 +11,9 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.widget.Toast;
+import android.widget.Chronometer;
+import android.widget.TextView;
+
 
 import com.facebook.stetho.Stetho;
 import com.facebook.stetho.okhttp3.StethoInterceptor;
@@ -53,6 +56,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private MapsActivity thisActivity;
     private boolean active;
     private int i=0;
+    private TextView chronometer;
 
 
     private GoogleApiClient mGoogleApiClient;
@@ -72,6 +76,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         thisActivity = this;
         active = true;
         context = this;
+        chronometer = (TextView) findViewById(R.id.chronometer);
         groups = new String[0];
         new GetGroupTask(this, this).execute(GlobalVariables.getDataServerAddress()+"/groups");
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.

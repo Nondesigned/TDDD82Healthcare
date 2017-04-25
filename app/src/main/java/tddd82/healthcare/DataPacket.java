@@ -5,12 +5,13 @@ import java.util.Arrays;
 
 public class DataPacket {
 
-
+    private final static int ENCRYPTION_START = 12;
     public final static int HEADER_SIZE = 57;
     public final static int MAX_SIZE = 65507 - HEADER_SIZE;
 
     public final static int FLAG_IS_VIDEO = 1;
-    public final static int FLAG_ENCODING = 2;
+    public final static int FLAG_INCREASE_QUALITY = 2;
+    public final static int FLAG_DECREASE_QUALITY = 3;
 
     private byte[] buffer;
     private long creationTime;
@@ -81,14 +82,6 @@ public class DataPacket {
         return ByteBuffer.wrap(tmp).getInt();
     }
 
-    public void setBuffer(byte[] buffer){
-        this.buffer = buffer;
-    }
-
-    public void setPayload(byte[] buffer){
-        setRange(buffer, this.buffer, HEADER_SIZE);
-    }
-
     public void setSource(int src){
         byte[] tmp = ByteBuffer.allocate(4).putInt(src).array();
         setRange(tmp, this.buffer, 0);
@@ -133,6 +126,10 @@ public class DataPacket {
         setRange(tmp, this.buffer, 21);
     }
 
+    public void setPayload(byte[] payload){
+        System.arraycopy(payload, 0, this.buffer, HEADER_SIZE, payload.length);
+    }
+
 
     public boolean validChecksum(){
         byte[] sha = ServerUtils.getSHA256(buffer, 0, 25);
@@ -155,37 +152,48 @@ public class DataPacket {
         return destination;
     }
 
-    public void encrypt(CallCrypto cc){
+    public boolean encrypt(CallCrypto cc){
         int src = getSource();
         int dst = getDestination();
         int len = getLength();
-        byte[] encrypted = cc.encrypt(this.buffer, 12, len - 12);
+        byte[] encrypted = cc.encrypt(this.buffer, ENCRYPTION_START, len - ENCRYPTION_START);
         if (encrypted == null){
-            System.out.println(src);
+            return false;
         }
-        this.buffer = new byte[encrypted.length + 12];
+        this.buffer = new byte[encrypted.length + ENCRYPTION_START];
         setSource(src);
         setDestination(dst);
-        setLength(encrypted.length + 12);
-        for (int i = 0; i < encrypted.length; i++)
-            buffer[i + 12] = encrypted[i];
-        //setRange(encrypted, buffer, 12);
+        setLength(encrypted.length + ENCRYPTION_START);
+        System.arraycopy(encrypted, 0, this.buffer, ENCRYPTION_START, encrypted.length);
 
+        return true;
     }
 
-    public void decrypt(CallCrypto cc){
+    public boolean decrypt(CallCrypto cc){
         int totalLength = getLength();
         int src = getSource();
         int dst = getDestination();
-        byte[] decrypted = cc.decrypt(this.buffer, 12, totalLength - 12);
+        byte[] decrypted = cc.decrypt(this.buffer, ENCRYPTION_START, totalLength - ENCRYPTION_START);
         if (decrypted == null) {
-            System.out.println(dst);
+            return false;
         }
-        this.buffer = new byte[decrypted.length + 12];
-        for (int i = 0; i < decrypted.length; i++)
-            buffer[i + 12] = decrypted[i];
+        this.buffer = new byte[decrypted.length + ENCRYPTION_START];
+        System.arraycopy(decrypted, 0, this.buffer, ENCRYPTION_START, decrypted.length);
+
         setSource(src);
         setDestination(dst);
-        setLength(decrypted.length + 12);
+        setLength(decrypted.length + ENCRYPTION_START);
+
+        return true;
+    }
+
+    public float getFrameRate(){
+        byte[] tmp = Arrays.copyOfRange(this.buffer, 16, 20);
+        return ByteBuffer.wrap(tmp).getFloat();
+    }
+
+    public void setFrameRate(float frameRate){
+        byte[] tmp = ByteBuffer.allocate(4).putFloat(frameRate).array();
+        setRange(tmp, buffer, 16);
     }
 }

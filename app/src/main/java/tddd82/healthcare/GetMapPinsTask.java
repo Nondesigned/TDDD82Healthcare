@@ -3,6 +3,7 @@ package tddd82.healthcare;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Chronometer;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -22,8 +23,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.text.Format;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Timer;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by pergu on 2017-03-10.
@@ -35,6 +40,8 @@ public class GetMapPinsTask extends AsyncTask<String, Void, String> {
     private GoogleMap mMap;
     private MapsActivity mapsActivity;
     private String url;
+    private long startTime;
+    private long difference;
 
     public GetMapPinsTask(Context context, GoogleMap mMap, MapsActivity mapsActivity) {
         this.context = context;
@@ -54,6 +61,8 @@ public class GetMapPinsTask extends AsyncTask<String, Void, String> {
 
             @Override
             public void onResponse(JSONArray m_response) {
+                difference = System.nanoTime() - startTime;
+
                 Log.d("GETMAPPINSRESPONSE", m_response.toString());
                 CacheManager.put(m_response.toString(), "/pins", context);
                 addPinsToMap(m_response);
@@ -88,6 +97,7 @@ public class GetMapPinsTask extends AsyncTask<String, Void, String> {
         };
 
         mRequestQueue.add(jsonRequest);
+        startTime = System.nanoTime();
         mRequestQueue.start();
         return "Fetching markers";
     }
@@ -119,7 +129,7 @@ public class GetMapPinsTask extends AsyncTask<String, Void, String> {
         Log.d("PINS", "Sätter ut pins");
         mapsActivity.setMarkerList(markerArray);
         Log.d("MARKERARRAY", markerArray.toString());
-        mapsActivity.addPinsToMap(mMap);
+        mapsActivity.addPinsToMap(mMap, difference/1000000);
 
     }
 }
