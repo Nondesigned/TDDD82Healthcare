@@ -5,15 +5,16 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
+import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
 import android.graphics.YuvImage;
 import android.hardware.Camera;
-import android.view.Display;
 import android.widget.ImageView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+
 
 public class VideoCall{
 
@@ -55,6 +56,7 @@ public class VideoCall{
 
                 if (ret) {
 
+
                     if (fpsTimestamp + 500 < System.currentTimeMillis()){
                         fpsTimestamp = System.currentTimeMillis();
                         currentFps = 2*framesRecorded;
@@ -63,6 +65,7 @@ public class VideoCall{
                     framesRecorded++;
 
                     byte[] compressed = os.toByteArray();
+
                     DataPacket p = new DataPacket(compressed.length);
                     p.setPayload(compressed);
                     p.setBufferSize(compressed.length);
@@ -126,6 +129,7 @@ public class VideoCall{
             return CallError.CAMERA_ERROR;
         }
 
+
         cameraParameters = cameraInstance.getParameters();
         cameraParameters.setPreviewFormat(ImageFormat.NV21);
 
@@ -172,15 +176,16 @@ public class VideoCall{
                     decreaseQuality();
                 }
 
-
                 if (p.getBufferSize() < DataPacket.MAX_SIZE){
 
-                    final Bitmap bm = BitmapFactory.decodeByteArray(p.getBuffer(), DataPacket.HEADER_SIZE, p.getBufferSize());
+                    Matrix matrix = new Matrix();
+                    matrix.postRotate(270);
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(p.getBuffer(), DataPacket.HEADER_SIZE, p.getBufferSize());
+                    final Bitmap bm = Bitmap.createBitmap(bitmap, 0 , 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
                     if (bm != null) {
                         activity.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                displayView.setRotation(-90);
                                 displayView.setImageBitmap(bm);
                             }
                         });
@@ -202,6 +207,7 @@ public class VideoCall{
                 Camera.getCameraInfo(i, info);
                 if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
                     camera = Camera.open(i);
+                    return camera;
                 }
             }
         } catch (Exception ex){
