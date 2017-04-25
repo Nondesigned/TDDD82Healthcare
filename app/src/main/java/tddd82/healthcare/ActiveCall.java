@@ -38,7 +38,7 @@ public class ActiveCall extends AppCompatActivity {
                 public void onTimeout(int currentSequenceNumber, int destinationNumber) {
 
                 }
-            }, new CallCrypto(IV, key), (ImageView)findViewById(R.id.imageView2), thisIsIt, (TextView)findViewById(R.id.textView), isVideo);
+            }, new CallCrypto(IV, key), paparazzi, thisIsIt, (TextView)findViewById(R.id.textView), isVideo);
 
             if (callInstance.initialize() != CallError.SUCCESS){
 
@@ -49,7 +49,7 @@ public class ActiveCall extends AppCompatActivity {
         }
     };
 
-
+    private ImageView paparazzi;
     InitCall init;
     int sourceNr;
     int destNr;
@@ -64,7 +64,7 @@ public class ActiveCall extends AppCompatActivity {
         setContentView(R.layout.activity_active_call);
         thisIsIt = this;
         final Button endCall = (Button) findViewById(R.id.endCall);
-        ImageView paparazzi = (ImageView)findViewById(R.id.imageView2);
+        paparazzi = (ImageView)findViewById(R.id.imageView2);
 
         //Get token from SharedPref
         SharedPreferences sharedPreferences = this.getSharedPreferences("tddd82.healthcare", this.MODE_PRIVATE);

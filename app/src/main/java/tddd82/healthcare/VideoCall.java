@@ -10,6 +10,7 @@ import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
 import android.graphics.YuvImage;
 import android.hardware.Camera;
+import android.opengl.Matrix;
 import android.widget.ImageView;
 
 import java.io.ByteArrayOutputStream;
@@ -133,6 +134,7 @@ public class VideoCall{
         cameraParameters = cameraInstance.getParameters();
         cameraParameters.setPreviewFormat(ImageFormat.NV21);
 
+
         try {
             cameraInstance.setPreviewTexture(displayTexture);
         } catch (IOException e) {
@@ -145,7 +147,6 @@ public class VideoCall{
         cameraInstance.setParameters(cameraParameters);
 
         cameraInstance.setPreviewCallback(onFrame);
-
         return CallError.SUCCESS;
     }
 
@@ -182,6 +183,7 @@ public class VideoCall{
                     matrix.postRotate(270);
                     Bitmap bitmap = BitmapFactory.decodeByteArray(p.getBuffer(), DataPacket.HEADER_SIZE, p.getBufferSize());
                     final Bitmap bm = Bitmap.createBitmap(bitmap, 0 , 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+
                     if (bm != null) {
                         activity.runOnUiThread(new Runnable() {
                             @Override

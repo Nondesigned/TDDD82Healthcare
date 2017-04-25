@@ -4,12 +4,17 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.auth0.android.jwt.JWT;
@@ -49,10 +54,14 @@ public class CallingActivity extends AppCompatActivity {
     boolean isVideo;
     boolean callerIsVideo;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calling);
+
+        final MediaPlayer mediaPlayer = MediaPlayer.create(this, R.raw.dangerzone);
+        mediaPlayer.start();
 
         final TextView tokenText = (TextView) findViewById(R.id.textviewtoken);
         Intent intent = getIntent();
@@ -79,6 +88,7 @@ public class CallingActivity extends AppCompatActivity {
         //Sends accept message
         answer.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                mediaPlayer.stop();
                 isVideo = BatteryMng.doVideo();
                 callCrypto = new CallCrypto();
                 displayView = (ImageView)findViewById(R.id.imageView3);
@@ -99,6 +109,9 @@ public class CallingActivity extends AppCompatActivity {
                 callInstance.start();
 
                 displayView.setRotation(-90);
+                RelativeLayout.LayoutParams rlp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT, RelativeLayout.LayoutParams.FILL_PARENT);
+                displayView.setLayoutParams(rlp);
+                displayView.setScaleType(ImageView.ScaleType.FIT_CENTER);
                 answer.setVisibility(View.GONE);
                 answer.setClickable(false);
                 activeCall = true;
@@ -112,6 +125,7 @@ public class CallingActivity extends AppCompatActivity {
         decline.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 init.send(3, null);
+                mediaPlayer.stop();
                 finish();
             }
         });
