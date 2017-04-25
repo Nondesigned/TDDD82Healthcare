@@ -56,6 +56,7 @@ public class InitCall extends Thread implements Runnable{
 
     public void init(int sourceNr,int destNr, Event callEvent,Context context){
 
+
         SSLContext SSLcontext = null;
         try {
            SSLcontext =  SSLContext.getInstance("TLS");
@@ -102,6 +103,7 @@ public class InitCall extends Thread implements Runnable{
         ctrl.setSource(sourceNr);
         ctrl.setDestination(destNr);
 
+
         SharedPreferences sharedPreferences = context.getSharedPreferences("tddd82.healthcare", context.MODE_PRIVATE);
         String token = sharedPreferences.getString("TOKEN","default");
 
@@ -128,6 +130,9 @@ public class InitCall extends Thread implements Runnable{
                 break;
             case 3:
                 flags.setFlag(DECLINECALL,true);
+                break;
+            case 8:
+                flags.setFlag(INITVID,true);
                 break;
         }
         ctrl.setFlags(flags);
@@ -205,6 +210,7 @@ public class InitCall extends Thread implements Runnable{
                     callEvent.onCallEnded();
                 }
                 if(flag2 == true){
+
                     callEvent.onCallStarted(this.ip, GlobalVariables.getCallServerUDPPort(), this.sourceNr, this.destNr, receivedPacket.getIV(), receivedPacket.getKey(),isVideo);
                 }
 

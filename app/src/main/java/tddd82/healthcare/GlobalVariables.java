@@ -20,12 +20,20 @@ public class GlobalVariables {
     private static final String INTENT_CALL_NUMBER = "DEST";
     private static final String JSON_CONTACT_LIST = "contact list";
     private static final String CALL_SERVER_IP = "139.59.162.250";
+    private static final String DATA_SERVER_ADDRESS = "https://139.59.162.250:80";
     private static final int CALL_SERVER_UDP_PORT = 1338;
     private static final int CALL_SERVER_TCP_PORT = 1337;
+    private static final String[] cacheFiles = {"/pins", "/contacts", "localPins"};
 
 
+    public static String[] getCacheFiles(){
+        return cacheFiles;
+    }
     public static String getJsonContactList() {
         return JSON_CONTACT_LIST;
+    }
+    public static String getDataServerAddress() {
+        return DATA_SERVER_ADDRESS;
     }
 
     public static String getIntentCallNumber(){
