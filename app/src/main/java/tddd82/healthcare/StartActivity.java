@@ -51,14 +51,11 @@ public class StartActivity extends AppCompatActivity {
     SharedPreferences preferences;
     SharedPreferences.Editor editor;
     BottomNavigationView bottomNavigation;
-    MediaPlayer mediaPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
-
-        mediaPlayer = MediaPlayer.create(this, R.raw.dangerzone);
 
         BatteryMng.setContext(this);
         Toast.makeText(context, String.valueOf(BatteryMng.getPercentage()), Toast.LENGTH_SHORT).show();
@@ -204,16 +201,6 @@ public class StartActivity extends AppCompatActivity {
     public void showMap(){
         Intent showMap = new Intent(context,MapsActivity.class);
         startActivity(showMap);
-    }
-
-    public void playMusic(View view){
-        if(mediaPlayer.isPlaying()){
-            mediaPlayer.stop();
-            mediaPlayer.prepareAsync();
-        }
-        else{
-            mediaPlayer.start();
-        }
     }
 
 }

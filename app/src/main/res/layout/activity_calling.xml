@@ -12,6 +12,15 @@
     tools:context="tddd82.healthcare.CallingActivity"
     android:background="@color/colorBackgroundBlue">
 
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/staroflife"
+        android:id="@+id/imageView3"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:adjustViewBounds="true"/>
+
     <Button
         android:text="Answer"
         android:layout_width="wrap_content"
@@ -27,6 +36,7 @@
         android:textColor="@color/colorGreen"
         android:layout_alignParentLeft="true"
         android:layout_marginLeft="52dp" />
+
 
     <Button
         android:text="Decline"
@@ -70,18 +80,14 @@
         android:textSize="20sp"
         android:textColor="@color/colorWhite"/>
 
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:src="@drawable/staroflife"
-        android:id="@+id/imageView3"
+<!--
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        />
+-->
 
     <TextView
         android:text=" "
