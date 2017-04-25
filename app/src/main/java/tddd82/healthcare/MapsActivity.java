@@ -90,7 +90,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 long sleepDuration;
                 while(active) {
                     sleepDuration = 10000;
-                    if(BatteryMng.getPercentage() < 0.15){
+                    if(!BatteryMng.doVideo()){
                         sleepDuration = 30000;
                     }
 
