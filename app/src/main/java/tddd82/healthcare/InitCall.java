@@ -47,7 +47,6 @@ public class InitCall extends Thread implements Runnable{
     int destNr;
     private Context context;
     private Event callEvent;
-    CallVariables callVariables;
     // Defines header information and sends to server
     // tyeofFlag = 0 , initialize
     //  = 1 endCall
@@ -103,8 +102,6 @@ public class InitCall extends Thread implements Runnable{
         ctrl = new ControlPacket(bytes);
         ctrl.setSource(sourceNr);
         ctrl.setDestination(destNr);
-        callVariables.setSourceNr(sourceNr);
-        callVariables.setDestNr(destNr);
 
 
         SharedPreferences sharedPreferences = context.getSharedPreferences("tddd82.healthcare", context.MODE_PRIVATE);
