@@ -44,4 +44,12 @@ public class BatteryMng {
         Intent i = context.registerReceiver(null, ifilter);
         return i;
     }
+
+    public static boolean isCharging(){
+        Intent batteryStatus = getStatus();
+        int status = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
+        boolean isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING ||
+                status == BatteryManager.BATTERY_STATUS_FULL;
+        return isCharging;
+    }
 }

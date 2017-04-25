@@ -186,6 +186,9 @@ public class StartActivity extends AppCompatActivity {
         editor = preferences.edit();
         editor.remove("TOKEN");
         editor.apply();
+        for (String fileEnd : GlobalVariables.getCacheFiles()){
+            CacheManager.clear(fileEnd, this);
+        }
         Intent intent = getIntent();
         finish();
         startActivity(intent);

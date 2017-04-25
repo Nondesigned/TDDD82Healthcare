@@ -47,6 +47,7 @@ public class InitCall extends Thread implements Runnable{
     int destNr;
     private Context context;
     private Event callEvent;
+    CallVariables callVariables;
     // Defines header information and sends to server
     // tyeofFlag = 0 , initialize
     //  = 1 endCall
@@ -55,6 +56,7 @@ public class InitCall extends Thread implements Runnable{
     // Remove key part until sprint 3
 
     public void init(int sourceNr,int destNr, Event callEvent,Context context){
+
 
         SSLContext SSLcontext = null;
         try {
@@ -101,6 +103,9 @@ public class InitCall extends Thread implements Runnable{
         ctrl = new ControlPacket(bytes);
         ctrl.setSource(sourceNr);
         ctrl.setDestination(destNr);
+        callVariables.setSourceNr(sourceNr);
+        callVariables.setDestNr(destNr);
+
 
         SharedPreferences sharedPreferences = context.getSharedPreferences("tddd82.healthcare", context.MODE_PRIVATE);
         String token = sharedPreferences.getString("TOKEN","default");
@@ -128,6 +133,9 @@ public class InitCall extends Thread implements Runnable{
                 break;
             case 3:
                 flags.setFlag(DECLINECALL,true);
+                break;
+            case 8:
+                flags.setFlag(INITVID,true);
                 break;
         }
         ctrl.setFlags(flags);
@@ -205,6 +213,7 @@ public class InitCall extends Thread implements Runnable{
                     callEvent.onCallEnded();
                 }
                 if(flag2 == true){
+
                     callEvent.onCallStarted(this.ip, GlobalVariables.getCallServerUDPPort(), this.sourceNr, this.destNr, receivedPacket.getIV(), receivedPacket.getKey(),isVideo);
                 }
 

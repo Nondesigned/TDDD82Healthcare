@@ -18,10 +18,26 @@ public class ContactActivity extends AppCompatActivity {
     private static Context context;
     static ListView contactListView;
     static ListAdapter customAdapter;
+    static boolean active;
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        active = false;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        active = true;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact);
+
+        active = true;
 
         ContactActivity.context = this;
         ContactActivity.contactListView = (ListView) findViewById(R.id.list_view);
@@ -49,7 +65,7 @@ public class ContactActivity extends AppCompatActivity {
         new Thread(new Runnable(){
             @Override
             public void run(){
-                while(true) {
+                while(active) {
                     GetContactsTask task = new GetContactsTask(context);
                     task.execute("https://itkand-3-1.tddd82-2017.ida.liu.se:8080/contacts");
                     try {

@@ -106,6 +106,8 @@ class LoginTask extends AsyncTask<String, Void, String> {
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
+                    Log.v("LOGINERROR", error.toString());
+
                     makeToast("Wrong credentials");
 
                 }
