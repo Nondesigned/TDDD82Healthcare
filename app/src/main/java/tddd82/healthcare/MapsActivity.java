@@ -76,6 +76,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         thisActivity = this;
         active = true;
         context = this;
+        CacheManager.clear("/localPins", context);
         chronometer = (TextView) findViewById(R.id.chronometer);
         groups = new String[0];
         new GetGroupTask(this, this).execute(GlobalVariables.getDataServerAddress()+"/groups");
