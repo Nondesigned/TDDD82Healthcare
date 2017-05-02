@@ -108,10 +108,9 @@ public class CallingActivity extends AppCompatActivity {
                 callInstance.initialize();
                 callInstance.start();
 
-                displayView.setRotation(-90);
                 RelativeLayout.LayoutParams rlp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT, RelativeLayout.LayoutParams.FILL_PARENT);
                 displayView.setLayoutParams(rlp);
-                displayView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                displayView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 answer.setVisibility(View.GONE);
                 answer.setClickable(false);
                 activeCall = true;

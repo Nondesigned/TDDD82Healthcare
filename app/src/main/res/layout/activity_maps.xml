@@ -22,7 +22,7 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:textColor="@color/colorWhite"
-        android:background="@drawable/background_to_map_time"
+        android:background="@drawable/background_rounded"
         android:rotation="0"
         android:padding="5dp"/>
 
