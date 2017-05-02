@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class ActiveCall extends AppCompatActivity {
@@ -65,6 +66,11 @@ public class ActiveCall extends AppCompatActivity {
         thisIsIt = this;
         final Button endCall = (Button) findViewById(R.id.endCall);
         paparazzi = (ImageView)findViewById(R.id.imageView2);
+
+        RelativeLayout.LayoutParams rlp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT, RelativeLayout.LayoutParams.FILL_PARENT);
+        paparazzi.setLayoutParams(rlp);
+        paparazzi.setScaleType(ImageView.ScaleType.CENTER_CROP);
+
 
         //Get token from SharedPref
         SharedPreferences sharedPreferences = this.getSharedPreferences("tddd82.healthcare", this.MODE_PRIVATE);
