@@ -23,7 +23,7 @@ public class GlobalVariables {
     private static final String DATA_SERVER_ADDRESS = "https://139.59.162.250:80";
     private static final int CALL_SERVER_UDP_PORT = 1338;
     private static final int CALL_SERVER_TCP_PORT = 1337;
-    private static final String[] cacheFiles = {"/pins", "/contacts", "localPins"};
+    private static final String[] cacheFiles = {"/pins", "/contacts", "/localPins", "/groups"};
 
 
     public static String[] getCacheFiles(){
