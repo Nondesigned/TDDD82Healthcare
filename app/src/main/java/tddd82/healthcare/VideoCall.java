@@ -10,7 +10,6 @@ import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
 import android.graphics.YuvImage;
 import android.hardware.Camera;
-import android.opengl.Matrix;
 import android.widget.ImageView;
 
 import java.io.ByteArrayOutputStream;

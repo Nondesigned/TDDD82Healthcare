@@ -30,9 +30,7 @@ import java.util.Map;
 public class GetGroupTask extends AsyncTask<String,Void,String> {
 
     private Context context;
-    private JSONArray response;
     private MapsActivity mapsActivity;
-    private JSONObject group;
 
 
     public GetGroupTask(Context context, MapsActivity mapsActivity){
@@ -49,36 +47,15 @@ public class GetGroupTask extends AsyncTask<String,Void,String> {
 
             @Override
             public void onResponse(JSONArray m_response) {
-                response = m_response;
+                CacheManager.put(m_response.toString(),"/groups", context);
                 Log.v("GROUP RESPONSE","RESPONSE!");
-
-                HashMap<String, String> groupMap = new HashMap<>();
-
-                for (int i = 0; i < response.length(); i++) {
-                    try {
-                        JSONObject row = response.getJSONObject(i);
-                        groupMap.put(row.getString("id"), row.getString("name"));
-                        Log.d("PUTTING", row.getString("id"));
-                        Log.d("PUTTING", row.getString("name"));
-                    } catch (JSONException e) {
-
-                    }
-                }
-                Log.d("GROUP", "Sets GroupMap");
-                String[] groupArray = new String[groupMap.size()];
-                Object[] valuesArray = groupMap.values().toArray();
-                Object[] idArray = groupMap.keySet().toArray();
-                for(int i=0; i<groupMap.size(); i++){
-                    groupArray[i] = idArray[i].toString()+":"+valuesArray[i].toString();
-                }
-
-                mapsActivity.setGroupArray(groupArray);
+                doStuff(m_response);
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.v("ERRRRROOOORRRRRRR", error.toString());
-
+                doStuff(CacheManager.getJSON("/groups", context));
             }
         }){
 
@@ -105,6 +82,30 @@ public class GetGroupTask extends AsyncTask<String,Void,String> {
         mRequestQueue.start();
 
         return "Fetching groups";
+    }
+
+    private void doStuff(JSONArray response) {
+        HashMap<String, String> groupMap = new HashMap<>();
+
+        for (int i = 0; i < response.length(); i++) {
+            try {
+                JSONObject row = response.getJSONObject(i);
+                groupMap.put(row.getString("id"), row.getString("name"));
+                Log.d("PUTTING", row.getString("id"));
+                Log.d("PUTTING", row.getString("name"));
+            } catch (JSONException e) {
+
+            }
+        }
+        Log.d("GROUP", "Sets GroupMap");
+        String[] groupArray = new String[groupMap.size()];
+        Object[] valuesArray = groupMap.values().toArray();
+        Object[] idArray = groupMap.keySet().toArray();
+        for(int i=0; i<groupMap.size(); i++){
+            groupArray[i] = idArray[i].toString()+":"+valuesArray[i].toString();
+        }
+
+        mapsActivity.setGroupArray(groupArray);
     }
 
 }
